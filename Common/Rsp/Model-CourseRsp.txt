@@ -1,0 +1,11 @@
+﻿List<object>{
+	- Thumbnail
+	- Title
+	- Name
+	- Avatar User
+}
+pagination{
+	Page:
+	Limit:
+
+}
