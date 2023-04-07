@@ -13,6 +13,7 @@ namespace DAL.Models
         public long? Price { get; set; }
         public double? SalePercent { get; set; }
         public string? Description { get; set; }
+        public string? VideoPreview { get; set; }
         public string? Thumbnail { get; set; }
         public double? Discount { get; set; }
         public int? Status { get; set; }

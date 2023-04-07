@@ -11,22 +11,9 @@ namespace DAL
             var res = new List<CourseComponent>();
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                var courses = GetAllCourseByName(_title_like);
-                /*try
-                {*/
+                var courses = GetAllCourseByName(_title_like); // Get all course whose name contains _title_like
 
-                /*foreach (var course in courses)
-                {
-                    context.Entry(course).Reference(course => course.IdUserNavigation).Load();
-                }*/
-                /*}catch(Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }*/
-
-
-
-                var data = courses.OrderBy(x => x.CourseName).Skip(offset).Take(limit).ToList();
+                var data = courses.OrderBy(x => x.CourseName).Skip(offset).Take(limit).ToList(); // pagination
 
                 foreach(var course in data)
                 {
@@ -34,6 +21,7 @@ namespace DAL
 
                     res.Add(new CourseComponent
                     {
+                        Id = course.IdCourse,
                         Title = course.CourseName!,
                         Thumbnail = course.Thumbnail!,
                         AvatarUser = user!.Avatar,
@@ -45,9 +33,40 @@ namespace DAL
             return res;
         }
 
-        public IQueryable<Course> GetAllCourseByName(string _title_like)
+        public List<CourseComponent> GetAllCourseByExpert(Guid id)
+        {
+
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var res = new List<CourseComponent>();
+
+                foreach (var course in All.Where(course => course.IdUser == id).ToList())
+                {
+                    var user = context.Users.FirstOrDefault(x => x.IdUser == course.IdUser);
+
+                    res.Add(new CourseComponent
+                    {
+                        Id = course.IdCourse,
+                        Title = course.CourseName!,
+                        Thumbnail = course.Thumbnail!,
+                        AvatarUser = user!.Avatar,
+                        NameUser = user!.Name,
+                    });
+                };
+
+                return res;
+            }
+            
+        }
+
+        public IQueryable<Course> GetAllCourseByName(string? _title_like)
         {
             return All.Where(course => course.CourseName.Contains(_title_like==null?"":_title_like));
+        }
+
+        public Course GetCourseByID(Guid id)
+        {
+            return All.Where(course => course.IdCourse == id).FirstOrDefault()!;
         }
     }
 }

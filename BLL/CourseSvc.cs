@@ -41,5 +41,38 @@ namespace BLL
 
             return rsp;
         }
+
+        public SingleRsp GetAllCourseByExpert(Guid id)
+        {
+            var rsp = new SingleRsp();
+
+            if(_courseRep.GetAllCourseByExpert(id) == null)
+            {
+                rsp.SetError("Not found Course of this Expert");
+            }
+            else
+            {
+                rsp.Data = _courseRep.GetAllCourseByExpert(id);
+            }
+
+            return rsp;
+        }
+
+        public SingleRsp GetCourseByID(Guid id)
+        {
+            var res = new SingleRsp();
+
+            if(_courseRep.GetCourseByID(id) == null)
+            {
+                res.SetError("Not found course");
+            }
+            else
+            {
+                res.Data = _courseRep.GetCourseByID(id);
+            }
+
+            return res;
+        }
+
     }
 }

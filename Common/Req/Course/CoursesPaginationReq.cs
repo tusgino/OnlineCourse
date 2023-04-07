@@ -10,6 +10,6 @@ namespace Common.Req.Course
     {
         public int Page { get; set; }
         public int Limit { get; set; }
-        public string Title_like { get; set; } = string.Empty;
+        public string? Title_like { get; set; } = string.Empty;
     }
 }
