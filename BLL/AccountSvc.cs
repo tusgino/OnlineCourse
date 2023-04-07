@@ -92,9 +92,9 @@ namespace BLL
             {
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim("Role", user.IdTypeOfUserNavigation!.TypeOfUserName!)
+                new Claim(ClaimTypes.Role, user.IdTypeOfUserNavigation!.TypeOfUserName!)
             };
-            
+
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_appSettings.SecretKey));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
