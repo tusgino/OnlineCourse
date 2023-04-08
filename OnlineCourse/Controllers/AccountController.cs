@@ -53,5 +53,20 @@ namespace OnlineCourse.Controllers
                 return BadRequest(rsp.Message);
             }
         }
+
+
+        [HttpGet("check-valid-token")]
+        public IActionResult CheckValidToken(string token)
+        {
+            var res = _accountSvc.CheckValidToken(token);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return Unauthorized(res.Message);
+            }
+        }
     }
 }
