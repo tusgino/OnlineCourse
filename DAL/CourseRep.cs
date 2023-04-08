@@ -64,9 +64,27 @@ namespace DAL
             return All.Where(course => course.CourseName.Contains(_title_like==null?"":_title_like));
         }
 
-        public Course GetCourseByID(Guid id)
+        public object GetCourseByID(Guid id)
         {
-            return All.Where(course => course.IdCourse == id).FirstOrDefault()!;
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.Where(c => c.IdCourse== id).FirstOrDefault();
+                if (course == null)
+                {
+                    return null;
+                }
+                var user = context.Users.Where(u => u.IdUser == course.IdUser).FirstOrDefault();
+
+                return new
+                {
+                    Title = course.CourseName,
+                    Discount = course.Discount,
+                    Price = course.Price,
+                    Author = user?.Name,
+                    VideoPreview = course.VideoPreview,
+                };
+
+            }
         }
     }
 }
