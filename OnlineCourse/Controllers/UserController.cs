@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,8 @@ namespace OnlineCourse.Controllers
         private readonly UserSvc _userSvc = new UserSvc();
 
 
-        [HttpGet("get-user-by-id")]
+        [HttpGet("get-user")]
+        [Authorize]
         public IActionResult GetUserByID(Guid? id) {
             var rsp = _userSvc.GetUserByID(id);
 
