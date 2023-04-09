@@ -18,8 +18,16 @@ namespace DAL.Models
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<BankInfo> BankInfos { get; set; } = null!;
+        public virtual DbSet<Category> Categories { get; set; } = null!;
+        public virtual DbSet<Chapter> Chapters { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
         public virtual DbSet<Degree> Degrees { get; set; } = null!;
+        public virtual DbSet<Lesson> Lessons { get; set; } = null!;
+        public virtual DbSet<Purchase> Purchases { get; set; } = null!;
+        public virtual DbSet<Quiz> Quizzes { get; set; } = null!;
+        public virtual DbSet<Rate> Rates { get; set; } = null!;
+        public virtual DbSet<Study> Studies { get; set; } = null!;
+        public virtual DbSet<TradeDetail> TradeDetails { get; set; } = null!;
         public virtual DbSet<TypeOfUser> TypeOfUsers { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -68,6 +76,35 @@ namespace DAL.Models
                 entity.Property(e => e.BankName).HasMaxLength(50);
             });
 
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(e => e.IdCategory);
+
+                entity.ToTable("CATEGORY");
+
+                entity.Property(e => e.IdCategory)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Category");
+            });
+
+            modelBuilder.Entity<Chapter>(entity =>
+            {
+                entity.HasKey(e => e.IdChapter);
+
+                entity.ToTable("CHAPTER");
+
+                entity.Property(e => e.IdChapter)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Chapter");
+
+                entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
+
+                entity.HasOne(d => d.IdCourseNavigation)
+                    .WithMany(p => p.Chapters)
+                    .HasForeignKey(d => d.IdCourse)
+                    .HasConstraintName("FK_CHAPTER_COURSE");
+            });
+
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.HasKey(e => e.IdCourse);
@@ -84,6 +121,11 @@ namespace DAL.Models
 
                 entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
+                entity.HasOne(d => d.IdCategoryNavigation)
+                    .WithMany(p => p.Courses)
+                    .HasForeignKey(d => d.IdCategory)
+                    .HasConstraintName("FK_COURSE_CATEGORY");
+
                 entity.HasOne(d => d.IdUserNavigation)
                     .WithMany(p => p.Courses)
                     .HasForeignKey(d => d.IdUser)
@@ -92,18 +134,165 @@ namespace DAL.Models
 
             modelBuilder.Entity<Degree>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.IdDegree);
 
                 entity.ToTable("DEGREE");
 
-                entity.Property(e => e.IdDegree).HasColumnName("ID_Degree");
+                entity.Property(e => e.IdDegree)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Degree");
 
                 entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
                 entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Degrees)
                     .HasForeignKey(d => d.IdUser)
                     .HasConstraintName("FK_DEGREE_USER");
+            });
+
+            modelBuilder.Entity<Lesson>(entity =>
+            {
+                entity.HasKey(e => e.IdLesson);
+
+                entity.ToTable("LESSON");
+
+                entity.Property(e => e.IdLesson)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Lesson");
+
+                entity.Property(e => e.IdChapter).HasColumnName("ID_Chapter");
+
+                entity.HasOne(d => d.IdChapterNavigation)
+                    .WithMany(p => p.Lessons)
+                    .HasForeignKey(d => d.IdChapter)
+                    .HasConstraintName("FK_LESSON_CHAPTER");
+            });
+
+            modelBuilder.Entity<Purchase>(entity =>
+            {
+                entity.HasKey(e => new { e.IdUser, e.IdCourse, e.IdTrade });
+
+                entity.ToTable("PURCHASE");
+
+                entity.Property(e => e.IdUser).HasColumnName("ID_User");
+
+                entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
+
+                entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
+
+                entity.Property(e => e.DateOfPurchase).HasColumnType("datetime");
+
+                entity.HasOne(d => d.IdCourseNavigation)
+                    .WithMany(p => p.Purchases)
+                    .HasForeignKey(d => d.IdCourse)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PURCHASE_COURSE");
+
+                entity.HasOne(d => d.IdTradeNavigation)
+                    .WithMany(p => p.Purchases)
+                    .HasForeignKey(d => d.IdTrade)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PURCHASE_TRADE_DETAIL");
+
+                entity.HasOne(d => d.IdUserNavigation)
+                    .WithMany(p => p.Purchases)
+                    .HasForeignKey(d => d.IdUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PURCHASE_USER");
+            });
+
+            modelBuilder.Entity<Quiz>(entity =>
+            {
+                entity.HasKey(e => e.IdQuiz);
+
+                entity.ToTable("QUIZ");
+
+                entity.Property(e => e.IdQuiz)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Quiz");
+
+                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
+
+                entity.Property(e => e.Option1).HasColumnName("Option_1");
+
+                entity.Property(e => e.Option2).HasColumnName("Option_2");
+
+                entity.Property(e => e.Option3).HasColumnName("Option_3");
+
+                entity.Property(e => e.Option4).HasColumnName("Option_4");
+
+                entity.HasOne(d => d.IdLessonNavigation)
+                    .WithMany(p => p.Quizzes)
+                    .HasForeignKey(d => d.IdLesson)
+                    .HasConstraintName("FK_QUIZ_LESSON");
+            });
+
+            modelBuilder.Entity<Rate>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("RATE");
+
+                entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
+
+                entity.Property(e => e.IdUser).HasColumnName("ID_User");
+
+                entity.Property(e => e.Rate1).HasColumnName("Rate");
+
+                entity.HasOne(d => d.IdCourseNavigation)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdCourse)
+                    .HasConstraintName("FK_RATE_COURSE");
+
+                entity.HasOne(d => d.IdUserNavigation)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RATE_USER");
+            });
+
+            modelBuilder.Entity<Study>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("STUDY");
+
+                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
+
+                entity.Property(e => e.IdUser).HasColumnName("ID_User");
+
+                entity.HasOne(d => d.IdLessonNavigation)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdLesson)
+                    .HasConstraintName("FK_STUDY_LESSON");
+
+                entity.HasOne(d => d.IdUserNavigation)
+                    .WithMany()
+                    .HasForeignKey(d => d.IdUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_STUDY_USER");
+            });
+
+            modelBuilder.Entity<TradeDetail>(entity =>
+            {
+                entity.HasKey(e => e.IdTrade);
+
+                entity.ToTable("TRADE_DETAIL");
+
+                entity.Property(e => e.IdTrade)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Trade");
+
+                entity.Property(e => e.Balance).HasMaxLength(50);
+
+                entity.Property(e => e.DateOfTrade).HasColumnType("datetime");
+
+                entity.Property(e => e.IdUser).HasColumnName("ID_User");
+
+                entity.HasOne(d => d.IdUserNavigation)
+                    .WithMany(p => p.TradeDetails)
+                    .HasForeignKey(d => d.IdUser)
+                    .HasConstraintName("FK_TRADE_DETAIL_USER");
             });
 
             modelBuilder.Entity<TypeOfUser>(entity =>

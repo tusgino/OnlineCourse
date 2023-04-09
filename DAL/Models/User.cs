@@ -8,6 +8,9 @@ namespace DAL.Models
         public User()
         {
             Courses = new HashSet<Course>();
+            Degrees = new HashSet<Degree>();
+            Purchases = new HashSet<Purchase>();
+            TradeDetails = new HashSet<TradeDetail>();
         }
 
         public Guid IdUser { get; set; }
@@ -26,5 +29,8 @@ namespace DAL.Models
         public virtual BankInfo? IdBankAccountNavigation { get; set; }
         public virtual TypeOfUser? IdTypeOfUserNavigation { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<Degree> Degrees { get; set; }
+        public virtual ICollection<Purchase> Purchases { get; set; }
+        public virtual ICollection<TradeDetail> TradeDetails { get; set; }
     }
 }
