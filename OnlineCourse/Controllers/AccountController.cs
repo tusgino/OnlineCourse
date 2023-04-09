@@ -55,7 +55,7 @@ namespace OnlineCourse.Controllers
         }
 
 
-        [HttpGet("check-valid-token")]
+        [HttpPost("check-valid-token")]
         public IActionResult CheckValidToken(string token)
         {
             var res = _accountSvc.CheckValidToken(token);
