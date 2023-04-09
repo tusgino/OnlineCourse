@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.ComponentModel;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = new AppSettings();
@@ -48,7 +49,8 @@ builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
         policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
     }));
 
-
+/*builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions
+                .ReferenceHandler = ReferenceHandler.Preserve);*/
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -26,7 +26,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("Login")]
-        public IActionResult Login([FromForm] LoginReq loginReq)
+        public IActionResult Login([FromBody] LoginReq loginReq)
         {
             var rsp = _accountSvc.Login(loginReq);
 
@@ -41,7 +41,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("Register")]
-        public IActionResult Register([FromForm] RegisterReq registerReq)
+        public IActionResult Register([FromBody] RegisterReq registerReq)
         {
             var rsp = _accountSvc.Register(registerReq);
             if(rsp.Success)
@@ -51,6 +51,21 @@ namespace OnlineCourse.Controllers
             else
             {
                 return BadRequest(rsp.Message);
+            }
+        }
+
+
+        [HttpPost("check-valid-token")]
+        public IActionResult CheckValidToken(string token)
+        {
+            var res = _accountSvc.CheckValidToken(token);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return Unauthorized(res.Message);
             }
         }
     }

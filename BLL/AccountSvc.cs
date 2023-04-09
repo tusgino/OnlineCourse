@@ -20,6 +20,57 @@ namespace BLL
     {
         private readonly AccountRep _accountRep = new AccountRep();
         private readonly AppSettings _appSettings = new AppSettings();
+
+        public SingleRsp CheckValidToken(string token)
+        {
+            var rsp = new SingleRsp();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("Pjnis7DgRYABE9aShtatwK16j3BuIchX");
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            // Giải mã token và lấy danh sách các Claim
+            try
+            {
+                var claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+                var claimsIdentity = claimsPrincipal.Identity as ClaimsIdentity;
+
+                // Sử dụng claimsIdentity để xác thực và phân quyền cho người dùng
+                if (claimsIdentity == null)
+                {
+                    // Token không hợp lệ, không có ClaimIdentity
+                }
+                else if (claimsIdentity.IsAuthenticated && validatedToken.ValidTo < DateTime.UtcNow)
+                {
+                    // Token hợp lệ và thời gian hết hạn
+                    rsp.SetError("Out of time token");
+                }
+                else
+                {
+                    // Token không hết hạn
+                    rsp.Data = new
+                    {
+                        IDUser = claimsIdentity.FindFirst("IDUser").Value,
+                        Role = claimsIdentity.FindFirst(ClaimTypes.Role).Value,
+                    };
+                    
+                }
+            }
+            catch (SecurityTokenException)
+            {
+                rsp.SetError("Token is invalid");
+            }
+            
+            return rsp;
+
+        }
+
         public SingleRsp GetAccountByID(Guid id)
         {
             var rsp = new SingleRsp();
@@ -90,9 +141,11 @@ namespace BLL
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.IdTypeOfUserNavigation!.TypeOfUserName!)
+                new Claim("IDUser", Convert.ToString(user.IdUser)),
+                new Claim("Name", user.Name),
+                new Claim("Email", user.Email),
+                new Claim(ClaimTypes.Role, user.IdTypeOfUserNavigation!.TypeOfUserName!),
+                new Claim("Role", user.IdTypeOfUserNavigation!.TypeOfUserName!)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_appSettings.SecretKey));

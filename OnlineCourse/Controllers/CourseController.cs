@@ -13,11 +13,11 @@ namespace OnlineCourse.Controllers
         private readonly CourseSvc _courseSvc = new CourseSvc();
 
         [HttpGet("Get-all-course-for")]
-        public IActionResult GetAllCourse(int Page, int Limit, string? Title_like)
+        public IActionResult GetAllCourse( int _page, int _limit, string? title_like)
         {
-            var coursesPaginationReq = new CoursesPaginationReq
+             var coursesPaginationReq = new CoursesPaginationReq
             {
-               Page= Page, Limit=Limit, Title_like=Title_like,
+               Page= _page, Limit=_limit, Title_like=title_like,
             };
             var res = _courseSvc.GetAllCourse(coursesPaginationReq);
             return Ok(res);
