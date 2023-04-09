@@ -21,8 +21,9 @@ namespace BLL
         private readonly AccountRep _accountRep = new AccountRep();
         private readonly AppSettings _appSettings = new AppSettings();
 
-        public SingleRsp CheckValidToken(string token)
+        public SingleRsp CheckValidToken(TokenReq TokenReq)
         {
+            var token = TokenReq.token;
             var rsp = new SingleRsp();
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("Pjnis7DgRYABE9aShtatwK16j3BuIchX");

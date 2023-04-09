@@ -56,9 +56,9 @@ namespace OnlineCourse.Controllers
 
 
         [HttpPost("check-valid-token")]
-        public IActionResult CheckValidToken(string token)
+        public IActionResult CheckValidToken([FromBody] TokenReq tokenReq)
         {
-            var res = _accountSvc.CheckValidToken(token);
+            var res = _accountSvc.CheckValidToken(tokenReq);
             if(res.Success)
             {
                 return Ok(res);
