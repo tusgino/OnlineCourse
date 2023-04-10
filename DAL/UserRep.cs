@@ -12,7 +12,13 @@ namespace DAL
     {
         public User GetUserByID(Guid? id)
         {
-            return All.Where(u => u.IdUser == id).FirstOrDefault()!;
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var user = context.Users.Where(u => u.IdUser== id).FirstOrDefault();
+                if (user != null)
+                    context.Entry(user)!.Reference(u => u.IdTypeOfUserNavigation).Load();
+                return user;
+            }
         }
     }
 }
