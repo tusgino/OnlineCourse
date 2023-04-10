@@ -8,12 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 [ApiController]
 public class UploadController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-
-    public UploadController(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
 
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(IFormFile file)
