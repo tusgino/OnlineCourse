@@ -73,6 +73,23 @@ namespace BLL
 
             return res;
         }
+        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq)
+        {
+            var data = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+
+            var rsp = new SingleRsp();
+
+            if (data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+
+            return rsp;
+        }
 
     }
 }

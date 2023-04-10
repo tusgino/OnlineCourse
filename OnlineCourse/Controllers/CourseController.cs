@@ -50,7 +50,30 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-all-courses-by-filtering")]
+        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        {
+            CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
+            {
+                text = _title_like,
+                category_name = _category_name,
+                start_day = _start_upload_day,
+                end_day = _end_upload_day,
+                status_active = _status_active,
+                status_store = _status_store
+            };
 
+            var res = _courseSvc.GetAllCoursesByFiltering(coursesFilteringReq);
+
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
 
     }
 }

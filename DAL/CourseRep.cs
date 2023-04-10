@@ -1,6 +1,7 @@
 ﻿using Common.DAL;
 using Common.Req.Course;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace DAL
 {
@@ -79,11 +80,25 @@ namespace DAL
                 {
                     Title = course.CourseName,
                     Discount = course.Discount,
-                    Price = course.Price,
+                    Price = course.Price,   
                     Author = user?.Name,
                     VideoPreview = course.VideoPreview,
                 };
 
+            }
+        }
+        public List<Course> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
+
+                return GetAllCourseByName(_title_like).Where(course =>
+                    course.DateOfUpload > _start_upload_day && course.DateOfUpload < _end_upload_day &&
+                    categories.Contains(course.IdCategory ?? Guid.Empty) &&
+                    (course.Status == _status_active ||
+                    course.Status == _status_store)
+                ).ToList();
             }
         }
     }
