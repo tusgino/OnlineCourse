@@ -51,7 +51,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-by-filtering")]
-        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store, int page)
         {
             CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
             {
@@ -62,8 +62,15 @@ namespace OnlineCourse.Controllers
                 status_active = _status_active,
                 status_store = _status_store
             };
+            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
+            {
+                Page = page,
+                Limit = 10,
+                Title_like = _title_like,
+            };
 
-            var res = _courseSvc.GetAllCoursesByFiltering(coursesFilteringReq);
+
+            var res = _courseSvc.GetAllCoursesByFiltering(coursesFilteringReq, coursesPaginationReq);
 
             if (res.Success)
             {

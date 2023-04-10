@@ -73,9 +73,17 @@ namespace BLL
 
             return res;
         }
-        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq)
+        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq, CoursesPaginationReq coursesPaginationReq)
         {
-            var data = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+
+            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+
+            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int total = courses.Count;
+            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
+                (int)(1 + (total / coursesPaginationReq.Limit));
+
+            var data = courses.Skip(offset).Take(coursesPaginationReq.Limit).ToList();
 
             var rsp = new SingleRsp();
 
