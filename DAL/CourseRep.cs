@@ -91,8 +91,8 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                if (_start_upload_day == null) _start_upload_day = new DateTime(1, 1, 1);
-                if (_end_upload_day == null) _end_upload_day = new DateTime(9999, 1, 1);
+            //    if (_start_upload_day == null) _start_upload_day = new DateTime(1, 1, 1);
+            //    if (_end_upload_day == null) _end_upload_day = new DateTime(9999, 1, 1);
 
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
 

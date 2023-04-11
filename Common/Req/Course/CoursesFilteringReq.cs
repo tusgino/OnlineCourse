@@ -14,7 +14,6 @@ namespace Common.Req.Course
         public DateTime? end_day { get; set; }
         public int status_active { get; set; }
         public int status_store { get; set; }
-
     }
 
 }

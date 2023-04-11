@@ -75,7 +75,8 @@ namespace BLL
         }
         public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq, CoursesPaginationReq coursesPaginationReq)
         {
-
+            if (coursesFilteringReq.start_day == null) coursesFilteringReq.start_day = new DateTime(1, 1, 1);
+            if (coursesFilteringReq.end_day == null) coursesFilteringReq.end_day = new DateTime(9999, 1, 1);
             var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
 
             int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
