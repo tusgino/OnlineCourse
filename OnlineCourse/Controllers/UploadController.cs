@@ -2,6 +2,7 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -10,6 +11,7 @@ public class UploadController : ControllerBase
 {
 
     [HttpPost("upload")]
+    [Authorize]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         try
