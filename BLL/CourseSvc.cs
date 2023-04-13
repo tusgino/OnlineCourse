@@ -99,6 +99,14 @@ namespace BLL
 
             return rsp;
         }
+        public SingleRsp GetCoursesByCategoryID(Guid _category_id)
+        {
+            var courses = _courseRep.GetAllCourseByCategoryID(_category_id);
+            var rsp = new SingleRsp();
+
+            rsp.Data = courses;
+            return rsp;
+        }
 
     }
 }

@@ -81,6 +81,18 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-
+        [HttpGet("get-all-courses-by-categoryid")]
+        public IActionResult GetAllCoursesByCategoryID(Guid _category_id)
+        {
+            var res = _courseSvc.GetCoursesByCategoryID(_category_id);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

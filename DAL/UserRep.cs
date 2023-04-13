@@ -21,7 +21,6 @@ namespace DAL
 
                 var id_accounts = context.Accounts.Where(account => account.DateCreate >= _start_date_create && account.DateCreate <= _end_date_create).Select(account => account.IdAccount) .ToList();
 
-                
 
                 List<int> user_types = new List<int>();
                 if (_is_admin == true) user_types.Add(0);

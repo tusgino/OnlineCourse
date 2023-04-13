@@ -1,6 +1,7 @@
 ﻿using Common.DAL;
 using Common.Req.Course;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace DAL
@@ -91,9 +92,6 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-            //    if (_start_upload_day == null) _start_upload_day = new DateTime(1, 1, 1);
-            //    if (_end_upload_day == null) _end_upload_day = new DateTime(9999, 1, 1);
-
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
 
                 var data = GetAllCourseByName(_title_like).Where(course =>
@@ -104,6 +102,32 @@ namespace DAL
                 );
 
                 return data.ToList();
+            }
+        }
+        public List<Course> GetAllCourseByCategoryID(Guid _category_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<Course> courses = new List<Course>();
+                foreach (Course course in context.Courses)
+                {
+                    if (course.IdCategory == _category_id)
+                    {
+                        courses.Add(course);
+                    }
+                }
+                return courses;
+            }
+        }
+        public void DeleteCourseByID(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.FirstOrDefault(course => course.IdCategory == _course_id);
+
+                context.Courses.Remove(course!);
+                context.SaveChanges();
+
             }
         }
     }
