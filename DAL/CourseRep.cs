@@ -123,7 +123,7 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                var course = context.Courses.FirstOrDefault(course => course.IdCategory == _course_id);
+                var course = context.Courses.FirstOrDefault(course => course.IdCourse == _course_id);
 
                 context.Courses.Remove(course!);
                 context.SaveChanges();
