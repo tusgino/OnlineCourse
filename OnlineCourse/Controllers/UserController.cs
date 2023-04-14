@@ -46,10 +46,15 @@ namespace OnlineCourse.Controllers
 
             var rsp = _userSvc.GetAllUsersByFiltering(userFilteringReq, page);
 
-            if(rsp.Success)
+            if (rsp.Success)
             {
                 return Ok(rsp);
-            } 
+            }
+            else
+            {
+                return BadRequest(rsp.Message);
+            }
+        }
 
         [HttpPatch("{ID_User}")]
 

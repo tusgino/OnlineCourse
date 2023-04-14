@@ -20,13 +20,13 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
 
-                var id_accounts = context.Accounts.Where(account => account.DateCreate >= _start_date_create && account.DateCreate <= _end_date_create).Select(account => account.IdAccount) .ToList();
+                var id_accounts = context.Accounts.Where(account => account.DateCreate >= _start_date_create && account.DateCreate <= _end_date_create).Select(account => account.IdAccount).ToList();
 
 
                 List<int> user_types = new List<int>();
                 if (_is_admin == true) user_types.Add(0);
                 if (_is_expert == true) user_types.Add(1);
-                if (_is_student== true) user_types.Add(2);
+                if (_is_student == true) user_types.Add(2);
 
                 List<int> user_status = new List<int>();
                 if (_status_active == true) user_status.Add(1);
@@ -36,9 +36,10 @@ namespace DAL
                     user.Name.Contains(_title_like == null ? "" : _title_like) &&
                     id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
                     user_types.Contains(user.IdTypeOfUser ?? -1) &&
-                    user_status.Contains(user.Status ?? -1) 
+                    user_status.Contains(user.Status ?? -1)
                 ).ToList();
             }
+        }
         public bool UpdateUserByID(Guid id, JsonPatchDocument newUser)
         {
             var user = GetUserByID(id);

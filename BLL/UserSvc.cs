@@ -25,11 +25,11 @@ namespace BLL
             }
             return rsp;
         }
-        public SingleRsp GetAllUsersByFiltering(UserFilteringReq userFilteringReq, int page) 
+        public SingleRsp GetAllUsersByFiltering(UserFilteringReq userFilteringReq, int page)
         {
             if (userFilteringReq.start_date_create == null) userFilteringReq.start_date_create = new DateTime(1, 1, 1);
             if (userFilteringReq.end_date_create == null) userFilteringReq.end_date_create = new DateTime(9999, 1, 1);
-            
+
             var users = _userRep.GetAllUsersByFiltering(userFilteringReq.text, userFilteringReq.start_date_create, userFilteringReq.end_date_create, userFilteringReq.is_student, userFilteringReq.is_expert, userFilteringReq.is_admin, userFilteringReq.status_active, userFilteringReq.status_banned);
 
             int limit = 10;
@@ -41,7 +41,7 @@ namespace BLL
 
             var rsp = new SingleRsp();
 
-            if(data == null)
+            if (data == null)
             {
                 rsp.SetError("Not found user");
             }
@@ -49,7 +49,8 @@ namespace BLL
             {
                 rsp.Data = data;
             }
-
+            return rsp;
+        }
         public SingleRsp UpdateUser(Guid iD_User, JsonPatchDocument patchDoc)
         {
             var rsp = new SingleRsp();
