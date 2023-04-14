@@ -51,6 +51,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-by-filtering")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store, int page)
         {
             CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
