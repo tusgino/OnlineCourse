@@ -49,8 +49,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
         policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
     }));
 
-/*builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions
-                .ReferenceHandler = ReferenceHandler.Preserve);*/
+builder.Services.AddControllers().AddNewtonsoftJson();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
