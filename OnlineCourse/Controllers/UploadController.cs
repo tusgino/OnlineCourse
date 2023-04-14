@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 [Route("api/[controller]")]
 [ApiController]
 public class UploadController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-
-    public UploadController(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
 
     [HttpPost("upload")]
+    [Authorize]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         try

@@ -2,6 +2,7 @@
 using Common.Req.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -49,12 +50,20 @@ namespace OnlineCourse.Controllers
             {
                 return Ok(rsp);
             } 
+
+        [HttpPatch("{ID_User}")]
+
+        public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
+        {
+            var rsp = _userSvc.UpdateUser(ID_User, patchDoc);
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
             else
             {
                 return BadRequest(rsp.Message);
             }
-
-
         }
     }
 }

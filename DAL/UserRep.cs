@@ -1,5 +1,6 @@
 ﻿using Common.DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,16 @@ namespace DAL
                     user_status.Contains(user.Status ?? -1) 
                 ).ToList();
             }
+        public bool UpdateUserByID(Guid id, JsonPatchDocument newUser)
+        {
+            var user = GetUserByID(id);
+            if (user != null)
+            {
+                newUser.ApplyTo(user);
+                Context.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }
