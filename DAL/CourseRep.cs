@@ -1,8 +1,11 @@
 ﻿using Common.DAL;
 using Common.Req.Course;
 using DAL.Models;
+using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Security.Cryptography.Xml;
 
 namespace DAL
 {
@@ -128,6 +131,22 @@ namespace DAL
                 context.Courses.Remove(course!);
                 context.SaveChanges();
 
+            }
+        }
+        
+        public bool UpdateCourse(Guid _course_id, JsonPatchDocument newCourse)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.FirstOrDefault(course => course.IdCourse == _course_id);
+                
+                if(course != null)
+                {
+                    newCourse.ApplyTo(course);
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
             }
         }
     }

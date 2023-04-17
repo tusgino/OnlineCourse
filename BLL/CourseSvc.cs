@@ -3,6 +3,7 @@ using Common.Req.Course;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,6 +108,16 @@ namespace BLL
             rsp.Data = courses;
             return rsp;
         }
+        public SingleRsp UpdateCourse(Guid _id_course, JsonPatchDocument newCourse)
+        {
+            var rsp = new SingleRsp();
 
+            if(!_courseRep.UpdateCourse(_id_course, newCourse))
+            {
+                rsp.SetError("Update failed");
+            }
+
+            return rsp;
+        }
     }
 }

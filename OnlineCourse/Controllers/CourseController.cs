@@ -2,6 +2,7 @@
 using Common.Req.Course;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -86,6 +87,19 @@ namespace OnlineCourse.Controllers
         public IActionResult GetAllCoursesByCategoryID(Guid _category_id)
         {
             var res = _courseSvc.GetCoursesByCategoryID(_category_id);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpPatch("Update-course")]
+        public IActionResult UpdateCourse(Guid _course_id, JsonPatchDocument newCourse)
+        {
+            var res = _courseSvc.UpdateCourse(_course_id, newCourse);
             if(res.Success)
             {
                 return Ok(res);
