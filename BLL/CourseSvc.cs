@@ -1,5 +1,6 @@
 ﻿using Common.BLL;
 using Common.Req.Course;
+using Common.Req.User;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
@@ -116,6 +117,42 @@ namespace BLL
             {
                 rsp.SetError("Update failed");
             }
+
+            return rsp;
+        }
+        public SingleRsp GetAllCourseForAnalytics(CourseAnalyticsReq courseAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        {
+            if (courseAnalyticsReq.start_reg_user == null) courseAnalyticsReq.start_reg_user = 0;
+            if (courseAnalyticsReq.end_reg_user == null) courseAnalyticsReq.end_reg_user = int.MaxValue;
+
+            if (courseAnalyticsReq.start_rate == null) courseAnalyticsReq.start_rate = 1;
+            if (courseAnalyticsReq.end_rate == null) courseAnalyticsReq.end_rate = 5;
+
+            var courses = _courseRep.GetAllCoursesForAnalytics(courseAnalyticsReq.title_like,
+                                                               courseAnalyticsReq.start_reg_user,
+                                                               courseAnalyticsReq.end_reg_user,
+                                                               courseAnalyticsReq.start_rate,
+                                                               courseAnalyticsReq.end_rate);
+
+            int limit = 10;
+            int offset = (coursesPaginationReq.Page - 1) * limit;
+            int total = courses.Count;
+            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
+                (int)(1 + (total / coursesPaginationReq.Limit));
+
+            var data = courses.Skip(offset).Take(limit).ToList();
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found course");
+            } 
+            else
+            {
+                rsp.Data = data;
+            }
+
+
 
             return rsp;
         }

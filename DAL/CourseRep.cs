@@ -149,5 +149,79 @@ namespace DAL
                 return false;
             }
         }
+        public int GetNumberOfRegisterdUser(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                int count_reg_user = 0;
+                foreach (Purchase purchase in context.Purchases)
+                {
+                    if (purchase.IdCourse == _course_id)
+                    {
+                        count_reg_user++;
+                    }
+                }
+                return count_reg_user;
+            }
+        }
+        public int GetCourseRate(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                int rate_point = 0, count_turn = 0;
+                foreach(Rate rate in context.Rates)
+                {
+                    if(rate.IdCourse == _course_id)
+                    {
+                        rate_point += rate.Rate1 ?? 0;
+                        count_turn++;
+                    }
+                }
+                return count_turn == 0 ? 0 : rate_point/count_turn;
+            }
+        }
+        public List<object> GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like == null? "" : _title_like)).ToList();
+
+
+                // filter courses by number of registered users
+                foreach(Course course in courses)
+                {
+                    if(GetNumberOfRegisterdUser(course.IdCourse) < _start_reg_user || GetNumberOfRegisterdUser(course.IdCourse) > _end_reg_user)
+                    {
+                        courses.Remove(course);
+                    }
+                }
+
+
+                // filter courses by rate
+                foreach(Course course in courses.ToList())
+                {
+                    if(GetCourseRate(course.IdCourse) < _start_rate || GetCourseRate(course.IdCourse) > _end_rate)
+                    {
+                        courses.Remove(course) ;
+                    }
+                }
+
+
+                List<object> data = new List<object>();
+                foreach(Course course in courses)
+                {
+                    data.Add(new
+                    {
+                        course_name = course.CourseName,
+                        num_of_reg = GetNumberOfRegisterdUser(course.IdCourse),
+                        rate = GetCourseRate(course.IdCourse)
+                    });
+                }
+
+                return data;
+
+
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BLL;
 using Common.Req.Course;
+using Common.Req.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -108,6 +109,36 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
+        }
+        [HttpGet("Get-all-courses-for-analytics")]
+        public IActionResult GetAllCoursesForAnalytics (string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
+        {
+            CourseAnalyticsReq courseAnalyticsReq = new CourseAnalyticsReq
+            {
+                title_like = _title_like,
+                start_reg_user = _start_reg_user,
+                end_reg_user = _end_reg_user,
+                start_rate = _start_rate,
+                end_rate = _end_rate,
+            };
+            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
+            {
+                Page = page,
+                Limit = 10,
+                Title_like = _title_like,
+            };
+
+            var res = _courseSvc.GetAllCourseForAnalytics(courseAnalyticsReq, coursesPaginationReq);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+
+
         }
     }
 }

@@ -51,6 +51,172 @@ namespace DAL
             }
             return false;
         }
-        
+        public List<object> GetAllStudentForAnalytics(string? _student_name_like, int? _start_purchase_course, int? _end_purchase_course, int? _start_finish_course, int? _end_finish_course)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                LessonRep lessonRep = new LessonRep();
+
+                List<User> users = context.Users.Where(user => user.Name.Contains(_student_name_like == null? "" : _student_name_like) &&
+                                                       user.IdTypeOfUser == 2
+                ).ToList();
+
+
+                // fitler by  purchased course
+                foreach(User user in users)
+                {
+                    List<Course> courses = new List<Course>();
+                    foreach (Purchase purchase in context.Purchases)
+                    {
+                        if (purchase.IdUser == user.IdUser)
+                        {
+                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == purchase.IdCourse);
+
+                            courses.Add(course!);
+                        }
+                    }
+                    if (courses.Count < _start_purchase_course || courses.Count > _end_purchase_course)
+                    {
+                        users.Remove(user);
+                    }
+                }
+
+                //filter by finished course
+                foreach(User user in users)
+                {
+                    List<Course> courses = new List<Course>();
+                    foreach(Study study in context.Studies)
+                    {
+                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
+                        {
+                            var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
+                            var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
+                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
+
+                            courses.Add(course);
+                        }
+                    }
+                    if(courses.Count < _start_finish_course || courses.Count > _end_finish_course)
+                    {
+                        users.Remove(user);
+                    } 
+                }
+
+
+                List<List<Course>> purchased_courses = new List<List<Course>>();
+
+                foreach (User user in users)
+                {
+                    List<Course> courses = new List<Course>();
+                    foreach (Purchase purchase in context.Purchases)
+                    {
+                        if (purchase.IdUser == user.IdUser)
+                        {
+                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == purchase.IdCourse);
+
+                            courses.Add(course!);
+                        }
+                    }
+                    purchased_courses.Add(courses);
+                }
+
+                List<List<Course>> finish_courses = new List<List<Course>>();
+                foreach(User user in users)
+                {
+                    List<Course> courses = new List<Course>();
+                    foreach (Study study in context.Studies)
+                    {
+                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
+                        {
+                            var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
+                            var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
+                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
+
+                            courses.Add(course);
+                        }
+                    }
+                    finish_courses.Add(courses);
+                }
+
+
+
+                List<object> data = new List<object>();
+                int i = 0;
+                foreach(User user in context.Users)
+                {
+                    if (user.IdTypeOfUser == 2)
+                    {
+                        data.Add(new 
+                        {
+                            student_name = user.Name,
+                            purchased_courses_count = purchased_courses[i].Count,
+                            finished_courses_count = finish_courses[i].Count
+                        });
+                        ++i;
+                    }
+                }
+
+                return data;
+
+
+            }
+        }
+        public List<object> GetAllExpertsForAnalytics(string? _expert_name_like, int? _start_upload_course, int? _end_upload_course, long? _start_revenue, long? _end_revenue)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                CourseRep courseRep = new CourseRep();
+
+                List<User> experts = context.Users.Where(user => user.Name.Contains(_expert_name_like == null ? "" : _expert_name_like) && user.IdTypeOfUser == 1).ToList();
+
+                // filter expert 
+
+                foreach(User user in experts)
+                {
+                    List<Course> courses = new List<Course>();
+                    long revenue = 0;
+                    foreach(Course course in context.Courses)
+                    {
+                        if(course.IdUser == user.IdUser)
+                        {
+                            courses.Add(course);
+                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
+
+                        }
+                    }
+                    if(courses.Count < _start_upload_course || courses.Count > _end_upload_course || revenue < _start_revenue || revenue > _end_revenue)
+                    {
+                        experts.Remove(user);
+                    } 
+                }
+
+
+                List<object> data = new List<object>();
+                
+                foreach(User user in experts)
+                {
+                    List<Course> courses = new List<Course>();
+                    long revenue = 0;
+                    foreach (Course course in context.Courses)
+                    {
+                        if (course.IdUser == user.IdUser)
+                        {
+                            courses.Add(course);
+                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
+
+                        }
+                    }
+                    data.Add(new
+                    {
+                        _expert_name = user.Name,
+                        _numOfUploadCourse = courses.Count,
+                        _revenue = revenue,
+                    });
+                }
+
+                return data;
+
+            }
+        }
     }
 }

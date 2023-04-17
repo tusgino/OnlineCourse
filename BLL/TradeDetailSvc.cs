@@ -33,12 +33,14 @@ namespace BLL
                                                                             tradeDetailFilteringReq.end_date, 
                                                                             tradeDetailFilteringReq.start_balance, 
                                                                             tradeDetailFilteringReq.end_balance);
+
+            int limit = 10;
             int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
             int total = tradeDetails.Count;
-            int totalPages = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
+            int totalPages = (total % limit) == 0 ? (int)(total /limit) :
+                (int)(1 + (total / limit));
 
-            var data = tradeDetails.Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+            var data = tradeDetails.Skip(offset).Take(limit).ToList();
 
             var rsp = new SingleRsp();
 
