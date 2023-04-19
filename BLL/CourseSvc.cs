@@ -1,6 +1,7 @@
 ﻿using Common.BLL;
 using Common.Req.Course;
 using Common.Rsp;
+using Common.Rsp.DTO;
 using DAL;
 using DAL.Models;
 using System;
@@ -54,6 +55,17 @@ namespace BLL
             {
                 rsp.Data = _courseRep.GetAllCourseByExpert(id);
             }
+
+            return rsp;
+        }
+
+        public SingleRsp GetACourse(Guid id)
+        {
+            var rsp = new SingleRsp();
+
+            if((rsp.Data = _courseRep.GetACourse(id)) == null){
+                rsp.SetError("Not found Course");
+            };
 
             return rsp;
         }
