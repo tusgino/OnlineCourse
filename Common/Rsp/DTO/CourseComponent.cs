@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Req.Course
+namespace Common.Rsp.DTO
 {
     public class CourseComponent
     {
