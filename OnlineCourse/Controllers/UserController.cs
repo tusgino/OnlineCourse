@@ -30,7 +30,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-users-by-filtering")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned, int page)
         {
             UserFilteringReq userFilteringReq = new UserFilteringReq

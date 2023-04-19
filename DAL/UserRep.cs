@@ -50,15 +50,19 @@ namespace DAL
                 List<UserModel_Admin> res = new List<UserModel_Admin>();
                 foreach(User user in data)
                 {
+                    context.Entry(user).Reference(user => user.IdAccountNavigation).Load();
+                    context.Entry(user).Reference(user => user.IdBankAccountNavigation).Load();
+                    context.Entry(user).Reference(user => user.IdTypeOfUserNavigation).Load();
+
                     res.Add(new UserModel_Admin
                     {
                         Name = user.Name,
-                        //TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
+                        TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
                         DateOfBirth = user.DateOfBirth.ToString(),
                         PhoneNumber = user.PhoneNumber,
                         IDCard = user.IdCard,
                         Email = user.Email,
-                        //DateCreate = user.IdAccountNavigation!.DateCreate.ToString(),
+                        DateCreate = user.IdAccountNavigation!.DateCreate!.ToString(),
                         Status = user.Status == 1 ? "Hoạt động" : "Bị khoá", 
                     });
                 }
