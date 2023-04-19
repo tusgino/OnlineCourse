@@ -28,6 +28,7 @@ namespace DAL
                                 IdLesson = lesson.IdLesson,
                                 Index= lesson.Index,
                                 Video=lesson.Video,
+                                Tittle = lesson.Title,
                             });
                         }
                         chapterDTOs.Add(new ChapterDTO
