@@ -2,6 +2,8 @@
 using Common.Req.Course;
 using Common.Rsp.DTO;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace DAL
 {
@@ -120,10 +122,52 @@ namespace DAL
                 {
                     Title = course.CourseName,
                     Discount = course.Discount,
-                    Price = course.Price,
+                    Price = course.Price,   
                     Author = user?.Name,
                     VideoPreview = course.VideoPreview,
                 };
+
+            }
+        }
+        public List<Course> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
+
+                var data = GetAllCourseByName(_title_like).Where(course =>
+                    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
+                    categories.Contains(course.IdCategory ?? Guid.Empty) &&
+                    (course.Status == _status_active ||
+                    course.Status == _status_store)
+                );
+
+                return data.ToList();
+            }
+        }
+        public List<Course> GetAllCourseByCategoryID(Guid _category_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<Course> courses = new List<Course>();
+                foreach (Course course in context.Courses)
+                {
+                    if (course.IdCategory == _category_id)
+                    {
+                        courses.Add(course);
+                    }
+                }
+                return courses;
+            }
+        }
+        public void DeleteCourseByID(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.FirstOrDefault(course => course.IdCourse == _course_id);
+
+                context.Courses.Remove(course!);
+                context.SaveChanges();
 
             }
         }
