@@ -85,6 +85,40 @@ namespace BLL
 
             return res;
         }
+        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq, CoursesPaginationReq coursesPaginationReq)
+        {
+            if (coursesFilteringReq.start_day == null) coursesFilteringReq.start_day = new DateTime(1, 1, 1);
+            if (coursesFilteringReq.end_day == null) coursesFilteringReq.end_day = new DateTime(9999, 1, 1);
+            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+
+            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int total = courses.Count;
+            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
+                (int)(1 + (total / coursesPaginationReq.Limit));
+
+            var data = courses.Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+
+            var rsp = new SingleRsp();
+
+            if (data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetCoursesByCategoryID(Guid _category_id)
+        {
+            var courses = _courseRep.GetAllCourseByCategoryID(_category_id);
+            var rsp = new SingleRsp();
+
+            rsp.Data = courses;
+            return rsp;
+        }
 
     }
 }
