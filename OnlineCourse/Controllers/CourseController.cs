@@ -53,9 +53,9 @@ namespace OnlineCourse.Controllers
         }*/
 
         [HttpGet("Get-course-by-IdCourse-for-Student")]
-        public IActionResult GetCourseByIDCourse(Guid id)
+        public IActionResult GetCourseByIDCourse(Guid idCourse, Guid idUser)
         {
-            var res = _courseSvc.GetACourse(id); // res.Data: CourseDTO 
+            var res = _courseSvc.GetACourse(idCourse, idUser); // res.Data: CourseDTO 
             if (res.Success)
             {
                 return Ok(res);

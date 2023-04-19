@@ -9,26 +9,28 @@ namespace DAL
 {
     public class CourseRep : GenericRep<WebsiteKhoaHocOnline_V4Context, Course>
     {
-        public CourseDTO GetACourse(Guid id)
+        public CourseDTO GetACourse(Guid idCourse, Guid idUser)
         {
             var courses = new List<CourseDTO>();
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 Course course;
-                if((course = context.Courses.SingleOrDefault(c => c.IdCourse == id)!) != null)
+                if((course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse)!) != null)
                 {
-                    List<Chapter> chapters = context.Chapters.Where(ch => ch.IdCourseNavigation!.IdCourse == id).OrderBy(ch => ch.Index).ToList();
+                    List<Chapter> chapters = context.Chapters.Where(ch => ch.IdCourseNavigation!.IdCourse == idCourse).OrderBy(ch => ch.Index).ToList();
                     List<ChapterDTO> chapterDTOs = new List<ChapterDTO>();
                     foreach(var chapter in chapters) {
                         List<LessonDTO> lessonDTOs= new List<LessonDTO>();
                         foreach(var lesson in context.Lessons.Where(l => l.IdChapterNavigation.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList())
                         {
+                            var study = context.Studies.SingleOrDefault(st => st.IdLesson== lesson.IdLesson && st.IdUser == idUser)!;
                             lessonDTOs.Add(new LessonDTO
                             {
                                 IdLesson = lesson.IdLesson,
                                 Title = lesson.Title,
                                 Index= lesson.Index,
                                 Video=lesson.Video,
+                                Status = study==null? 0 : study.Status,
                             });
                         }
                         chapterDTOs.Add(new ChapterDTO
@@ -39,9 +41,10 @@ namespace DAL
                             Name = chapter.Name,
                         });
                     }
+                    
                     return new CourseDTO
                     {
-                        IdCourse = id,
+                        IdCourse = idCourse,
                         CourseName = course.CourseName,
                         Chapters = chapterDTOs
                     };

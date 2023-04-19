@@ -56,11 +56,11 @@ namespace BLL
             return rsp;
         }
 
-        public SingleRsp GetACourse(Guid id)
+        public SingleRsp GetACourse(Guid idCourse, Guid idUser)
         {
             var rsp = new SingleRsp();
 
-            if((rsp.Data = _courseRep.GetACourse(id)) == null){
+            if((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null){
                 rsp.SetError("Not found Course");
             };
 

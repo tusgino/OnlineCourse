@@ -13,5 +13,7 @@ namespace Common.Rsp.DTO
         public string? Title { get; set; }
         public string? Video { get; set; }
 
+        public int? Status { get; set; }
+
     }
 }
