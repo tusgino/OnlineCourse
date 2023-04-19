@@ -23,6 +23,7 @@ namespace OnlineCourse.Controllers
             return Ok(res);
         }
 
+        [Authorize]
         [HttpGet("Get-all-course-by-Id")] // id can Id of Expert or Student
         public IActionResult GetAllCourseByIdUser(Guid id) {
             var res = _courseSvc.GetAllCourseByIdUser(id);
