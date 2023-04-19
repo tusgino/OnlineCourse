@@ -172,5 +172,48 @@ namespace DAL
 
             }
         }
+
+        public List<CourseComponent> GetAllCourseByIdUser(Guid id)
+        {
+            List<CourseComponent> courses = new List<CourseComponent>();
+
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var expert = context.Users.SingleOrDefault(u => u.IdUser == id && u.IdTypeOfUserNavigation.IdTypeOfUser == 1);
+                if (expert != null)
+                {
+                    foreach(var course in context.Courses.Where(c => c.IdUser == id).ToList())
+                    {
+                        courses.Add(new CourseComponent
+                        {
+                            AvatarUser = expert.Avatar,
+                            Id = course.IdCourse,
+                            Thumbnail = course.Thumbnail,
+                            NameUser = null,
+                            Title = course.CourseName,
+                        });
+                    }
+                }
+                else
+                {
+                    var purchases = context.Purchases.Where(p => p.IdUser == id).ToList();
+                    foreach (var purchase in purchases)
+                    {
+                        var course = context.Courses.SingleOrDefault(c => c.IdCourse == purchase.IdCourse);
+                        context.Entry(course).Reference(c => c.IdUserNavigation).Load();
+                        courses.Add(new CourseComponent
+                        {
+                            AvatarUser = course.IdUserNavigation.Avatar,
+                            Id = course.IdCourse,
+                            NameUser = course.IdUserNavigation.Name,
+                            Thumbnail= course.Thumbnail,
+                            Title= course.CourseName,
+                        });
+                    }
+                }
+            }
+
+            return courses;
+        }
     }
 }

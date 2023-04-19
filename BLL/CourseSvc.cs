@@ -43,11 +43,11 @@ namespace BLL
             return rsp;
         }
 
-        public SingleRsp GetAllCourseByExpert(Guid id)
+        public SingleRsp GetAllCourseByIdUser(Guid id)
         {
             var rsp = new SingleRsp();
 
-            if(_courseRep.GetAllCourseByExpert(id) == null)
+            if(_courseRep.GetAllCourseByIdUser(id) == null)
             {
                 rsp.SetError("Not found Course of this Expert");
             }

@@ -23,9 +23,9 @@ namespace OnlineCourse.Controllers
             return Ok(res);
         }
 
-        [HttpGet("Get-all-course-by-Expert"), Authorize(Roles = "Expert")]
-        public IActionResult GetAllCourseByExpert(Guid id) {
-            var res = _courseSvc.GetAllCourseByExpert(id);
+        [HttpGet("Get-all-course-by-Id")] // id can Id of Expert or Student
+        public IActionResult GetAllCourseByIdUser(Guid id) {
+            var res = _courseSvc.GetAllCourseByIdUser(id);
             if (res.Success)
             {
                 return Ok(res);
@@ -109,5 +109,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
+
     }
 }
