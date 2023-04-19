@@ -1,4 +1,5 @@
 ﻿using Common.DAL;
+using Common.Req.User;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
@@ -15,7 +16,7 @@ namespace DAL
         {
             return All.Where(u => u.IdUser == id).FirstOrDefault()!;
         }
-        public List<User> GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned)
+        public List<UserModel_Admin> GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
@@ -32,12 +33,42 @@ namespace DAL
                 if (_status_active == true) user_status.Add(1);
                 if (_status_banned == true) user_status.Add(0);
 
-                return context.Users.Where(user =>
+                //return context.Users.Where(user =>
+                //    user.Name.Contains(_title_like == null ? "" : _title_like) &&
+                //    id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
+                //    user_types.Contains(user.IdTypeOfUser ?? -1) &&
+                //    user_status.Contains(user.Status ?? -1)
+                //).ToList();
+
+                List<User> data = context.Users.Where(user =>
                     user.Name.Contains(_title_like == null ? "" : _title_like) &&
                     id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
                     user_types.Contains(user.IdTypeOfUser ?? -1) &&
                     user_status.Contains(user.Status ?? -1)
                 ).ToList();
+
+                List<UserModel_Admin> res = new List<UserModel_Admin>();
+                foreach(User user in data)
+                {
+                    context.Entry(user).Reference(user => user.IdAccountNavigation).Load();
+                    context.Entry(user).Reference(user => user.IdBankAccountNavigation).Load();
+                    context.Entry(user).Reference(user => user.IdTypeOfUserNavigation).Load();
+
+                    res.Add(new UserModel_Admin
+                    {
+                        Name = user.Name,
+                        TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
+                        DateOfBirth = user.DateOfBirth.ToString(),
+                        PhoneNumber = user.PhoneNumber,
+                        IDCard = user.IdCard,
+                        Email = user.Email,
+                        DateCreate = user.IdAccountNavigation!.DateCreate!.ToString(),
+                        Status = user.Status == 1 ? "Hoạt động" : "Bị khoá", 
+                    });
+                }
+
+
+                return res;
             }
         }
         public bool UpdateUserByID(Guid id, JsonPatchDocument newUser)
