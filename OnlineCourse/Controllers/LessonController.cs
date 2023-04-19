@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace OnlineCourse.Controllers
     {
         private LessonSvc _lessonSvc = new LessonSvc();
         [HttpGet("{idLesson}")]
+        [Authorize]
         public IActionResult GetLessonByID(Guid idLesson)
         {
             var rsp = _lessonSvc.GetLessonByID(idLesson);
