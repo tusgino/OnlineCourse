@@ -51,7 +51,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }*/
-
+        [Authorize]
         [HttpGet("Get-course-by-IdCourse-for-Student")]
         public IActionResult GetCourseByIDCourse(Guid idCourse, Guid idUser)
         {
