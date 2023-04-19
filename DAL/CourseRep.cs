@@ -1,5 +1,5 @@
 ﻿using Common.DAL;
-using Common.Req.Course;
+using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.JsonPatch;
@@ -11,6 +11,47 @@ namespace DAL
 {
     public class CourseRep : GenericRep<WebsiteKhoaHocOnline_V4Context, Course>
     {
+        public CourseDTO GetACourse(Guid id)
+        {
+            var courses = new List<CourseDTO>();
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                Course course;
+                if((course = context.Courses.SingleOrDefault(c => c.IdCourse == id)!) != null)
+                {
+                    List<Chapter> chapters = context.Chapters.Where(ch => ch.IdCourseNavigation!.IdCourse == id).OrderBy(ch => ch.Index).ToList();
+                    List<ChapterDTO> chapterDTOs = new List<ChapterDTO>();
+                    foreach(var chapter in chapters) {
+                        List<LessonDTO> lessonDTOs= new List<LessonDTO>();
+                        foreach(var lesson in context.Lessons.Where(l => l.IdChapterNavigation.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList())
+                        {
+                            lessonDTOs.Add(new LessonDTO
+                            {
+                                IdLesson = lesson.IdLesson,
+                                Index= lesson.Index,
+                                Video=lesson.Video,
+                                Tittle = lesson.Title,
+                            });
+                        }
+                        chapterDTOs.Add(new ChapterDTO
+                        {
+                            IdChapter = chapter.IdChapter,
+                            Index = chapter.Index,
+                            Lessons = lessonDTOs,
+                            Name = chapter.Name,
+                        });
+                    }
+                    return new CourseDTO
+                    {
+                        IdCourse = id,
+                        CourseName = course.CourseName,
+                        Chapters = chapterDTOs
+                    };
+                }
+            }
+            return null!;
+        }
+
         public List<CourseComponent> GetAllCourse(int offset, int limit, string _title_like)
         {
             var res = new List<CourseComponent>();
