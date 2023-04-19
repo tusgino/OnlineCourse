@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/private/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {

@@ -97,14 +97,13 @@ namespace DAL
             {
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
 
-                var data = GetAllCourseByName(_title_like).Where(course =>
+                return GetAllCourseByName(_title_like).Where(course =>
                     course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
                     categories.Contains(course.IdCategory ?? Guid.Empty) &&
                     (course.Status == _status_active ||
                     course.Status == _status_store)
-                );
+                ).ToList();
 
-                return data.ToList();
             }
         }
         public List<Course> GetAllCourseByCategoryID(Guid _category_id)
