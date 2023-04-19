@@ -24,6 +24,7 @@ namespace DAL
                             lessonDTOs.Add(new LessonDTO
                             {
                                 IdLesson = lesson.IdLesson,
+                                Title = lesson.Title,
                                 Index= lesson.Index,
                                 Video=lesson.Video,
                             });

@@ -10,6 +10,7 @@ namespace Common.Rsp.DTO
     {
         public Guid IdLesson { get; set; }
         public int? Index { get; set; }
+        public string? Title { get; set; }
         public string? Video { get; set; }
 
     }

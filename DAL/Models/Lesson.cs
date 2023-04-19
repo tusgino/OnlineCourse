@@ -16,6 +16,7 @@ namespace DAL.Models
         public int? Index { get; set; }
         public string? Video { get; set; }
         public double? Duration { get; set; }
+        public string? Title { get; set; }
 
         public virtual Chapter? IdChapterNavigation { get; set; }
         public virtual ICollection<Quiz> Quizzes { get; set; }
