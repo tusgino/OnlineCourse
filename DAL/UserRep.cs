@@ -4,6 +4,7 @@ using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,11 +59,11 @@ namespace DAL
                     {
                         Name = user.Name,
                         TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
-                        DateOfBirth = user.DateOfBirth.ToString(),
+                        DateOfBirth = (user.DateOfBirth == null) ? "" : user.DateOfBirth.Value.ToShortDateString(),
                         PhoneNumber = user.PhoneNumber,
                         IDCard = user.IdCard,
                         Email = user.Email,
-                        DateCreate = user.IdAccountNavigation!.DateCreate!.ToString(),
+                        DateCreate = user.IdAccountNavigation!.DateCreate!.Value.ToShortDateString(),
                         Status = user.Status == 1 ? "Hoạt động" : "Bị khoá", 
                     });
                 }
