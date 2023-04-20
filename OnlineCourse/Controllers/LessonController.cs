@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Common.Req.Lesson;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,5 +23,19 @@ namespace OnlineCourse.Controllers
                 return BadRequest();
             }
         }
+
+       /* [HttpPut("Upload-Lesson")]
+        public IActionResult AddLesson([FromBody] LessonReq)
+        {
+            var rsp = _lessonSvc.GetLessonByID(idLesson);
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }*/
     }
 }
