@@ -60,5 +60,17 @@ namespace BLL
             }
             return rsp;
         }
+
+        public SingleRsp GetAllExpert()
+        {
+            var rsp = new SingleRsp();
+
+            if((rsp.Data = _userRep.GetAllExpert()) == null)
+            {
+                rsp.SetError("Not found any Expert");
+            }
+
+            return rsp; 
+        }
     }
 }

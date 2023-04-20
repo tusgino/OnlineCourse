@@ -70,5 +70,19 @@ namespace OnlineCourse.Controllers
                 return BadRequest(rsp.Message);
             }
         }
+
+        [HttpGet("Get-All-Expert")]
+        public IActionResult GetAllExpert()
+        {
+            var rsp = _userSvc.GetAllExpert();
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest(rsp.Message);
+            }
+        }
     }
 }

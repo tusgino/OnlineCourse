@@ -51,5 +51,10 @@ namespace DAL
             }
             return false;
         }
+
+        public List<User> GetAllExpert()
+        {
+            return All.Where(u => u.IdTypeOfUserNavigation.TypeOfUserName == "Expert").ToList();
+        }
     }
 }
