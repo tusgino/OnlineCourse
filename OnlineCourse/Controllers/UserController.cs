@@ -57,7 +57,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("{ID_User}")]
+        [HttpPatch("Update-user-by-id")]
 
         public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
         {

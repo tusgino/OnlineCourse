@@ -38,7 +38,13 @@ namespace BLL
             int total = users.Count;
             int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
 
-            var data = users.Skip(offset).Take(limit).ToList();
+            var data = users.OrderBy(user => user.Name).Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
 
             var rsp = new SingleRsp();
 
@@ -48,7 +54,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
             return rsp;
         }

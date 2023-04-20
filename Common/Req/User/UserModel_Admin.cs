@@ -8,6 +8,7 @@ namespace Common.Req.User
 {
     public class UserModel_Admin
     {
+        public Guid ID { get; set; }
         public string? Name { get; set; } = string.Empty;
         public string? TypeOfUser { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; } = string.Empty;

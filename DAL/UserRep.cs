@@ -57,14 +57,15 @@ namespace DAL
 
                     res.Add(new UserModel_Admin
                     {
+                        ID = user.IdUser,
                         Name = user.Name,
                         TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
                         DateOfBirth = (user.DateOfBirth == null) ? "" : user.DateOfBirth.Value.ToShortDateString(),
-                        PhoneNumber = user.PhoneNumber,
-                        IDCard = user.IdCard,
-                        Email = user.Email,
+                        PhoneNumber = (user.PhoneNumber == null) ? "" : user.PhoneNumber,
+                        IDCard = (user.IdCard == null) ? "" : user.IdCard,
+                        Email = (user.Email == null) ? "" : user.Email,
                         DateCreate = user.IdAccountNavigation!.DateCreate!.Value.ToShortDateString(),
-                        Status = user.Status == 1 ? "Hoạt động" : "Bị khoá", 
+                        Status = user.Status == 1 ? "Hoạt động" : (user.Status == 0 ? "Bị khoá" : "Cấm vĩnh viễn"), 
                     });
                 }
 
