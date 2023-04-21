@@ -67,8 +67,8 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-by-filtering")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store, int page)
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store, int page)
         {
             CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
             {
@@ -111,8 +111,8 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpPatch("Update-course")]
-        public IActionResult UpdateCourse(Guid _course_id, JsonPatchDocument newCourse)
+        [HttpPatch("{ID_Course}")]
+        public IActionResult UpdateCourse(Guid _course_id, [FromBody] JsonPatchDocument newCourse)
         {
             var res = _courseSvc.UpdateCourse(_course_id, newCourse);
             if(res.Success)

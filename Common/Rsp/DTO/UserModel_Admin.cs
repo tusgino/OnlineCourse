@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Req.User
+namespace Common.Rsp.DTO
 {
     public class UserModel_Admin
     {

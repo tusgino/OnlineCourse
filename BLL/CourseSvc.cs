@@ -98,7 +98,13 @@ namespace BLL
             int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
                 (int)(1 + (total / coursesPaginationReq.Limit));
 
-            var data = courses.Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+            var data = courses.OrderBy(course => course.Name).Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
 
             var rsp = new SingleRsp();
 
@@ -108,7 +114,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
 
             return rsp;
@@ -154,6 +160,12 @@ namespace BLL
 
             var data = courses.Skip(offset).Take(limit).ToList();
 
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
             var rsp = new SingleRsp();
             if(data == null)
             {
@@ -161,7 +173,7 @@ namespace BLL
             } 
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
 
 

@@ -132,19 +132,51 @@ namespace DAL
 
             }
         }
-        public List<Course> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        public List<CourseModel_Admin> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
 
-                return GetAllCourseByName(_title_like).Where(course =>
+                //return GetAllCourseByName(_title_like).Where(course =>
+                //    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
+                //    categories.Contains(course.IdCategory ?? Guid.Empty) &&
+                //    (course.Status == _status_active ||
+                //    course.Status == _status_store)
+                //).ToList();
+
+                List<int> course_status = new List<int>();
+                if (_status_active == true) course_status.Add(1);
+                if (_status_store == true) course_status.Add(0);
+
+                List<Course> data = GetAllCourseByName(_title_like).Where(course =>
                     course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
                     categories.Contains(course.IdCategory ?? Guid.Empty) &&
-                    (course.Status == _status_active ||
-                    course.Status == _status_store)
+                    course_status.Contains(course.Status ?? -1)
                 ).ToList();
 
+                List<CourseModel_Admin> res = new List<CourseModel_Admin>();
+                foreach(Course course in data)
+                {
+                    //context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
+                    //context.Entry(course).Reference(course => course.IdUserNavigation).Load();
+
+                    res.Add(new CourseModel_Admin
+                    {
+                        ID = course.IdCourse,
+                        Name = course.CourseName,
+                        //Category = course.IdCategoryNavigation!.Name,
+                        //UploadUser = course.IdUserNavigation!.Name,
+                        DateUpload = (course.DateOfUpload == null) ? "" : course.DateOfUpload.Value.ToShortDateString(),
+                        Price = course.Price.ToString(),
+                        Discount = course.Discount.ToString(),
+                        FeePercent = course.FeePercent.ToString(),
+                        Status = course.Status == 1 ? "Hoạt động" : (course.Status == 0 ? "Lưu trữ" : "Cấm vĩnh viễn"),
+                    });
+                }
+
+
+                return res;
             }
         }
         public List<Course> GetAllCourseByCategoryID(Guid _category_id)

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace OnlineCourse.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/private/[controller]")]
     [ApiController]
     public class TradeDetailController : ControllerBase
     {

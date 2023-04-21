@@ -1,5 +1,5 @@
 ﻿using Common.DAL;
-using Common.Req.User;
+using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
@@ -54,7 +54,6 @@ namespace DAL
                     context.Entry(user).Reference(user => user.IdAccountNavigation).Load();
                     context.Entry(user).Reference(user => user.IdBankAccountNavigation).Load();
                     context.Entry(user).Reference(user => user.IdTypeOfUserNavigation).Load();
-
                     res.Add(new UserModel_Admin
                     {
                         ID = user.IdUser,

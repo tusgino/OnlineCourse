@@ -88,6 +88,11 @@ namespace BLL
 
             var data = students.Skip(offset).Take(limit).ToList();
 
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
 
             var rsp = new SingleRsp();
             if(data == null)
@@ -96,7 +101,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
 
             return rsp;
@@ -122,6 +127,12 @@ namespace BLL
 
             var data = experts.Skip(offset).Take(limit).ToList();
 
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
             var rsp = new SingleRsp();
             if(data == null)
             {
@@ -129,7 +140,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
 
 

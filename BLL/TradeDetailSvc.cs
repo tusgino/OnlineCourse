@@ -42,6 +42,12 @@ namespace BLL
 
             var data = tradeDetails.Skip(offset).Take(limit).ToList();
 
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
             var rsp = new SingleRsp();
 
             if(data == null)
@@ -50,7 +56,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
 
             return rsp;

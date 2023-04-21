@@ -57,7 +57,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("Update-user-by-id")]
+        [HttpPatch("{ID_User}")]
 
         public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
         {
@@ -72,7 +72,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpGet("Student-Analytics")]
+        [HttpGet("Get-all-students-for-analytics")]
         public IActionResult GetStudentsForAnalytics(string? _student_name_like, int? _start_purchase_course, int? _end_purchase_course, int? _start_finish_course, int? _end_finish_course, int page)
         {
             StudentAnalyticsReq studentAnalyticsReq = new StudentAnalyticsReq
