@@ -77,7 +77,7 @@ namespace OnlineCourse.Controllers
                 start_day = _start_upload_day,
                 end_day = _end_upload_day,
                 status_active = _status_active,
-                status_store = _status_store
+                status_store = _status_store,
             };
             CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
             {
@@ -112,9 +112,9 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpPatch("{ID_Course}")]
-        public IActionResult UpdateCourse(Guid _course_id, [FromBody] JsonPatchDocument newCourse)
+        public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
         {
-            var res = _courseSvc.UpdateCourse(_course_id, newCourse);
+            var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);
             if(res.Success)
             {
                 return Ok(res);

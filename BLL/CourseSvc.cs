@@ -127,11 +127,11 @@ namespace BLL
             rsp.Data = courses;
             return rsp;
         }
-        public SingleRsp UpdateCourse(Guid _id_course, JsonPatchDocument newCourse)
+        public SingleRsp UpdateCourse(Guid _id_course, JsonPatchDocument patchDoc)
         {
             var rsp = new SingleRsp();
 
-            if(!_courseRep.UpdateCourse(_id_course, newCourse))
+            if(!_courseRep.UpdateCourse(_id_course, patchDoc))
             {
                 rsp.SetError("Update failed");
             }

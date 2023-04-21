@@ -218,6 +218,7 @@ namespace DAL
                     context.SaveChanges();
                     return true;
                 }
+                Console.WriteLine(course);
                 return false;
             }
         }
@@ -260,7 +261,7 @@ namespace DAL
 
 
                 // filter courses by number of registered users
-                foreach(Course course in courses)
+                foreach(Course course in courses.ToList())
                 {
                     if(GetNumberOfRegisterdUser(course.IdCourse) < _start_reg_user || GetNumberOfRegisterdUser(course.IdCourse) > _end_reg_user)
                     {

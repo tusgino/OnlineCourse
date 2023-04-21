@@ -95,7 +95,7 @@ namespace DAL
 
 
                 // fitler by  purchased course
-                foreach(User user in users)
+                foreach(User user in users.ToList())
                 {
                     List<Course> courses = new List<Course>();
                     foreach (Purchase purchase in context.Purchases)
@@ -174,18 +174,17 @@ namespace DAL
 
                 List<object> data = new List<object>();
                 int i = 0;
-                foreach(User user in context.Users)
+                foreach(User user in users)
                 {
-                    if (user.IdTypeOfUser == 2)
+                    
+                    data.Add(new 
                     {
-                        data.Add(new 
-                        {
-                            student_name = user.Name,
-                            purchased_courses_count = purchased_courses[i].Count,
-                            finished_courses_count = finish_courses[i].Count
-                        });
-                        ++i;
-                    }
+                        student_name = user.Name,
+                        purchased_courses_count = purchased_courses[i].Count,
+                        finished_courses_count = finish_courses[i].Count
+                    });
+                    ++i;
+                    
                 }
 
                 return data;
@@ -203,7 +202,7 @@ namespace DAL
 
                 // filter expert 
 
-                foreach(User user in experts)
+                foreach(User user in experts.ToList())
                 {
                     List<Course> courses = new List<Course>();
                     long revenue = 0;
