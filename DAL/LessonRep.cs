@@ -11,6 +11,25 @@ namespace DAL
 {
     public class LessonRep : GenericRep<WebsiteKhoaHocOnline_V4Context, Lesson>
     {
+        public bool AddLesson(Lesson lesson)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Chapters.SingleOrDefault(c => c.IdChapter == lesson.IdChapter) != null)
+                {
+                    context.Lessons.Add(lesson);
+                    context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                
+
+            }
+        }
+
         public LessonDTO GetLessonByID(Guid idLesson)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())

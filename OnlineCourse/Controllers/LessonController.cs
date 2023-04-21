@@ -24,10 +24,10 @@ namespace OnlineCourse.Controllers
             }
         }
 
-       /* [HttpPut("Upload-Lesson")]
-        public IActionResult AddLesson([FromBody] LessonReq)
+        [HttpPost("Upload-Lesson")]
+        public IActionResult AddLesson([FromBody] LessonReq lessonReq)
         {
-            var rsp = _lessonSvc.GetLessonByID(idLesson);
+            var rsp = _lessonSvc.AddLesson(lessonReq);
             if (rsp.Success)
             {
                 return Ok(rsp);
@@ -36,6 +36,6 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest();
             }
-        }*/
+        }
     }
 }
