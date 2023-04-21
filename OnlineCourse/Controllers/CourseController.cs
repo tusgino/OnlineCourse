@@ -127,7 +127,7 @@ namespace OnlineCourse.Controllers
         [HttpDelete("Remove-course")]
         public IActionResult RemoveCourse(Guid idCourse)
         {
-            var res = _courseSvc.RemoveCourse();
+            var res = _courseSvc.RemoveCourse(idCourse);
             if (res.Success)
             {
                 return Ok(res);
