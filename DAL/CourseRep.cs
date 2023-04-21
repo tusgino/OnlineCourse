@@ -234,5 +234,13 @@ namespace DAL
                 }
             }
         }
+
+        /*public bool RemoveCourse(Guid idCourse)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Categories.SingleOrDefault(c => c.IdCategory == ))
+            }
+        }*/
     }
 }
