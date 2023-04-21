@@ -117,5 +117,40 @@ namespace BLL
             return rsp;
         }
 
+        public SingleRsp AddCourse(CourseReq courseReq)
+        {
+            var rsp = new SingleRsp();
+
+            if (_courseRep.AddCourse(new Course
+            {
+                IdCategory = courseReq.IdCategory,
+                CourseName = courseReq.CourseName,
+                DateOfUpload = DateTime.Now,
+                Description= courseReq.Description,
+                Discount = courseReq.Discount,
+                FeePercent= courseReq.FeePercent,
+                IdCourse=Guid.NewGuid(),
+                IdUser=courseReq.IdUser,
+                Price=courseReq.Price,
+                Status=courseReq.Status,
+                Thumbnail=courseReq.Thumbnail,
+                VideoPreview=courseReq.VideoPreview,
+            }))
+            {
+                rsp.SetError("Not found any category");
+            }
+
+            return rsp;
+        }
+
+        public SingleRsp RemoveCourse(Guid idCourse)
+        {
+            var rsp = new SingleRsp();
+            if(!_courseRep.RemoveCourse(idCourse))
+            {
+                rsp.SetError($"Can not remove course which has id = {idCourse}");
+            }
+            return rsp;
+        }
     }
 }
