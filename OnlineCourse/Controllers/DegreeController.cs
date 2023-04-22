@@ -26,7 +26,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpGet("{idDegree}")]
+        [HttpGet("getByID/{idDegree}")]
         [Authorize(Roles = "Expert")]
         public IActionResult GetDegreesByIdDegree(Guid idDegree)
         {

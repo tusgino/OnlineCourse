@@ -44,7 +44,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("Update-BankInfo")]
+        [HttpPatch("Update-BankInfo/{idBankInfo}")]
         public IActionResult UpdateBanKInfo(Guid idBankInfo, [FromBody] JsonPatchDocument patchDoc)
         {
             var rsp = _bankInfoSvc.UpdateBankInfo(idBankInfo, patchDoc);
