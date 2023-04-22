@@ -183,15 +183,7 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                List<Course> courses = new List<Course>();
-                foreach (Course course in context.Courses)
-                {
-                    if (course.IdCategory == _category_id)
-                    {
-                        courses.Add(course);
-                    }
-                }
-                return courses;
+                return context.Courses.Where(course => course.IdCategory == _category_id).ToList();
             }
         }
         public void DeleteCourseByID(Guid _course_id)

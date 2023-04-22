@@ -121,10 +121,20 @@ namespace BLL
         }
         public SingleRsp GetCoursesByCategoryID(Guid _category_id)
         {
-            var courses = _courseRep.GetAllCourseByCategoryID(_category_id);
+            var courses = _courseRep.GetAllCourseByCategoryID(_category_id).OrderBy(course => course.CourseName).Select(course => course.CourseName).ToList(); ;
+            
+            
             var rsp = new SingleRsp();
 
-            rsp.Data = courses;
+            if (courses == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = courses;
+            }
+
             return rsp;
         }
         public SingleRsp UpdateCourse(Guid _id_course, JsonPatchDocument patchDoc)

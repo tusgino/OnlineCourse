@@ -10,7 +10,7 @@ namespace OnlineCourse.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly CategorySvc _categorySvc = new CategorySvc();
-        [HttpPost("add-category")]
+        [HttpPost("Add-category")]
         //[Authorize(Roles = "Admin")]
         public IActionResult AddCategory(string _category_name)
         {
@@ -24,11 +24,11 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpGet("get-all-categories")]
+        [HttpGet("Get-all-categories")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult GetAllCategories (string? _title_like)
+        public IActionResult GetAllCategories (string? _title_like, int page)
         {
-            var res = _categorySvc.GetAllCategories(_title_like);
+            var res = _categorySvc.GetAllCategories(_title_like, page);
             if(res.Success)
             {
                 return Ok(res);
@@ -38,7 +38,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpDelete("delete-categories")]
+        [HttpDelete("Delete-categories")]
         //[Authorize(Roles = "Admin")]
         public IActionResult DeleteCategories(List<Guid> categoryIds)
         {

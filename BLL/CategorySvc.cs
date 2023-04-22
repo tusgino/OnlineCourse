@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Common.Rsp;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BLL
 {
@@ -34,16 +35,38 @@ namespace BLL
             } 
             else
             {
-                rsp.SetError("Trung");
+                rsp.SetMessage("Trung");
             }
             return rsp;
         }
-        public SingleRsp GetAllCategories (string? _title_like)
+        public SingleRsp GetAllCategories (string? _title_like, int page)
         {
             var categories = _categoryRep.GetAllCategories(_title_like);
 
+            int limit = 10;
+            int offset = (page - 1) * limit;
+            int total = categories.Count;
+            int totalPages = (total % limit == 0) ? total / limit : 1 + total / limit;
+
+            var data = categories.OrderBy(category => category.Name).Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
             var rsp = new SingleRsp();
-            rsp.Data = categories;
+
+            if (data == null)
+            {
+                rsp.SetError("Not found category");
+            }
+            else
+            {
+                rsp.Data = res;
+            }
+
             return rsp;
         }
         public SingleRsp DeleteCategories(List<Guid> categoryIds)

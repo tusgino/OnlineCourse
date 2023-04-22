@@ -41,8 +41,12 @@ namespace DAL
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var category = context.Categories.FirstOrDefault(category => category.IdCategory == _category_id);
-                context.Categories.Remove(category);
-                context.SaveChanges();
+                if (category != null)
+                {
+                    context.Categories.Remove(category); 
+                    context.SaveChanges();
+                }
+
                 //return category.Courses;
             }
         }
