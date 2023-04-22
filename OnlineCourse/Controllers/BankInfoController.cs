@@ -12,9 +12,9 @@ namespace OnlineCourse.Controllers
         private BankInfoSvc _bankInfoSvc = new BankInfoSvc();
 
         [HttpGet("Get-By-IdUser")]
-        public IActionResult GetBankInfoByIDUser(Guid idUser)
+        public IActionResult GetBankInfoByIDUser(Guid idBankInfo)
         {
-            var res = _bankInfoSvc.GetBankInfoByIDUser(idUser);
+            var res = _bankInfoSvc.GetBankInfoByID(idBankInfo);
             if(res.Success)
             {
                 return Ok(res.Data);

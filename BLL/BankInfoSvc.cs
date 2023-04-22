@@ -15,13 +15,13 @@ namespace BLL
     {
         private BankInfoRep _bankInfoRep = new BankInfoRep();
 
-        public SingleRsp GetBankInfoByIDUser(Guid idUser)
+        public SingleRsp GetBankInfoByID(Guid idBankInfo)
         {
             var rsp = new SingleRsp();
 
-            if((rsp.Data = _bankInfoRep.GetBankInfoByIDUser(idUser)) == null)
+            if((rsp.Data = _bankInfoRep.GetBankInfoByID(idBankInfo)) == null)
             {
-                rsp.SetError($"Not found bankinfo of User have id = {idUser}");
+                rsp.SetError($"Not found bankinfo id = {idBankInfo}");
             }
 
             return rsp;

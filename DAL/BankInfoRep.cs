@@ -38,19 +38,11 @@ namespace DAL
             }
         }
 
-        public BankInfo GetBankInfoByIDUser(Guid idUser)
+        public BankInfo GetBankInfoByID(Guid idBankInfo)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                var user = context.Users.SingleOrDefault(u => u.IdUser == idUser);
-                if(user == null)
-                {
-                    return null!;
-                }
-                else
-                {
-                    return context.BankInfos.SingleOrDefault(b => b.Users.Contains(user))!;
-                }
+                return context.BankInfos.SingleOrDefault(b => b.IdBankAccount == idBankInfo)!;
             }
         }   
     }
