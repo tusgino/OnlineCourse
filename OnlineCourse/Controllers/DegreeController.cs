@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace OnlineCourse.Controllers
         private DegreeSvc _degreeSvc = new DegreeSvc();
 
         [HttpGet("Get-by-IdUser={idUser}")]
+        [Authorize(Roles = "Expert")]
         public IActionResult GetDegreesByIdUser(Guid idUser)
         {
             var res = _degreeSvc.GetDegreesByIdUser(idUser);

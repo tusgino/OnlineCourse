@@ -1,8 +1,10 @@
 ﻿using BLL;
 using Common.Req.BankInfo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace OnlineCourse.Controllers
 {
@@ -13,6 +15,8 @@ namespace OnlineCourse.Controllers
         private BankInfoSvc _bankInfoSvc = new BankInfoSvc();
 
         [HttpGet("Get-By-IdBankInfo")]
+        [Authorize(Roles = "Expert")]
+
         public IActionResult GetBankInfoByIDUser(Guid idBankInfo)
         {
             var res = _bankInfoSvc.GetBankInfoByID(idBankInfo);
