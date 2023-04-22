@@ -23,9 +23,10 @@ namespace OnlineCourse.Controllers
             return Ok(res);
         }
 
-        [HttpGet("Get-all-course-by-Expert"), Authorize(Roles = "Expert")]
-        public IActionResult GetAllCourseByExpert(Guid id) {
-            var res = _courseSvc.GetAllCourseByExpert(id);
+        [Authorize]
+        [HttpGet("Get-all-course-by-Id")] // id can Id of Expert or Student
+        public IActionResult GetAllCourseByIdUser(Guid id) {
+            var res = _courseSvc.GetAllCourseByIdUser(id);
             if (res.Success)
             {
                 return Ok(res);
@@ -50,11 +51,11 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }*/
-
+        [Authorize]
         [HttpGet("Get-course-by-IdCourse-for-Student")]
-        public IActionResult GetCourseByIDCourse(Guid id)
+        public IActionResult GetCourseByIDCourse(Guid idCourse, Guid idUser)
         {
-            var res = _courseSvc.GetACourse(id); // res.Data: CourseDTO 
+            var res = _courseSvc.GetACourse(idCourse, idUser); // res.Data: CourseDTO 
             if (res.Success)
             {
                 return Ok(res);
@@ -109,5 +110,34 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
+        [HttpPost("Add-course")]
+        public IActionResult AddCourse([FromBody] CourseReq courseReq)
+        {
+            var res = _courseSvc.AddCourse(courseReq);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpDelete("Remove-course")]
+        public IActionResult RemoveCourse(Guid idCourse)
+        {
+            var res = _courseSvc.RemoveCourse(idCourse);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+
+
     }
 }
