@@ -10,6 +10,34 @@ namespace DAL
 {
     public class BankInfoRep : GenericRep<WebsiteKhoaHocOnline_V4Context, BankInfo>
     {
+        public void AddBankInfo(BankInfo bankInfo)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                context.BankInfos.Add(bankInfo);
+                context.SaveChanges();
+            }
+        }
+
+        public bool AddBankInfoByIdUser(Guid idBankAccount, Guid idUser)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                User? user;
+                if ((user = context.Users.SingleOrDefault(u => u.IdUser == idUser)) != null)
+                {
+                    user.IdBankAccount= idBankAccount;
+                    context.Users.Update(user);
+                    context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public BankInfo GetBankInfoByIDUser(Guid idUser)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())

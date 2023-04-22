@@ -1,4 +1,5 @@
 ﻿using Common.BLL;
+using Common.Req.BankInfo;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
@@ -23,6 +24,28 @@ namespace BLL
                 rsp.SetError($"Not found bankinfo of User have id = {idUser}");
             }
 
+            return rsp;
+        }
+
+        public SingleRsp AddBankInfo(BankInfoReq bankInfoReq)
+        {
+            var rsp = new SingleRsp();
+            var bankInfo = new BankInfo
+            {
+                IdBankAccount = Guid.NewGuid(),
+                AccountName = bankInfoReq.AccountName,
+                BankAccountNumber = bankInfoReq.BankAccountNumber,
+                BankName = bankInfoReq.BankName,
+            };
+
+            if(_bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser))
+            {
+                rsp.SetError($"Not found user have id = {bankInfoReq.IdUser}");
+            }
+            else
+            {
+                _bankInfoRep.AddBankInfo(bankInfo);
+            }
             return rsp;
         }
     }

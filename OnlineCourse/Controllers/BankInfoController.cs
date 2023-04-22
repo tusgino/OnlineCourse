@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Common.Req.BankInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,20 @@ namespace OnlineCourse.Controllers
             else
             {
                 return BadRequest(res.Message);
+            }
+        }
+
+        [HttpPost("Add-BankInfo")]
+        public IActionResult AddBankInfo([FromBody] BankInfoReq bankInfoReq)
+        {
+            var rsp = _bankInfoSvc.AddBankInfo(bankInfoReq);
+            if(rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest(rsp.Message);
             }
         }
     }
