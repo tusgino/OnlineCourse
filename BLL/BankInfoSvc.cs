@@ -3,6 +3,7 @@ using Common.Req.BankInfo;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,18 @@ namespace BLL
             {
                 _bankInfoRep.AddBankInfo(bankInfo);
             }
+            return rsp;
+        }
+
+        public SingleRsp UpdateBankInfo(Guid idBankInfo, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_bankInfoRep.UpdateBankInfo(idBankInfo, patchDoc))
+            {
+                rsp.SetError("Can not update Bankinfo");
+            }
+
             return rsp;
         }
     }

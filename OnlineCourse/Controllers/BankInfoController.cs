@@ -1,6 +1,7 @@
 ﻿using BLL;
 using Common.Req.BankInfo;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -17,7 +18,7 @@ namespace OnlineCourse.Controllers
             var res = _bankInfoSvc.GetBankInfoByID(idBankInfo);
             if(res.Success)
             {
-                return Ok(res.Data);
+                return Ok(res);
             }
             else
             {
@@ -30,6 +31,20 @@ namespace OnlineCourse.Controllers
         {
             var rsp = _bankInfoSvc.AddBankInfo(bankInfoReq);
             if(rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest(rsp.Message);
+            }
+        }
+
+        [HttpPatch("Update-BankInfo")]
+        public IActionResult UpdateBanKInfo(Guid idBankInfo, [FromBody] JsonPatchDocument patchDoc)
+        {
+            var rsp = _bankInfoSvc.UpdateBankInfo(idBankInfo, patchDoc);
+            if (rsp.Success)
             {
                 return Ok(rsp);
             }

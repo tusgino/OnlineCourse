@@ -1,5 +1,6 @@
 ﻿using Common.DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,22 @@ namespace DAL
             {
                 return context.BankInfos.SingleOrDefault(b => b.IdBankAccount == idBankInfo)!;
             }
-        }   
+        }
+
+        public bool UpdateBankInfo(Guid idBankInfo, JsonPatchDocument patchDoc)
+        { 
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var bankInfo = context.BankInfos.SingleOrDefault(b => b.IdBankAccount==idBankInfo);
+                if(bankInfo != null)
+                {
+                    patchDoc.ApplyTo(bankInfo);
+                    context.SaveChanges() ;
+                    return true;
+                }
+                return false;
+                
+            }
+        }
     }
 }
