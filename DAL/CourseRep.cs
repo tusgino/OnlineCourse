@@ -1,5 +1,4 @@
 ﻿using Common.DAL;
-using Common.Req.Course;
 using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore.Query.Internal;
