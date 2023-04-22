@@ -28,9 +28,9 @@ namespace OnlineCourse.Controllers
 
         [HttpGet("{idDegree}")]
         [Authorize(Roles = "Expert")]
-        public IActionResult GetDegreesByIdDegree(Guid idUser)
+        public IActionResult GetDegreesByIdDegree(Guid idDegree)
         {
-            var res = _degreeSvc.GetDegreeByIdDegree(idUser);
+            var res = _degreeSvc.GetDegreeByIdDegree(idDegree);
             if (res.Success)
             {
                 return Ok(res);
