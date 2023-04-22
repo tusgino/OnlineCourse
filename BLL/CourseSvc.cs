@@ -143,7 +143,7 @@ namespace BLL
             return rsp;
         }
 
-        public SingleRsp RemoveCourse(Guid idCourse)
+/*        public SingleRsp RemoveCourse(Guid idCourse)
         {
             var rsp = new SingleRsp();
             if(!_courseRep.RemoveCourse(idCourse))
@@ -151,6 +151,6 @@ namespace BLL
                 rsp.SetError($"Can not remove course which has id = {idCourse}");
             }
             return rsp;
-        }
+        }*/
     }
 }

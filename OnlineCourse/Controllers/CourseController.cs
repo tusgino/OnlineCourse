@@ -124,7 +124,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpDelete("Remove-course")]
+/*        [HttpDelete("Remove-course")]
         public IActionResult RemoveCourse(Guid idCourse)
         {
             var res = _courseSvc.RemoveCourse(idCourse);
@@ -136,7 +136,7 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
-        }
+        }*/
 
 
     }
