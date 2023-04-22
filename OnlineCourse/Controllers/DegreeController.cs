@@ -24,8 +24,21 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
+        }
 
-
+        [HttpGet("{idDegree}")]
+        [Authorize(Roles = "Expert")]
+        public IActionResult GetDegreesByIdDegree(Guid idUser)
+        {
+            var res = _degreeSvc.GetDegreeByIdDegree(idUser);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
         }
     }
 }

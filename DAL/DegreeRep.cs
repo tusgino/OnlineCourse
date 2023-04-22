@@ -10,6 +10,14 @@ namespace DAL
 {
     public class DegreeRep : GenericRep<WebsiteKhoaHocOnline_V4Context, Degree>
     {
+        public Degree GetDegreeByIdDegree(Guid idDegree)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Degrees.SingleOrDefault(d => d.IdDegree == idDegree)!;
+            }
+        }
+
         public List<Degree> GetDegreesByIdUser(Guid idUser)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())

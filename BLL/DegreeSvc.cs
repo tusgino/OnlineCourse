@@ -25,5 +25,16 @@ namespace BLL
             
             return rsp;
         }
+        public SingleRsp GetDegreeByIdDegree(Guid idDegree)
+        {
+            var rsp = new SingleRsp();
+
+            if ((rsp.Data = _degreeRep.GetDegreeByIdDegree(idDegree)) == null)
+            {
+                rsp.SetError($"Not found any degree has id = {idDegree}");
+            }
+
+            return rsp;
+        }
     }
 }
