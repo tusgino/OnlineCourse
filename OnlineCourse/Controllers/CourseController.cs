@@ -111,6 +111,33 @@ namespace OnlineCourse.Controllers
             }
         }
 
+        [HttpPost("Add-course")]
+        public IActionResult AddCourse([FromBody] CourseReq courseReq)
+        {
+            var res = _courseSvc.AddCourse(courseReq);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpDelete("Remove-course")]
+        public IActionResult RemoveCourse(Guid idCourse)
+        {
+            var res = _courseSvc.RemoveCourse(idCourse);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+
 
     }
 }

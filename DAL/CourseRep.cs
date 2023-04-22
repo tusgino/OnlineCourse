@@ -218,5 +218,29 @@ namespace DAL
 
             return courses;
         }
+
+        public bool AddCourse(Course course)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Categories.SingleOrDefault(c => c.IdCategory == course.IdCategory) == null) {
+                    return false;
+                }
+                else
+                {
+                    context.Courses.Add(course);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+        }
+
+        /*public bool RemoveCourse(Guid idCourse)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Categories.SingleOrDefault(c => c.IdCategory == ))
+            }
+        }*/
     }
 }
