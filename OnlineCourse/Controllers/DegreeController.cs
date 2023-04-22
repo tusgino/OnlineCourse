@@ -11,7 +11,7 @@ namespace OnlineCourse.Controllers
     {
         private DegreeSvc _degreeSvc = new DegreeSvc();
 
-        [HttpGet("Get-by-IdUser={idUser}")]
+        [HttpGet("{idUser}")]
         [Authorize(Roles = "Expert")]
         public IActionResult GetDegreesByIdUser(Guid idUser)
         {
