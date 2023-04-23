@@ -37,7 +37,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        /*[HttpGet("Get-course-by-IdCourse")]
+        [HttpGet("Get-course-by-IdCourse")]
         public IActionResult GetCourseByIDCourse(Guid id)
         {
             var res = _courseSvc.GetCourseByID(id);
@@ -50,7 +50,7 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
-        }*/
+        }
         [Authorize]
         [HttpGet("Get-course-by-IdCourse-for-Student")]
         public IActionResult GetCourseByIDCourse(Guid idCourse, Guid idUser)

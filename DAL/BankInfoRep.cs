@@ -11,12 +11,13 @@ namespace DAL
 {
     public class BankInfoRep : GenericRep<WebsiteKhoaHocOnline_V4Context, BankInfo>
     {
-        public void AddBankInfo(BankInfo bankInfo)
+        public bool AddBankInfo(BankInfo bankInfo)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 context.BankInfos.Add(bankInfo);
                 context.SaveChanges();
+                return true;
             }
         }
 

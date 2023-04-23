@@ -39,13 +39,14 @@ namespace BLL
                 BankName = bankInfoReq.BankName,
             };
 
-            if(_bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser))
+            if(!_bankInfoRep.AddBankInfo(bankInfo))
             {
+
                 rsp.SetError($"Not found user have id = {bankInfoReq.IdUser}");
             }
             else
             {
-                _bankInfoRep.AddBankInfo(bankInfo);
+                _bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser);
             }
             return rsp;
         }
