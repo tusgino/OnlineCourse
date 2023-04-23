@@ -31,7 +31,7 @@ namespace DAL
                                 IdLesson = lesson.IdLesson,
                                 Title = lesson.Title,
                                 Index= lesson.Index,
-                                Video=lesson.Video,
+                                Video=lesson.Video, 
                                 Status = study==null? 0 : study.Status,
                             });
                         }

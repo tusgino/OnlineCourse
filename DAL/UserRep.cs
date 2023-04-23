@@ -95,11 +95,13 @@ namespace DAL
                 ).ToList();
 
 
+                List<Purchase> purchases = context.Purchases.ToList();
+
                 // fitler by  purchased course
                 foreach(User user in users.ToList())
                 {
                     List<Course> courses = new List<Course>();
-                    foreach (Purchase purchase in context.Purchases)
+                    foreach (Purchase purchase in purchases)
                     {
                         if (purchase.IdUser == user.IdUser)
                         {
@@ -141,7 +143,7 @@ namespace DAL
                 foreach (User user in users)
                 {
                     List<Course> courses = new List<Course>();
-                    foreach (Purchase purchase in context.Purchases)
+                    foreach (Purchase purchase in purchases)
                     {
                         if (purchase.IdUser == user.IdUser)
                         {
@@ -153,11 +155,14 @@ namespace DAL
                     purchased_courses.Add(courses);
                 }
 
+
+                List<Study> studies = context.Studies.ToList(); 
+
                 List<List<Course>> finish_courses = new List<List<Course>>();
                 foreach(User user in users)
                 {
                     List<Course> courses = new List<Course>();
-                    foreach (Study study in context.Studies)
+                    foreach (Study study in studies)
                     {
                         if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
                         {
