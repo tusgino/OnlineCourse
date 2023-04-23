@@ -36,7 +36,7 @@ namespace DAL
                 var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdLesson);
                 var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
 
-                if (lesson.Index == chapter.Lessons.Count - 1 && chapter.Index == course.Chapters.Count -1)
+                if (lesson.Index == chapter.Lessons.Count - 1 && chapter.Index == course.Chapters.Count - 1)
                 {
                     return true;
                 }
@@ -44,6 +44,8 @@ namespace DAL
                 {
                     return false;
                 }
+            }
+        }
         public LessonDTO GetLessonByID(Guid idLesson)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
