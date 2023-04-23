@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Req.Course;
 
 namespace BLL
 {
@@ -37,7 +38,13 @@ namespace BLL
             int total = users.Count;
             int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
 
-            var data = users.Skip(offset).Take(limit).ToList();
+            var data = users.OrderBy(user => user.Name).Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
 
             var rsp = new SingleRsp();
 
@@ -47,7 +54,7 @@ namespace BLL
             }
             else
             {
-                rsp.Data = data;
+                rsp.Data = res;
             }
             return rsp;
         }
@@ -59,6 +66,87 @@ namespace BLL
                 rsp.SetError("Update failed");
             }
             return rsp;
+        }
+        public SingleRsp GetAllStudentForAnalytics(StudentAnalyticsReq studentAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        {
+            if (studentAnalyticsReq.start_purchase_course == null) studentAnalyticsReq.start_purchase_course = 0;
+            if (studentAnalyticsReq.end_purchase_course == null) studentAnalyticsReq.end_purchase_course = int.MaxValue;
+
+            if (studentAnalyticsReq.start_finish_course == null) studentAnalyticsReq.start_finish_course = 0;
+            if (studentAnalyticsReq.end_finish_course == null) studentAnalyticsReq.end_finish_course = int.MaxValue;
+
+            var students = _userRep.GetAllStudentForAnalytics(studentAnalyticsReq.student_name_like,
+                                                          studentAnalyticsReq.start_purchase_course,
+                                                          studentAnalyticsReq.end_purchase_course,
+                                                          studentAnalyticsReq.start_finish_course,
+                                                          studentAnalyticsReq.end_finish_course);
+
+            int limit = 10;
+            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int total = students.Count;
+            int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
+
+            var data = students.Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found student");
+            }
+            else
+            {
+                rsp.Data = res;
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetAllExpertsForAnalytics (ExpertAnalyticsReq expertAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        {
+            if (expertAnalyticsReq.start_upload_course == null) expertAnalyticsReq.start_upload_course = 0;
+            if (expertAnalyticsReq.end_upload_course == null) expertAnalyticsReq.end_upload_course = int.MaxValue;
+
+            if (expertAnalyticsReq.start_revenue == null) expertAnalyticsReq.start_revenue = 0;
+            if(expertAnalyticsReq.end_revenue == null) expertAnalyticsReq.end_revenue = int.MaxValue;
+
+            var experts = _userRep.GetAllExpertsForAnalytics(expertAnalyticsReq.expert_name,
+                                                             expertAnalyticsReq.start_upload_course,
+                                                             expertAnalyticsReq.end_upload_course,
+                                                             expertAnalyticsReq.start_revenue,
+                                                             expertAnalyticsReq.end_revenue);
+
+            int limit = 10;
+            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int total = experts.Count;
+            int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
+
+            var data = experts.Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found expert");
+            }
+            else
+            {
+                rsp.Data = res;
+            }
+
+
+
+            return rsp;
+
         }
     }
 }

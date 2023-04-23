@@ -1,8 +1,11 @@
 ﻿using Common.DAL;
 using Common.Rsp.DTO;
 using DAL.Models;
+using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Security.Cryptography.Xml;
 
 namespace DAL
 {
@@ -132,35 +135,58 @@ namespace DAL
 
             }
         }
-        public List<Course> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store)
+        public List<CourseModel_Admin> GetAllCourseByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
 
-                var data = GetAllCourseByName(_title_like).Where(course =>
+                //return GetAllCourseByName(_title_like).Where(course =>
+                //    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
+                //    categories.Contains(course.IdCategory ?? Guid.Empty) &&
+                //    (course.Status == _status_active ||
+                //    course.Status == _status_store)
+                //).ToList();
+
+                List<int> course_status = new List<int>();
+                if (_status_active == true) course_status.Add(1);
+                if (_status_store == true) course_status.Add(0);
+
+                List<Course> data = GetAllCourseByName(_title_like).Where(course =>
                     course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
                     categories.Contains(course.IdCategory ?? Guid.Empty) &&
-                    (course.Status == _status_active ||
-                    course.Status == _status_store)
-                );
+                    course_status.Contains(course.Status ?? -1)
+                ).ToList();
 
-                return data.ToList();
+                List<CourseModel_Admin> res = new List<CourseModel_Admin>();
+                foreach(Course course in data)
+                {
+                    //context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
+                    //context.Entry(course).Reference(course => course.IdUserNavigation).Load();
+
+                    res.Add(new CourseModel_Admin
+                    {
+                        ID = course.IdCourse,
+                        Name = course.CourseName,
+                        //Category = course.IdCategoryNavigation!.Name,
+                        //UploadUser = course.IdUserNavigation!.Name,
+                        DateUpload = (course.DateOfUpload == null) ? "" : course.DateOfUpload.Value.ToShortDateString(),
+                        Price = course.Price.ToString(),
+                        Discount = course.Discount.ToString(),
+                        FeePercent = course.FeePercent.ToString(),
+                        Status = course.Status == 1 ? "Hoạt động" : (course.Status == 0 ? "Lưu trữ" : "Cấm vĩnh viễn"),
+                    });
+                }
+
+
+                return res;
             }
         }
         public List<Course> GetAllCourseByCategoryID(Guid _category_id)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                List<Course> courses = new List<Course>();
-                foreach (Course course in context.Courses)
-                {
-                    if (course.IdCategory == _category_id)
-                    {
-                        courses.Add(course);
-                    }
-                }
-                return courses;
+                return context.Courses.Where(course => course.IdCategory == _category_id).ToList();
             }
         }
         public void DeleteCourseByID(Guid _course_id)
@@ -171,6 +197,97 @@ namespace DAL
 
                 context.Courses.Remove(course!);
                 context.SaveChanges();
+
+            }
+        }
+        
+        public bool UpdateCourse(Guid _course_id, JsonPatchDocument newCourse)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.FirstOrDefault(course => course.IdCourse == _course_id);
+                
+                if(course != null)
+                {
+                    newCourse.ApplyTo(course);
+                    context.SaveChanges();
+                    return true;
+                }
+                Console.WriteLine(course);
+                return false;
+            }
+        }
+        public int GetNumberOfRegisterdUser(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                int count_reg_user = 0;
+                foreach (Purchase purchase in context.Purchases)
+                {
+                    if (purchase.IdCourse == _course_id)
+                    {
+                        count_reg_user++;
+                    }
+                }
+                return count_reg_user;
+            }
+        }
+        public int GetCourseRate(Guid _course_id)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                int rate_point = 0, count_turn = 0;
+                foreach(Rate rate in context.Rates)
+                {
+                    if(rate.IdCourse == _course_id)
+                    {
+                        rate_point += rate.Rate1 ?? 0;
+                        count_turn++;
+                    }
+                }
+                return count_turn == 0 ? 0 : rate_point/count_turn;
+            }
+        }
+        public List<object> GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like == null? "" : _title_like)).ToList();
+
+
+                // filter courses by number of registered users
+                foreach(Course course in courses.ToList())
+                {
+                    if(GetNumberOfRegisterdUser(course.IdCourse) < _start_reg_user || GetNumberOfRegisterdUser(course.IdCourse) > _end_reg_user)
+                    {
+                        courses.Remove(course);
+                    }
+                }
+
+
+                // filter courses by rate
+                foreach(Course course in courses.ToList())
+                {
+                    if(GetCourseRate(course.IdCourse) < _start_rate || GetCourseRate(course.IdCourse) > _end_rate)
+                    {
+                        courses.Remove(course) ;
+                    }
+                }
+
+
+                List<object> data = new List<object>();
+                foreach(Course course in courses)
+                {
+                    data.Add(new
+                    {
+                        course_name = course.CourseName,
+                        num_of_reg = GetNumberOfRegisterdUser(course.IdCourse),
+                        rate = GetCourseRate(course.IdCourse)
+                    });
+                }
+
+                return data;
+
 
             }
         }
