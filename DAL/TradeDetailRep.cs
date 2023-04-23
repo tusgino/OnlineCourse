@@ -16,8 +16,8 @@ namespace DAL
             {
                 
                 List<int> typesOfTrade = new List<int>();
-                if (_is_rent == true) typesOfTrade.Add(1);
-                if (_is_purchase == true) typesOfTrade.Add(2);
+                if (_is_rent == true) typesOfTrade.Add(0);
+                if (_is_purchase == true) typesOfTrade.Add(1);
 
                 List<int> tradeStatus = new List<int>();
                 if (_is_success == true) tradeStatus.Add(1);
