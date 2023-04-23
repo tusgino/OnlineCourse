@@ -170,7 +170,7 @@ namespace DAL.Models
 
             modelBuilder.Entity<Purchase>(entity =>
             {
-                entity.HasKey(e => new { e.IdUser, e.IdCourse, e.IdTrade });
+                entity.HasKey(e => new { e.IdUser, e.IdCourse });
 
                 entity.ToTable("PURCHASE");
 
@@ -178,9 +178,9 @@ namespace DAL.Models
 
                 entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
 
-                entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
-
                 entity.Property(e => e.DateOfPurchase).HasColumnType("datetime");
+
+                entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
 
                 entity.HasOne(d => d.IdCourseNavigation)
                     .WithMany(p => p.Purchases)
@@ -191,7 +191,6 @@ namespace DAL.Models
                 entity.HasOne(d => d.IdTradeNavigation)
                     .WithMany(p => p.Purchases)
                     .HasForeignKey(d => d.IdTrade)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_TRADE_DETAIL");
 
                 entity.HasOne(d => d.IdUserNavigation)

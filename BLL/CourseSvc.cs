@@ -45,27 +45,24 @@ namespace BLL
             return rsp;
         }
 
-        public SingleRsp GetAllCourseByExpert(Guid id)
+        public SingleRsp GetAllCourseByIdUser(Guid id)
         {
             var rsp = new SingleRsp();
+            
+            
 
-            if(_courseRep.GetAllCourseByExpert(id) == null)
+            if((rsp.Data = _courseRep.GetAllCourseByIdUser(id)) == null)
             {
                 rsp.SetError("Not found Course of this Expert");
             }
-            else
-            {
-                rsp.Data = _courseRep.GetAllCourseByExpert(id);
-            }
-
             return rsp;
         }
 
-        public SingleRsp GetACourse(Guid id)
+        public SingleRsp GetACourse(Guid idCourse, Guid idUser)
         {
             var rsp = new SingleRsp();
 
-            if((rsp.Data = _courseRep.GetACourse(id)) == null){
+            if((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null){
                 rsp.SetError("Not found Course");
             };
 
@@ -190,5 +187,40 @@ namespace BLL
 
             return rsp;
         }
+        public SingleRsp AddCourse(CourseReq courseReq)
+        {
+            var rsp = new SingleRsp();
+
+            if (_courseRep.AddCourse(new Course
+            {
+                IdCategory = courseReq.IdCategory,
+                CourseName = courseReq.CourseName,
+                DateOfUpload = DateTime.Now,
+                Description= courseReq.Description,
+                Discount = courseReq.Discount,
+                FeePercent= courseReq.FeePercent,
+                IdCourse=Guid.NewGuid(),
+                IdUser=courseReq.IdUser,
+                Price=courseReq.Price,
+                Status=courseReq.Status,
+                Thumbnail=courseReq.Thumbnail,
+                VideoPreview=courseReq.VideoPreview,
+            }))
+            {
+                rsp.SetError("Not found any category");
+            }
+
+            return rsp;
+        }
+
+/*        public SingleRsp RemoveCourse(Guid idCourse)
+        {
+            var rsp = new SingleRsp();
+            if(!_courseRep.RemoveCourse(idCourse))
+            {
+                rsp.SetError($"Can not remove course which has id = {idCourse}");
+            }
+            return rsp;
+        }*/
     }
 }

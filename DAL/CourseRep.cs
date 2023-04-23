@@ -11,26 +11,28 @@ namespace DAL
 {
     public class CourseRep : GenericRep<WebsiteKhoaHocOnline_V4Context, Course>
     {
-        public CourseDTO GetACourse(Guid id)
+        public CourseDTO GetACourse(Guid idCourse, Guid idUser)
         {
             var courses = new List<CourseDTO>();
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 Course course;
-                if((course = context.Courses.SingleOrDefault(c => c.IdCourse == id)!) != null)
+                if((course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse)!) != null)
                 {
-                    List<Chapter> chapters = context.Chapters.Where(ch => ch.IdCourseNavigation!.IdCourse == id).OrderBy(ch => ch.Index).ToList();
+                    List<Chapter> chapters = context.Chapters.Where(ch => ch.IdCourseNavigation!.IdCourse == idCourse).OrderBy(ch => ch.Index).ToList();
                     List<ChapterDTO> chapterDTOs = new List<ChapterDTO>();
                     foreach(var chapter in chapters) {
                         List<LessonDTO> lessonDTOs= new List<LessonDTO>();
                         foreach(var lesson in context.Lessons.Where(l => l.IdChapterNavigation.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList())
                         {
+                            var study = context.Studies.SingleOrDefault(st => st.IdLesson== lesson.IdLesson && st.IdUser == idUser)!;
                             lessonDTOs.Add(new LessonDTO
                             {
                                 IdLesson = lesson.IdLesson,
+                                Title = lesson.Title,
                                 Index= lesson.Index,
                                 Video=lesson.Video,
-                                Tittle = lesson.Title,
+                                Status = study==null? 0 : study.Status,
                             });
                         }
                         chapterDTOs.Add(new ChapterDTO
@@ -41,9 +43,10 @@ namespace DAL
                             Name = chapter.Name,
                         });
                     }
+                    
                     return new CourseDTO
                     {
-                        IdCourse = id,
+                        IdCourse = idCourse,
                         CourseName = course.CourseName,
                         Chapters = chapterDTOs
                     };
@@ -288,5 +291,72 @@ namespace DAL
 
             }
         }
+
+        public List<CourseComponent> GetAllCourseByIdUser(Guid id)
+        {
+            List<CourseComponent> courses = new List<CourseComponent>();
+
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var expert = context.Users.SingleOrDefault(u => u.IdUser == id && u.IdTypeOfUserNavigation.IdTypeOfUser == 1);
+                if (expert != null)
+                {
+                    foreach(var course in context.Courses.Where(c => c.IdUser == id).ToList())
+                    {
+                        courses.Add(new CourseComponent
+                        {
+                            AvatarUser = expert.Avatar,
+                            Id = course.IdCourse,
+                            Thumbnail = course.Thumbnail,
+                            NameUser = null,
+                            Title = course.CourseName,
+                        });
+                    }
+                }
+                else
+                {
+                    var purchases = context.Purchases.Where(p => p.IdUser == id).ToList();
+                    foreach (var purchase in purchases)
+                    {
+                        var course = context.Courses.SingleOrDefault(c => c.IdCourse == purchase.IdCourse);
+                        context.Entry(course).Reference(c => c.IdUserNavigation).Load();
+                        courses.Add(new CourseComponent
+                        {
+                            AvatarUser = course.IdUserNavigation.Avatar,
+                            Id = course.IdCourse,
+                            NameUser = course.IdUserNavigation.Name,
+                            Thumbnail= course.Thumbnail,
+                            Title= course.CourseName,
+                        });
+                    }
+                }
+            }
+
+            return courses;
+        }
+
+        public bool AddCourse(Course course)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Categories.SingleOrDefault(c => c.IdCategory == course.IdCategory) == null) {
+                    return false;
+                }
+                else
+                {
+                    context.Courses.Add(course);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+        }
+
+        /*public bool RemoveCourse(Guid idCourse)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Categories.SingleOrDefault(c => c.IdCategory == ))
+            }
+        }*/
     }
 }
