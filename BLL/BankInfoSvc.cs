@@ -39,7 +39,7 @@ namespace BLL
                 BankName = bankInfoReq.BankName,
             };
 
-            if(_bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser))
+            if(!_bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser))
             {
                 rsp.SetError($"Not found user have id = {bankInfoReq.IdUser}");
             }
