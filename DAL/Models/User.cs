@@ -9,7 +9,6 @@ namespace DAL.Models
         {
             Courses = new HashSet<Course>();
             Degrees = new HashSet<Degree>();
-            Purchases = new HashSet<Purchase>();
             TradeDetails = new HashSet<TradeDetail>();
         }
 
@@ -30,7 +29,6 @@ namespace DAL.Models
         public virtual TypeOfUser? IdTypeOfUserNavigation { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Degree> Degrees { get; set; }
-        public virtual ICollection<Purchase> Purchases { get; set; }
         public virtual ICollection<TradeDetail> TradeDetails { get; set; }
     }
 }

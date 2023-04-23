@@ -170,32 +170,31 @@ namespace DAL.Models
 
             modelBuilder.Entity<Purchase>(entity =>
             {
-                entity.HasKey(e => new { e.IdUser, e.IdCourse, e.IdTrade });
+                entity.HasNoKey();
 
                 entity.ToTable("PURCHASE");
 
-                entity.Property(e => e.IdUser).HasColumnName("ID_User");
+                entity.Property(e => e.DateOfPurchase).HasColumnType("datetime");
 
                 entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
 
                 entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
 
-                entity.Property(e => e.DateOfPurchase).HasColumnType("datetime");
+                entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
                 entity.HasOne(d => d.IdCourseNavigation)
-                    .WithMany(p => p.Purchases)
+                    .WithMany()
                     .HasForeignKey(d => d.IdCourse)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_COURSE");
 
                 entity.HasOne(d => d.IdTradeNavigation)
-                    .WithMany(p => p.Purchases)
+                    .WithMany()
                     .HasForeignKey(d => d.IdTrade)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_TRADE_DETAIL");
 
                 entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany(p => p.Purchases)
+                    .WithMany()
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_USER");

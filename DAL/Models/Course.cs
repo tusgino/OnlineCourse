@@ -8,7 +8,6 @@ namespace DAL.Models
         public Course()
         {
             Chapters = new HashSet<Chapter>();
-            Purchases = new HashSet<Purchase>();
         }
 
         public Guid IdCourse { get; set; }
@@ -27,6 +26,5 @@ namespace DAL.Models
         public virtual Category? IdCategoryNavigation { get; set; }
         public virtual User? IdUserNavigation { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
-        public virtual ICollection<Purchase> Purchases { get; set; }
     }
 }
