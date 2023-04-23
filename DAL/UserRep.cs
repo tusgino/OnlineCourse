@@ -57,6 +57,7 @@ namespace DAL
                     res.Add(new UserModel_Admin
                     {
                         ID = user.IdUser,
+                        Avatar = user.Avatar,
                         Name = user.Name,
                         TypeOfUser = user.IdTypeOfUserNavigation!.TypeOfUserName,
                         DateOfBirth = (user.DateOfBirth == null) ? "" : user.DateOfBirth.Value.ToShortDateString(),

@@ -9,6 +9,7 @@ namespace Common.Rsp.DTO
     public class UserModel_Admin
     {
         public Guid ID { get; set; }
+        public string? Avatar { get; set; } = string.Empty;
         public string? Name { get; set; } = string.Empty;
         public string? TypeOfUser { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; } = string.Empty;
