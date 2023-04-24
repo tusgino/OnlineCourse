@@ -15,7 +15,6 @@ namespace Common.Rsp.DTO
         public string? Option2 { get; set; }
         public string? Option3 { get; set; }
         public string? Option4 { get; set; }
-        
         public string? Image { get; set; }
         public int? Answer { get; set; }
     }
