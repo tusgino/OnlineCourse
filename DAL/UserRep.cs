@@ -34,13 +34,6 @@ namespace DAL
                 if (_status_active == true) user_status.Add(1);
                 if (_status_banned == true) user_status.Add(0);
 
-                //return context.Users.Where(user =>
-                //    user.Name.Contains(_title_like == null ? "" : _title_like) &&
-                //    id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
-                //    user_types.Contains(user.IdTypeOfUser ?? -1) &&
-                //    user_status.Contains(user.Status ?? -1)
-                //).ToList();
-
                 List<User> data = context.Users.Where(user =>
                     user.Name.Contains(_title_like == null ? "" : _title_like) &&
                     id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
@@ -116,11 +109,13 @@ namespace DAL
                     }
                 }
 
+                List<Study> studies = context.Studies.ToList(); 
+
                 //filter by finished course
                 foreach(User user in users)
                 {
                     List<Course> courses = new List<Course>();
-                    foreach(Study study in context.Studies)
+                    foreach(Study study in studies)
                     {
                         if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
                         {
@@ -156,7 +151,6 @@ namespace DAL
                 }
 
 
-                List<Study> studies = context.Studies.ToList(); 
 
                 List<List<Course>> finish_courses = new List<List<Course>>();
                 foreach(User user in users)
