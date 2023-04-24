@@ -157,6 +157,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("Add-course")]
+        [Authorize(Roles = "Expert")]
         public IActionResult AddCourse([FromBody] CourseReq courseReq)
         {
             var res = _courseSvc.AddCourse(courseReq);
