@@ -190,7 +190,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if (_courseRep.AddCourse(new Course
+            if (!_courseRep.AddCourse(new Course
             {
                 IdCategory = courseReq.IdCategory,
                 CourseName = courseReq.CourseName,
