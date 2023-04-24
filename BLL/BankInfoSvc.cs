@@ -45,7 +45,7 @@ namespace BLL
             }
             else
             {
-                _bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser)
+                _bankInfoRep.AddBankInfoByIdUser(bankInfo.IdBankAccount, bankInfoReq.IdUser);
             }
             return rsp;
         }
