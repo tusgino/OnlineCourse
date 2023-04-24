@@ -58,6 +58,7 @@ namespace DAL
                     {
                         IdLesson = quiz.IdLesson,
                         Answer = quiz.Answer,
+                        Image = quiz.Image,
                         IdQuiz = quiz.IdQuiz,
                         Option1 = quiz.Option1,
                         Option2 = quiz.Option2,
