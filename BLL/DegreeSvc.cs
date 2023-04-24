@@ -1,7 +1,10 @@
 ﻿using Common.BLL;
+using Common.Req.BankInfo;
+using Common.Req.Degree;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +35,37 @@ namespace BLL
             if ((rsp.Data = _degreeRep.GetDegreeByIdDegree(idDegree)) == null)
             {
                 rsp.SetError($"Not found any degree has id = {idDegree}");
+            }
+
+            return rsp;
+        }
+
+        public SingleRsp AddDegree(DegreeReq degreeReq)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_degreeRep.AddDegree(new Degree
+            {
+                IdDegree = Guid.NewGuid(),
+                Description= degreeReq.Description,
+                IdUser= degreeReq.IdUser,
+                Image = degreeReq.Image,
+                Name= degreeReq.Name,
+            }))
+            {
+                rsp.SetError("Can not Add degree because Not found IdUser");
+            }
+
+            return rsp;
+        }
+
+        public SingleRsp UpdateDegree(Guid idDegree, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_degreeRep.UpdateDegree(idDegree, patchDoc))
+            {
+                rsp.SetError("Can not update Degree");
             }
 
             return rsp;

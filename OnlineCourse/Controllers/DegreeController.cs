@@ -1,6 +1,9 @@
 ﻿using BLL;
+using Common.Req.Degree;
+using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -38,6 +41,36 @@ namespace OnlineCourse.Controllers
             else
             {
                 return BadRequest(res.Message);
+            }
+        }
+
+        [HttpPost("Add-degree")]
+        [Authorize(Roles = "Expert")]
+        public IActionResult AddDegree([FromBody] DegreeReq degreeReq)
+        {
+            var res = _degreeSvc.AddDegree(degreeReq);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+
+        [HttpPatch("Update-degree")]
+        [Authorize(Roles = "Expert")]
+        public IActionResult UpdateDegree(Guid idDegree, JsonPatchDocument patchDoc)
+        {
+            var rsp = _degreeSvc.UpdateDegree(idDegree, patchDoc);
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest(rsp.Message);
             }
         }
     }
