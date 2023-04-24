@@ -1,7 +1,9 @@
-﻿using BLL;
+using BLL;
 using Common.Req.Course;
+using Common.Req.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -66,8 +68,8 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-by-filtering")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, int _status_active, int _status_store, int page)
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store, int page)
         {
             CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
             {
@@ -76,7 +78,7 @@ namespace OnlineCourse.Controllers
                 start_day = _start_upload_day,
                 end_day = _end_upload_day,
                 status_active = _status_active,
-                status_store = _status_store
+                status_store = _status_store,
             };
             CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
             {
@@ -97,10 +99,23 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpGet("get-all-courses-by-categoryid")]
+        [HttpGet("Get-all-courses-by-categoryid{_category_id}")]
         public IActionResult GetAllCoursesByCategoryID(Guid _category_id)
         {
             var res = _courseSvc.GetCoursesByCategoryID(_category_id);
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpPatch("{ID_Course}")]
+        public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
+        {
+            var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);
             if(res.Success)
             {
                 return Ok(res);
@@ -109,6 +124,36 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
+        }
+        [HttpGet("Get-all-courses-for-analytics")]
+        public IActionResult GetAllCoursesForAnalytics (string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
+        {
+            CourseAnalyticsReq courseAnalyticsReq = new CourseAnalyticsReq
+            {
+                title_like = _title_like,
+                start_reg_user = _start_reg_user,
+                end_reg_user = _end_reg_user,
+                start_rate = _start_rate,
+                end_rate = _end_rate,
+            };
+            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
+            {
+                Page = page,
+                Limit = 10,
+                Title_like = _title_like,
+            };
+
+            var res = _courseSvc.GetAllCourseForAnalytics(courseAnalyticsReq, coursesPaginationReq);
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+
+
         }
 
         [HttpPost("Add-course")]

@@ -12,8 +12,8 @@ namespace Common.Req.Course
         public string? category_name { get; set; } = string.Empty;
         public DateTime? start_day { get; set; }
         public DateTime? end_day { get; set; }
-        public int status_active { get; set; }
-        public int status_store { get; set; }
+        public bool? status_active { get; set; }
+        public bool? status_store { get; set; }
     }
 
 }

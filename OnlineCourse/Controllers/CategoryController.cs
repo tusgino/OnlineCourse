@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/private/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
         private readonly CategorySvc _categorySvc = new CategorySvc();
-        [HttpPost("add-category")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("Add-category")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult AddCategory(string _category_name)
         {
             var res = _categorySvc.AddCategory(_category_name);
@@ -24,11 +24,11 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpGet("get-all-categories")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetAllCategories ()
+        [HttpGet("Get-all-categories")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetAllCategories (string? _title_like, int page)
         {
-            var res = _categorySvc.GetAllCategories();
+            var res = _categorySvc.GetAllCategories(_title_like, page);
             if(res.Success)
             {
                 return Ok(res);
@@ -38,8 +38,8 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpDelete("delete-categories")]
-        [Authorize(Roles = "Admin")]
+        [HttpDelete("Delete-categories")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult DeleteCategories(List<Guid> categoryIds)
         {
             var res = _categorySvc.DeleteCategories(categoryIds);
