@@ -30,7 +30,7 @@ namespace BLL
 
             var _data = _courseRep.GetAllCourse(offset, coursesPaginationReq.Limit, coursesPaginationReq.Title_like);
 
-            object res = new
+            rsp.Data = new
             {
                 data = _data,
                 pagination = new
@@ -40,7 +40,6 @@ namespace BLL
                     _totalRows = total,
                 }
             };
-            rsp.Data = res;
 
             return rsp;
         }

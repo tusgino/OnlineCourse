@@ -16,7 +16,7 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == _lesson_id);
-                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdLesson);
+                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
 
                 if (lesson.Index == chapter.Lessons.Count - 1)
                 {
