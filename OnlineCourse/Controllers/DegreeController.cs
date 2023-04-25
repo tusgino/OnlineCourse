@@ -59,7 +59,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("Update-degree")]
+        [HttpPatch("Update-degree/{idDegree}")]
         [Authorize(Roles = "Expert")]
         public IActionResult UpdateDegree(Guid idDegree, JsonPatchDocument patchDoc)
         {
