@@ -75,6 +75,7 @@ namespace DAL
                     Index = lesson.Index,
                     Quizzes = quizDTOs,
                     Video = lesson.Video,
+                    Duration = lesson.Duration,
                 };
             }
         }
