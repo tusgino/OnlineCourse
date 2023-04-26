@@ -252,21 +252,22 @@ namespace DAL.Models
 
             modelBuilder.Entity<Study>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.IdUser, e.IdLesson });
 
                 entity.ToTable("STUDY");
 
-                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
-
                 entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
+                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
+
                 entity.HasOne(d => d.IdLessonNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdLesson)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_LESSON");
 
                 entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_USER");
