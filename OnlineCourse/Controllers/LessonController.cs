@@ -24,5 +24,19 @@ namespace OnlineCourse.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("change-status")]
+        public IActionResult ChangeStatus(Guid idUser, Guid idLesson)
+        {
+            var rsp = _lessonSvc.ChangeStatus(idUser, idLesson);
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

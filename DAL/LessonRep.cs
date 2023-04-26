@@ -78,5 +78,19 @@ namespace DAL
                 };
             }
         }
+
+        public bool ChangeStatus(Study study)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if (context.Studies.SingleOrDefault(s => s == study) == null)
+                {
+                    context.Studies.Add(study);
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }
