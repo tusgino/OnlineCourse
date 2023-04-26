@@ -351,6 +351,32 @@ namespace DAL
             }
         }
 
+        public bool ChangeStatus(Guid idCourse)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse);
+                if(course == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(course.Status == 0)
+                    {
+                        course.Status = 1;
+                    }
+                    else
+                    {
+                        course.Status = 0;
+                    }
+                    context.Courses.Update(course);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+        }
+
         /*public bool RemoveCourse(Guid idCourse)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())

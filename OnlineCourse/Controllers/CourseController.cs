@@ -15,11 +15,11 @@ namespace OnlineCourse.Controllers
         private readonly CourseSvc _courseSvc = new CourseSvc();
 
         [HttpGet("Get-all-course-for")]
-        public IActionResult GetAllCourse( int _page, int _limit, string? title_like)
+        public IActionResult GetAllCourse(int _page, int _limit, string? title_like)
         {
-             var coursesPaginationReq = new CoursesPaginationReq
+            var coursesPaginationReq = new CoursesPaginationReq
             {
-               Page= _page, Limit=_limit, Title_like=title_like,
+                Page = _page, Limit = _limit, Title_like = title_like,
             };
             var res = _courseSvc.GetAllCourse(coursesPaginationReq);
             return Ok(res);
@@ -103,7 +103,7 @@ namespace OnlineCourse.Controllers
         public IActionResult GetAllCoursesByCategoryID(Guid _category_id)
         {
             var res = _courseSvc.GetCoursesByCategoryID(_category_id);
-            if(res.Success)
+            if (res.Success)
             {
                 return Ok(res.Data);
             }
@@ -116,7 +116,7 @@ namespace OnlineCourse.Controllers
         public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);
-            if(res.Success)
+            if (res.Success)
             {
                 return Ok(res);
             }
@@ -126,7 +126,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-for-analytics")]
-        public IActionResult GetAllCoursesForAnalytics (string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
+        public IActionResult GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
         {
             CourseAnalyticsReq courseAnalyticsReq = new CourseAnalyticsReq
             {
@@ -144,7 +144,7 @@ namespace OnlineCourse.Controllers
             };
 
             var res = _courseSvc.GetAllCourseForAnalytics(courseAnalyticsReq, coursesPaginationReq);
-            if(res.Success)
+            if (res.Success)
             {
                 return Ok(res);
             }
@@ -170,10 +170,10 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-/*        [HttpDelete("Remove-course")]
-        public IActionResult RemoveCourse(Guid idCourse)
+        [HttpPost("change-status/{idCourse}")]
+        public IActionResult ChangeStatus(Guid idCourse)
         {
-            var res = _courseSvc.RemoveCourse(idCourse);
+            var res = _courseSvc.ChangeStatus(idCourse);
             if (res.Success)
             {
                 return Ok(res);
@@ -182,7 +182,8 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
-        }*/
+        }
+        
 
 
     }

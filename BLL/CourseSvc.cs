@@ -212,14 +212,26 @@ namespace BLL
             return rsp;
         }
 
-/*        public SingleRsp RemoveCourse(Guid idCourse)
+        public SingleRsp ChangeStatus(Guid idCourse)
         {
             var rsp = new SingleRsp();
-            if(!_courseRep.RemoveCourse(idCourse))
+
+            if (!_courseRep.ChangeStatus(idCourse))
             {
-                rsp.SetError($"Can not remove course which has id = {idCourse}");
+                rsp.SetError("Can not change status");
             }
+
             return rsp;
-        }*/
+        }
+
+        /*        public SingleRsp RemoveCourse(Guid idCourse)
+                {
+                    var rsp = new SingleRsp();
+                    if(!_courseRep.RemoveCourse(idCourse))
+                    {
+                        rsp.SetError($"Can not remove course which has id = {idCourse}");
+                    }
+                    return rsp;
+                }*/
     }
 }
