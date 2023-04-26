@@ -211,8 +211,8 @@ namespace DAL
                         if(course.IdUser == user.IdUser)
                         {
                             courses.Add(course);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
-
+                            double? earn = course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
+                            revenue += Convert.ToInt64((100 - course.FeePercent) * earn);
                         }
                     }
                     if(courses.Count < _start_upload_course || courses.Count > _end_upload_course || revenue < _start_revenue || revenue > _end_revenue)

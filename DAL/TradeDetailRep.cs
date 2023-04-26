@@ -1,5 +1,6 @@
 ﻿using Common.DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,21 @@ namespace DAL
                     (trade.DateOfTrade >= _start_date && trade.DateOfTrade <= _end_date) &&
                     (String.Compare(trade.Balance, _start_balance) >= 0 && String.Compare(trade.Balance, _end_balance) <= 0)
                 ).ToList();
+            }
+        }
+        public bool UpdateTrade(Guid id, JsonPatchDocument newTrade)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == id);
+
+                if (trade != null)
+                {
+                    newTrade.ApplyTo(trade);
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
             }
         }
     }

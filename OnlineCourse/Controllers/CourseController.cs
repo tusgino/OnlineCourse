@@ -112,7 +112,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpPatch("{ID_Course}")]
+        [HttpPatch("Update-course-by-{ID_Course}")]
         public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);

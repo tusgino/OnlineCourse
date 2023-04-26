@@ -2,6 +2,7 @@
 using Common.Req.Course;
 using Common.Req.TradeDetail;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -46,6 +47,18 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-
+        [HttpPatch("Update-trade-by-{ID_Trade}")]
+        public IActionResult UpdateCourse(Guid ID_Trade, [FromBody] JsonPatchDocument patchDoc)
+        {
+            var res = _tradeDetailSvc.UpdateTrade(ID_Trade, patchDoc);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }
