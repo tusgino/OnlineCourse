@@ -121,8 +121,8 @@ namespace DAL
                 {
                     List<Course> courses = new List<Course>();
                     foreach(Study study in context.Studies)
-                    {
-                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
+                    {   
+                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson) == true)
                         {
                             var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
                             var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
@@ -164,7 +164,7 @@ namespace DAL
                     List<Course> courses = new List<Course>();
                     foreach (Study study in studies)
                     {
-                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
+                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson) == true)
                         {
                             var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
                             var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
