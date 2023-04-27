@@ -144,5 +144,18 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-new-users")]
+        public IActionResult GetNewUsers()
+        {
+            var res = _userSvc.GetNewUsers();
+            if(res.Success)
+            {
+                return Ok(res.Data);  
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }
