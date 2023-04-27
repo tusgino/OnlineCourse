@@ -15,7 +15,7 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                
+
                 List<int> typesOfTrade = new List<int>();
                 if (_is_purchase == true) typesOfTrade.Add(0);
                 if (_is_rent == true) typesOfTrade.Add(1);
@@ -45,6 +45,23 @@ namespace DAL
                     return true;
                 }
                 return false;
+            }
+        }
+        public List<object> GetSystemRevenue()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.TradeDetails.Where(trade => trade.TypeOfTrade == 1)
+                                           .OrderBy(trade => trade.DateOfTrade)
+                                           .GroupBy(trade => trade.DateOfTrade.Value.Month)
+                                           .Select(group => new { Month = group.Key, Revenue = group.Sum(trade => Convert.ToInt64(trade.Balance)) })
+                                           .ToList<object>();
+
+
+
+
+
+
             }
         }
     }

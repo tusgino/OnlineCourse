@@ -73,6 +73,22 @@ namespace BLL
 
             return rsp;
         }
+        public SingleRsp GetSystemRevenue()
+        {
+            var data = _tradeDetailRep.GetSystemRevenue();
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Renevue not updated");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+
+            return rsp;
+        }
 
     }
 }

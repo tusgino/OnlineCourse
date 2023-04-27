@@ -38,7 +38,7 @@ namespace OnlineCourse.Controllers
 
             var res = _tradeDetailSvc.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq, coursesPaginationReq);
 
-            if(res.Success)
+            if (res.Success)
             {
                 return Ok(res);
             }
@@ -54,6 +54,19 @@ namespace OnlineCourse.Controllers
             if (res.Success)
             {
                 return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-system-revenue")]
+        public IActionResult GetSystemRevenue()
+        {
+            var res = _tradeDetailSvc.GetSystemRevenue();
+            if (res.Success)
+            {
+                return Ok(res.Data);
             }
             else
             {

@@ -250,40 +250,16 @@ namespace DAL
                 return data;
 
             }
+        
         }
-        public List<object> GetSystemRevenue()
+        public List<object> GetAllUsersByType()
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-
-                var courseRep = new CourseRep();
-                var courses = context.Courses.ToList();
-
-                var coursesByMonth = context.Purchases.OrderBy(purchase => purchase.DateOfPurchase.Value.Month).ToList()
-                                                      .GroupBy(purchase => purchase.DateOfPurchase.Value.Month).ToList();
-
-
-                List<object> data = new List<object>();
-                foreach(var month in coursesByMonth)
-                {
-                    double? revenueByMonth = 0;
-                    foreach(var purchase in month)
-                    {
-                        var course = context.Courses.FirstOrDefault(course => course.IdCourse == purchase.IdCourse);
-                        double? earn = course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
-                        var revenue = course.FeePercent * earn;
-                        revenueByMonth += revenue;
-                    }
-                    data.Add(new
-                    {
-                        Month = month.Key, 
-                        Revenue = revenueByMonth,
-                    });
-                }
-
-                return data;
-
-            } 
+                return context.Users.GroupBy(user => user.IdTypeOfUser)
+                                    .Select(group => new { TypeOfUser = group.Key, Number = group.Count()})
+                                    .ToList<object>();
+            }
         }
     }
 }
