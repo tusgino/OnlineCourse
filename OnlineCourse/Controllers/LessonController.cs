@@ -1,4 +1,5 @@
 ﻿using BLL;
+using Common.Req.Lesson;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +27,10 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("change-status")]
-        public IActionResult ChangeStatus(Guid idUser, Guid idLesson)
+        [Authorize]
+        public IActionResult ChangeStatus([FromBody] ChangeStatusReq changeStatusReq)
         {
-            var rsp = _lessonSvc.ChangeStatus(idUser, idLesson);
+            var rsp = _lessonSvc.ChangeStatus(changeStatusReq.IdUser, changeStatusReq.IdLesson);
             if (rsp.Success)
             {
                 return Ok(rsp);
