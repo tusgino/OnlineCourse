@@ -130,5 +130,20 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
+        [HttpGet("Get-system-revenue")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetSystemRevenue ()
+        {
+            var res = _userSvc.GetSystemRevenue();
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Common.DAL;
+using Common.Req.Course;
 using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -233,7 +235,7 @@ namespace DAL
                         if (course.IdUser == user.IdUser)
                         {
                             courses.Add(course);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
+                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
 
                         }
                     }
@@ -248,6 +250,40 @@ namespace DAL
                 return data;
 
             }
+        }
+        public List<object> GetSystemRevenue()
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+
+                var courseRep = new CourseRep();
+                var courses = context.Courses.ToList();
+
+                var coursesByMonth = context.Purchases.OrderBy(purchase => purchase.DateOfPurchase.Value.Month).ToList()
+                                                      .GroupBy(purchase => purchase.DateOfPurchase.Value.Month).ToList();
+
+
+                List<object> data = new List<object>();
+                foreach(var month in coursesByMonth)
+                {
+                    double? revenueByMonth = 0;
+                    foreach(var purchase in month)
+                    {
+                        var course = context.Courses.FirstOrDefault(course => course.IdCourse == purchase.IdCourse);
+                        double? earn = course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
+                        var revenue = course.FeePercent * earn;
+                        revenueByMonth += revenue;
+                    }
+                    data.Add(new
+                    {
+                        Month = month.Key, 
+                        Revenue = revenueByMonth,
+                    });
+                }
+
+                return data;
+
+            } 
         }
     }
 }

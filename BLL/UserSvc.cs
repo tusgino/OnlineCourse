@@ -148,5 +148,19 @@ namespace BLL
             return rsp;
 
         }
+        public SingleRsp GetSystemRevenue()
+        {
+            var data = _userRep.GetSystemRevenue().ToList();
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found revenue");
+            }
+            else
+            {
+                rsp.Data = data;    
+            }
+            return rsp;
+        }
     }
 }
