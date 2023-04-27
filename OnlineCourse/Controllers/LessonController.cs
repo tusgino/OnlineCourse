@@ -26,6 +26,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("change-status")]
+        [Authorize]
         public IActionResult ChangeStatus(Guid idUser, Guid idLesson)
         {
             var rsp = _lessonSvc.ChangeStatus(idUser, idLesson);
