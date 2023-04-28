@@ -83,15 +83,9 @@ namespace DAL
             {
                 return context.TradeDetails.Where(trade => trade.TypeOfTrade == 1)
                                            .OrderBy(trade => trade.DateOfTrade)
-                                           .GroupBy(trade => trade.DateOfTrade.Value.Year, trade => trade.DateOfTrade.Value.Month)
+                                           .GroupBy(trade => trade.DateOfTrade.Value.Month)
                                            .Select(group => new { Month = group.Key, Revenue = group.Sum(trade => Convert.ToInt64(trade.Balance)) })
                                            .ToList<object>();
-
-
-
-
-
-
             }
         }
     }
