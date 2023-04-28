@@ -165,5 +165,21 @@ namespace BLL
             }
             return rsp;
         }
+        public SingleRsp GetNewUsers()
+        {
+            var data = _userRep.GetNewUsers();
+
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Not found user");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
 }

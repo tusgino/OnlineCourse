@@ -210,11 +210,11 @@ namespace DAL
                     long revenue = 0;
                     foreach(Course course in context.Courses)
                     {
-                        if(course.IdUser == user.IdUser)
+                        if(course.IdUser == user.IdUser) 
                         {
                             courses.Add(course);
-                            double? earn = course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * earn);
+                            double? earn = course.Price * (1 - course.Discount/100) * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
+                            revenue += Convert.ToInt64((1 - course.FeePercent / 100) * earn);
                         }
                     }
                     if(courses.Count < _start_upload_course || courses.Count > _end_upload_course || revenue < _start_revenue || revenue > _end_revenue)
@@ -235,7 +235,7 @@ namespace DAL
                         if (course.IdUser == user.IdUser)
                         {
                             courses.Add(course);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * course.Discount * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
+                            revenue += Convert.ToInt64((1 - course.FeePercent/100) * course.Price * (1 - course.Discount/100) * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
 
                         }
                     }
@@ -261,5 +261,16 @@ namespace DAL
                                     .ToList<object>();
             }
         }
+        public List<object> GetNewUsers()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Users.Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { User = user, Account = account })
+                                    .OrderByDescending(element => element.Account.DateCreate)
+                                    .Select(element => element.User.Name)
+                                    .Take(6)
+                                    .ToList<object>();
+            }
+        } 
     }
 }
