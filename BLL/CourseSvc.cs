@@ -8,6 +8,7 @@ using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,10 +49,10 @@ namespace BLL
         public SingleRsp GetAllCourseByIdUser(Guid id)
         {
             var rsp = new SingleRsp();
-            
-            
 
-            if((rsp.Data = _courseRep.GetAllCourseByIdUser(id)) == null)
+
+
+            if ((rsp.Data = _courseRep.GetAllCourseByIdUser(id)) == null)
             {
                 rsp.SetError("Not found Course of this Expert");
             }
@@ -62,7 +63,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null){
+            if ((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null) {
                 rsp.SetError("Not found Course");
             };
 
@@ -73,7 +74,7 @@ namespace BLL
         {
             var res = new SingleRsp();
 
-            if(_courseRep.GetCourseByID(id) == null)
+            if (_courseRep.GetCourseByID(id) == null)
             {
                 res.SetError("Not found course");
             }
@@ -119,8 +120,8 @@ namespace BLL
         public SingleRsp GetCoursesByCategoryID(Guid _category_id)
         {
             var courses = _courseRep.GetAllCourseByCategoryID(_category_id).OrderBy(course => course.CourseName).Select(course => course.CourseName).ToList(); ;
-            
-            
+
+
             var rsp = new SingleRsp();
 
             if (courses == null)
@@ -138,7 +139,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if(!_courseRep.UpdateCourse(_id_course, patchDoc))
+            if (!_courseRep.UpdateCourse(_id_course, patchDoc))
             {
                 rsp.SetError("Update failed");
             }
@@ -174,10 +175,10 @@ namespace BLL
             };
 
             var rsp = new SingleRsp();
-            if(data == null)
+            if (data == null)
             {
                 rsp.SetError("Not found course");
-            } 
+            }
             else
             {
                 rsp.Data = res;
@@ -196,15 +197,15 @@ namespace BLL
                 IdCategory = courseReq.IdCategory,
                 CourseName = courseReq.CourseName,
                 DateOfUpload = DateTime.Now,
-                Description= courseReq.Description,
+                Description = courseReq.Description,
                 Discount = courseReq.Discount,
-                FeePercent= courseReq.FeePercent,
-                IdCourse=Guid.NewGuid(),
-                IdUser=courseReq.IdUser,
-                Price=courseReq.Price,
-                Status=courseReq.Status,
-                Thumbnail=courseReq.Thumbnail,
-                VideoPreview=courseReq.VideoPreview,
+                FeePercent = courseReq.FeePercent,
+                IdCourse = Guid.NewGuid(),
+                IdUser = courseReq.IdUser,
+                Price = courseReq.Price,
+                Status = courseReq.Status,
+                Thumbnail = courseReq.Thumbnail,
+                VideoPreview = courseReq.VideoPreview,
             }))
             {
                 rsp.SetError("Not found any category");
@@ -213,14 +214,44 @@ namespace BLL
             return rsp;
         }
 
-/*        public SingleRsp RemoveCourse(Guid idCourse)
+        /*        public SingleRsp RemoveCourse(Guid idCourse)
+                {
+                    var rsp = new SingleRsp();
+                    if(!_courseRep.RemoveCourse(idCourse))
+                    {
+                        rsp.SetError($"Can not remove course which has id = {idCourse}");
+                    }
+                    return rsp;
+                }*/
+
+        public SingleRsp GetAverageFeePercent()
         {
+            var data = _courseRep.GetAverageFeePercent();
             var rsp = new SingleRsp();
-            if(!_courseRep.RemoveCourse(idCourse))
+            if (data == null)
             {
-                rsp.SetError($"Can not remove course which has id = {idCourse}");
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
             }
             return rsp;
-        }*/
+        }
+        public SingleRsp GetBestCourses()
+        {
+            var data = _courseRep.GetBestCourses();
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
+
 }

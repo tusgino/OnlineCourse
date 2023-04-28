@@ -352,5 +352,27 @@ namespace DAL
                 if(context.Categories.SingleOrDefault(c => c.IdCategory == ))
             }
         }*/
+
+        public double? GetAverageFeePercent()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Courses.Average(c => c.FeePercent);
+            }
+        }
+        public List<string> GetBestCourses()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Courses.Where(course => context.Purchases
+                                          .GroupBy(purchase => purchase.IdCourse)
+                                          .OrderByDescending(group => group.Count())
+                                          .Take(2)
+                                          .Select(group => group.Key)
+                                          .Contains(course.IdCourse))
+                                     .Select(course => course.CourseName)
+                                     .ToList();
+            }
+        }
     }
 }

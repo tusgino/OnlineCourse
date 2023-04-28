@@ -182,7 +182,29 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }*/
-
+        [HttpGet("Get-average-feepercent")]
+        public IActionResult GetAverageFeePercent()
+        {
+            var res = _courseSvc.GetAverageFeePercent();
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-best-courses")]
+        public IActionResult GetBestCourses()
+        {
+            var res = _courseSvc.GetBestCourses();
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else return BadRequest(res.Message);
+        }
 
     }
 }
