@@ -1,6 +1,7 @@
 ﻿using Common.DAL;
 using Common.Rsp.DTO;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,10 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == _lesson_id);
-                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
 
-                if (lesson.Index == chapter.Lessons.Count - 1)
+                var chapter = context.Chapters.Include(chapter => chapter.Lessons).FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
+
+                if (lesson.Index == chapter.Lessons.Count)
                 {
                     return true;
                 }
@@ -33,10 +35,11 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == _lesson_id);
-                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
-                var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
 
-                if (lesson.Index == chapter.Lessons.Count - 1 && chapter.Index == course.Chapters.Count - 1)
+                var chapter = context.Chapters.Include(chapter => chapter.Lessons).FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
+                var course = context.Courses.Include(course => course.Chapters).FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
+
+                if (lesson.Index == chapter.Lessons.Count && chapter.Index == course.Chapters.Count)
                 {
                     return true;
                 }

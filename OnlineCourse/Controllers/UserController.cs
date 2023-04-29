@@ -130,5 +130,32 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-all-users-by-type")]
+        public IActionResult GetAllUsersByType()
+        {
+            var res = _userSvc.GetAllUsersByType();
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-new-users")]
+        public IActionResult GetNewUsers()
+        {
+            var res = _userSvc.GetNewUsers();
+            if(res.Success)
+            {
+                return Ok(res.Data);  
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

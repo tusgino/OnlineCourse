@@ -1,9 +1,11 @@
 ﻿using Common.DAL;
+using Common.Req.Course;
 using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -33,13 +35,6 @@ namespace DAL
                 List<int> user_status = new List<int>();
                 if (_status_active == true) user_status.Add(1);
                 if (_status_banned == true) user_status.Add(0);
-
-                //return context.Users.Where(user =>
-                //    user.Name.Contains(_title_like == null ? "" : _title_like) &&
-                //    id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
-                //    user_types.Contains(user.IdTypeOfUser ?? -1) &&
-                //    user_status.Contains(user.Status ?? -1)
-                //).ToList();
 
                 List<User> data = context.Users.Where(user =>
                     user.Name.Contains(_title_like == null ? "" : _title_like) &&
@@ -116,13 +111,16 @@ namespace DAL
                     }
                 }
 
+                List<Study> studies = context.Studies.ToList(); 
+
                 //filter by finished course
                 foreach(User user in users)
                 {
                     List<Course> courses = new List<Course>();
-                    foreach(Study study in context.Studies)
-                    {   
-                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson) == true)
+
+                    foreach(Study study in studies)
+                    {
+                        if (study.IdUser == user.IdUser && study.Status == 1 && lessonRep.IsLastOfCourse(study.IdLesson ?? Guid.Empty) == true)
                         {
                             var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
                             var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
@@ -156,7 +154,6 @@ namespace DAL
                 }
 
 
-                List<Study> studies = context.Studies.ToList(); 
 
                 List<List<Course>> finish_courses = new List<List<Course>>();
                 foreach(User user in users)
@@ -214,11 +211,11 @@ namespace DAL
                     long revenue = 0;
                     foreach(Course course in context.Courses)
                     {
-                        if(course.IdUser == user.IdUser)
+                        if(course.IdUser == user.IdUser) 
                         {
                             courses.Add(course);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
-
+                            double? earn = course.Price * (1 - course.Discount/100) * courseRep.GetNumberOfRegisterdUser(course.IdCourse);
+                            revenue += Convert.ToInt64((1 - course.FeePercent / 100) * earn);
                         }
                     }
                     if(courses.Count < _start_upload_course || courses.Count > _end_upload_course || revenue < _start_revenue || revenue > _end_revenue)
@@ -239,7 +236,7 @@ namespace DAL
                         if (course.IdUser == user.IdUser)
                         {
                             courses.Add(course);
-                            revenue += Convert.ToInt64((100 - course.FeePercent) * course.Price * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
+                            revenue += Convert.ToInt64((1 - course.FeePercent/100) * course.Price * (1 - course.Discount/100) * courseRep.GetNumberOfRegisterdUser(course.IdCourse));
 
                         }
                     }
@@ -254,6 +251,27 @@ namespace DAL
                 return data;
 
             }
+        
         }
+        public List<object> GetAllUsersByType()
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Users.GroupBy(user => user.IdTypeOfUser)
+                                    .Select(group => new { TypeOfUser = group.Key, Number = group.Count()})
+                                    .ToList<object>();
+            }
+        }
+        public List<object> GetNewUsers()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Users.Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { User = user, Account = account })
+                                    .OrderByDescending(element => element.Account.DateCreate)
+                                    .Select(element => element.User.Name)
+                                    .Take(6)
+                                    .ToList<object>();
+            }
+        } 
     }
 }

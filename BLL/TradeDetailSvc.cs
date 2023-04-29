@@ -4,6 +4,7 @@ using Common.Req.TradeDetail;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,33 @@ namespace BLL
             else
             {
                 rsp.Data = res;
+            }
+
+            return rsp;
+        }
+        public SingleRsp UpdateTrade(Guid id, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_tradeDetailRep.UpdateTrade(id, patchDoc))
+            {
+                rsp.SetError("Update failed");
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetSystemRevenue()
+        {
+            var data = _tradeDetailRep.GetSystemRevenue();
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Renevue not updated");
+            }
+            else
+            {
+                rsp.Data = data;
             }
 
             return rsp;

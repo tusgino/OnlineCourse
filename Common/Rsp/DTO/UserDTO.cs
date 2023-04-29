@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Rsp.DTO
+
 {
     public class UserDTO
     {
@@ -16,6 +17,9 @@ namespace Common.Rsp.DTO
         public string? Avatar { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public int? Status { get; set; }
+
         public AccountDTO? Account { get; set; }
+        public int? IdTypeOfUser { get; set; }
     }
 }
+

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Req.Course;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace BLL
 {
@@ -147,6 +148,38 @@ namespace BLL
 
             return rsp;
 
+        }
+        public SingleRsp GetAllUsersByType()
+        {
+            var data = _userRep.GetAllUsersByType();
+
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Data not found");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+        public SingleRsp GetNewUsers()
+        {
+            var data = _userRep.GetNewUsers();
+
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Not found user");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
         }
     }
 }
