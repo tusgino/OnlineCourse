@@ -25,7 +25,7 @@ namespace DAL
                     {
                         var tradeDetail = new TradeDetail
                         {
-                            Balance = Convert.ToString(course.Price * course.Discount / 100),
+                            Balance = Convert.ToString(course.Price * (course.Discount / 100)),
                             DateOfTrade = DateTime.Now,
                             IdTrade = Guid.NewGuid(),
                             IdUser = user.IdUser,
