@@ -8,6 +8,7 @@ namespace DAL.Models
         public Guid IdQuiz { get; set; }
         public Guid? IdLesson { get; set; }
         public string? Question { get; set; }
+        public string? Image { get; set; }
         public string? Option1 { get; set; }
         public string? Option2 { get; set; }
         public string? Option3 { get; set; }

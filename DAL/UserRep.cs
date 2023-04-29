@@ -3,12 +3,15 @@ using Common.Req.Course;
 using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DAL
@@ -272,5 +275,82 @@ namespace DAL
                                     .ToList<object>();
             }
         } 
+        public List<object> GetAllExpertRequests(string _name, DateTime _date_create_from, DateTime _date_create_to)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<object> res = new List<object>();
+
+                //context.Users.Where(user => user.Name.Contains(_name) && user.IdTypeOfUser == 1 && user.Status == -2)
+                //            .Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { _User = user, _Account = account })
+                //            .Where(group => group._Account.DateCreate >= _date_create_from && group._Account.DateCreate <= _date_create_to)
+                //            .Join(context.BankInfos, group => group._User.IdBankAccount, bankinfo => bankinfo.IdBankAccount, (group, bankinfo) => new { _Group = group, _BankInfo = bankinfo })
+                //            .Join(context.Degrees, group => group._Group._User.IdUser, degree => degree.IdUser, (group, degree) => new { _Group = group, _Degree = degree })
+                //            .Select(group => new
+                //            {
+                //                group._Group._Group._User.IdUser,
+                //                group._Group._Group._User.Name,
+                //                group._Group._Group._User.DateOfBirth,
+                //                group._Group._Group._User.PhoneNumber,
+                //                group._Group._Group._User.IdCard,
+                //                group._Group._Group._User.Email,
+                //                group._Group._Group._Account.DateCreate,
+                //                group._Group._BankInfo.BankAccountNumber,
+                //                group._Group._BankInfo.BankName,
+                //                DegreeName = group._Degree.Name,
+                //                group._Degree.Image,
+                //                group._Degree.Description
+                //            });
+
+
+                var query = from user in context.Users
+                            join account in context.Accounts on user.IdAccount equals account.IdAccount
+                            join bankInfo in context.BankInfos on user.IdBankAccount equals bankInfo.IdBankAccount into bankInfoGroup
+                            from bankInfo in bankInfoGroup.DefaultIfEmpty()
+                            join degree in context.Degrees on user.IdUser equals degree.IdUser into degreeGroup
+                            from degree in degreeGroup.DefaultIfEmpty()
+                            where user.IdTypeOfUser == 1 && user.Status == -2 && user.Name.Contains(_name) && account.DateCreate >= _date_create_from && account.DateCreate <= _date_create_to
+                            select new
+                            {
+                                user.IdUser,
+                                user.Name,
+                                user.DateOfBirth,
+                                user.PhoneNumber,
+                                user.IdCard,
+                                user.Email,
+                                account.DateCreate,
+                                BankAccountNumber = bankInfo.BankAccountNumber ?? "",
+                                BankName = bankInfo.BankName ?? "",
+                                DegreeName = degree.Name ?? "",
+                                DegreeImage = degree.Image ?? "",
+                                DegreeDescription = degree.Description ?? ""
+                            };
+
+                foreach (var element in query)
+                {
+                    Console.WriteLine(element);
+                    res.Add(new
+                    {
+                        IdUser = element.IdUser,
+                        Name = element.Name,
+                        DateOfBirth = element.DateOfBirth,
+                        PhoneNumber = element.PhoneNumber,
+                        IdCard = element.IdCard,
+                        Email = element.Email,
+                        DateCreate = element.DateCreate,
+                        BankNumber = element.BankAccountNumber,
+                        BankName = element.BankName,
+                        Degree = new
+                        {
+                            DegreeName = element.DegreeName,
+                            DegreeImage = element.DegreeImage,
+                            DegreeDescription = element.DegreeDescription,
+                        },
+                    });
+
+                }
+                return res;
+            }
+        }
     }
 }

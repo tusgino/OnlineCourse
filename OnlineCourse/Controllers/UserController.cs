@@ -157,5 +157,19 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-all-expert-requests")]
+        public IActionResult GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to, int page)
+        {
+            var res = _userSvc.GetAllExpertRequests(_name, _date_create_from, _date_create_to, page);
+
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

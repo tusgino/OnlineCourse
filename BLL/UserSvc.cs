@@ -181,5 +181,37 @@ namespace BLL
             }
             return rsp;
         }
+        public SingleRsp GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to, int page)
+        {
+            if (_date_create_from == null) _date_create_from = new DateTime(1800, 1, 1);
+            if (_date_create_to == null) _date_create_to = new DateTime(9999, 1, 1);
+
+            var experts = _userRep.GetAllExpertRequests(_name ?? "", _date_create_from ?? DateTime.Now, _date_create_to ?? DateTime.Now);
+
+            int limit = 10;
+            int offset = (page - 1) * limit;
+            int total = experts.Count;
+            int totalPages = total % limit == 0 ? total / limit : total / limit + 1;
+
+            var res = experts.Skip(offset).Take(limit).ToList();
+
+            object data = new
+            {
+                _data = res,
+                _totalRows = total,
+            };
+
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Not found request");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
 }
