@@ -9,6 +9,7 @@ namespace Common.Rsp.DTO
     public class CourseDTO
     {
         public Guid IdCourse { get; set; }
+        public UserDTO? User { get; set; }
         public string? CourseName { get; set; }
         public List<ChapterDTO> Chapters { get; set; }
     }
