@@ -37,7 +37,7 @@ namespace DAL
                             IdUser = user.IdUser,
                             Purchases = user.Purchases,
                             TradeStatus = 0,
-                            TypeOfTrade = typeOfPurchase,
+                            TypeOfTrade = 0,
                         };
                         context.TradeDetails.Add(tradeDetail);
                         context.Purchases.Add(new Purchase
