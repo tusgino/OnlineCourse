@@ -17,7 +17,7 @@ namespace DAL
                 {
                     var user = context.Users.SingleOrDefault(u => u.Email == email);
                     var course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse);
-                    if(user == null || course == null)
+                    if (user == null || course == null)
                     {
                         return Guid.Empty;
                     }
@@ -25,7 +25,7 @@ namespace DAL
                     {
                         var tradeDetail = new TradeDetail
                         {
-                            Balance = Convert.ToString(course.Price * ((100-course.Discount) / 100)),
+                            Balance = Convert.ToString(course.Price * ((100 - course.Discount) / 100)),
                             DateOfTrade = DateTime.Now,
                             IdTrade = Guid.NewGuid(),
                             IdUser = user.IdUser,
@@ -34,6 +34,13 @@ namespace DAL
                             TypeOfTrade = typeOfPurchase,
                         };
                         context.TradeDetails.Add(tradeDetail);
+                        context.Purchases.Add(new Purchase
+                        {
+                            DateOfPurchase = DateTime.Now,
+                            IdTrade = tradeDetail.IdTrade,
+                            IdUser = user.IdUser,
+                            IdCourse = course.IdCourse,
+                        });
                         context.SaveChanges();
 
                         return tradeDetail.IdTrade;
