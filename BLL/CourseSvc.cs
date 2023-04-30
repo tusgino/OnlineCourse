@@ -212,16 +212,45 @@ namespace BLL
 
             return rsp;
         }
-
-/*        public SingleRsp RemoveCourse(Guid idCourse)
+        public SingleRsp GetAverageFeePercent()
         {
+            var data = _courseRep.GetAverageFeePercent();
             var rsp = new SingleRsp();
-            if(!_courseRep.RemoveCourse(idCourse))
+            if (data == null)
             {
-                rsp.SetError($"Can not remove course which has id = {idCourse}");
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
             }
             return rsp;
-        }*/
+        }
+        public SingleRsp GetBestCourses()
+        {
+            var data = _courseRep.GetBestCourses();
+            var rsp = new SingleRsp();
+            if (data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+        public SingleRsp ChangeStatus(Guid idCourse)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_courseRep.ChangeStatus(idCourse))
+            {
+                rsp.SetError("Can not change status");
+            }
+
+            return rsp;
+        }
     }
 
 }
