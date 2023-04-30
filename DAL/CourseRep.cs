@@ -140,36 +140,30 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
-
-                //return GetAllCourseByName(_title_like).Where(course =>
-                //    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
-                //    categories.Contains(course.IdCategory ?? Guid.Empty) &&
-                //    (course.Status == _status_active ||
-                //    course.Status == _status_store)
-                //).ToList();
-
                 List<int> course_status = new List<int>();
                 if (_status_active == true) course_status.Add(1);
                 if (_status_store == true) course_status.Add(0);
 
-                List<Course> data = GetAllCourseByName(_title_like).Where(course =>
-                    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
-                    categories.Contains(course.IdCategory ?? Guid.Empty) &&
-                    course_status.Contains(course.Status ?? -1)
-                ).ToList();
+                List<Course> data = context.Courses.Where(course => 
+                   course.CourseName.Contains(_title_like == null ? "" : _title_like) &&
+                   course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
+                   (categories.Contains(course.IdCategory ?? Guid.Empty) || course.IdCategory == null)&&
+                   course_status.Contains(course.Status ?? -1)
+                 ).ToList();
 
                 List<CourseModel_Admin> res = new List<CourseModel_Admin>();
                 foreach(Course course in data)
                 {
-                    //context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
-                    //context.Entry(course).Reference(course => course.IdUserNavigation).Load();
+                    if(course.IdCategory != null) 
+                        context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
+                    context.Entry(course).Reference(course => course.IdUserNavigation).Load();
 
                     res.Add(new CourseModel_Admin
                     {
                         ID = course.IdCourse,
                         Name = course.CourseName,
-                        //Category = course.IdCategoryNavigation!.Name,
-                        //UploadUser = course.IdUserNavigation!.Name,
+                        Category = course.IdCategory == null ? null : course.IdCategoryNavigation!.Name,
+                        UploadUser = course.IdUserNavigation!.Name,
                         DateUpload = (course.DateOfUpload == null) ? "" : course.DateOfUpload.Value.ToShortDateString(),
                         Price = course.Price.ToString(),
                         Discount = course.Discount.ToString(),
@@ -384,5 +378,27 @@ namespace DAL
                 if(context.Categories.SingleOrDefault(c => c.IdCategory == ))
             }
         }*/
+
+        public double? GetAverageFeePercent()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Courses.Average(c => c.FeePercent);
+            }
+        }
+        public List<string> GetBestCourses()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Courses.Where(course => context.Purchases
+                                          .GroupBy(purchase => purchase.IdCourse)
+                                          .OrderByDescending(group => group.Count())
+                                          .Take(2)
+                                          .Select(group => group.Key)
+                                          .Contains(course.IdCourse))
+                                     .Select(course => course.CourseName)
+                                     .ToList();
+            }
+        }
     }
 }

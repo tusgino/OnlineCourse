@@ -112,7 +112,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
-        [HttpPatch("{ID_Course}")]
+        [HttpPatch("Update-course-by-{ID_Course}")]
         public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);
@@ -181,10 +181,31 @@ namespace OnlineCourse.Controllers
             else
             {
                 return BadRequest(res.Message);
-            }   
+            }
         }
-        
 
-
+        [HttpGet("Get-average-feepercent")]
+        public IActionResult GetAverageFeePercent()
+        {
+            var res = _courseSvc.GetAverageFeePercent();
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-best-courses")]
+        public IActionResult GetBestCourses()
+        {
+            var res = _courseSvc.GetBestCourses();
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else return BadRequest(res.Message);
+        }
     }
 }
