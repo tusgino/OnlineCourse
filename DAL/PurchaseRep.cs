@@ -15,6 +15,11 @@ namespace DAL
             {
                 using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
                 {
+                    if (context.Purchases.SingleOrDefault(p => p.IdCourse == idCourse && p.IdUserNavigation.Email == email) != null)
+                    {
+                        return Guid.Empty;
+                    }
+
                     var user = context.Users.SingleOrDefault(u => u.Email == email);
                     var course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse);
                     if (user == null || course == null)
@@ -23,6 +28,7 @@ namespace DAL
                     }
                     else
                     {
+                        
                         var tradeDetail = new TradeDetail
                         {
                             Balance = Convert.ToString(course.Price * ((100 - course.Discount) / 100)),
