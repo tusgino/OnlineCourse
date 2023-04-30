@@ -315,7 +315,7 @@ namespace DAL
                 }
                 else
                 {
-                    var purchases = context.Purchases.Where(p => p.IdUser == id).ToList();
+                    var purchases = context.Purchases.Where(p => p.IdUser == id && p.IdTradeNavigation.TradeStatus == 1).ToList();
                     foreach (var purchase in purchases)
                     {
                         var course = context.Courses.SingleOrDefault(c => c.IdCourse == purchase.IdCourse);
