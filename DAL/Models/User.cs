@@ -10,6 +10,7 @@ namespace DAL.Models
             Courses = new HashSet<Course>();
             Degrees = new HashSet<Degree>();
             Purchases = new HashSet<Purchase>();
+            Studies = new HashSet<Study>();
             TradeDetails = new HashSet<TradeDetail>();
         }
 
@@ -31,6 +32,7 @@ namespace DAL.Models
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Degree> Degrees { get; set; }
         public virtual ICollection<Purchase> Purchases { get; set; }
+        public virtual ICollection<Study> Studies { get; set; }
         public virtual ICollection<TradeDetail> TradeDetails { get; set; }
     }
 }

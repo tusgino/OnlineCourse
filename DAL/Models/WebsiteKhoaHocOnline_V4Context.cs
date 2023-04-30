@@ -36,7 +36,7 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-KBURRDK\\SQLEXPRESS;Initial Catalog=WebsiteKhoaHocOnline_V4;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=HUAN\\SQLEXPRESS;Initial Catalog=WebsiteKhoaHocOnline_V4;Integrated Security=True");
             }
         }
 
@@ -252,21 +252,22 @@ namespace DAL.Models
 
             modelBuilder.Entity<Study>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.IdUser, e.IdLesson });
 
                 entity.ToTable("STUDY");
 
-                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
-
                 entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
+                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
+
                 entity.HasOne(d => d.IdLessonNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdLesson)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_LESSON");
 
                 entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_USER");

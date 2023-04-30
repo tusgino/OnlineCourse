@@ -23,7 +23,7 @@ namespace DAL
                     List<ChapterDTO> chapterDTOs = new List<ChapterDTO>();
                     foreach(var chapter in chapters) {
                         List<LessonDTO> lessonDTOs= new List<LessonDTO>();
-                        foreach(var lesson in context.Lessons.Where(l => l.IdChapterNavigation.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList())
+                        foreach(var lesson in context.Lessons.Where(l => l.IdChapterNavigation!.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList())
                         {
                             var study = context.Studies.SingleOrDefault(st => st.IdLesson== lesson.IdLesson && st.IdUser == idUser)!;
                             lessonDTOs.Add(new LessonDTO
@@ -55,7 +55,7 @@ namespace DAL
             return null!;
         }
 
-        public List<CourseComponent> GetAllCourse(int offset, int limit, string _title_like)
+        public List<CourseComponent> GetAllCourse(int offset, int limit, string? _title_like)
         {
             var res = new List<CourseComponent>();
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
@@ -110,7 +110,7 @@ namespace DAL
 
         public IQueryable<Course> GetAllCourseByName(string? _title_like)
         {
-            return All.Where(course => course.CourseName.Contains(_title_like==null?"":_title_like));
+            return All.Where(course => course.CourseName!.Contains(_title_like==null?"":_title_like));
         }
 
         public object GetCourseByID(Guid id)
@@ -120,7 +120,7 @@ namespace DAL
                 var course = context.Courses.Where(c => c.IdCourse== id).FirstOrDefault();
                 if (course == null)
                 {
-                    return null;
+                    return null!;
                 }
                 var user = context.Users.Where(u => u.IdUser == course.IdUser).FirstOrDefault();
 
@@ -309,14 +309,14 @@ namespace DAL
                 }
                 else
                 {
-                    var purchases = context.Purchases.Where(p => p.IdUser == id).ToList();
+                    var purchases = context.Purchases.Where(p => p.IdUser == id && p.IdTradeNavigation.TradeStatus == 1).ToList();
                     foreach (var purchase in purchases)
                     {
                         var course = context.Courses.SingleOrDefault(c => c.IdCourse == purchase.IdCourse);
                         context.Entry(course).Reference(c => c.IdUserNavigation).Load();
                         courses.Add(new CourseComponent
                         {
-                            AvatarUser = course.IdUserNavigation.Avatar,
+                            AvatarUser = course.IdUserNavigation!.Avatar,
                             Id = course.IdCourse,
                             NameUser = course.IdUserNavigation.Name,
                             Thumbnail= course.Thumbnail,
@@ -339,6 +339,32 @@ namespace DAL
                 else
                 {
                     context.Courses.Add(course);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+        }
+
+        public bool ChangeStatus(Guid idCourse)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var course = context.Courses.SingleOrDefault(c => c.IdCourse == idCourse);
+                if(course == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(course.Status == 0)
+                    {
+                        course.Status = 1;
+                    }
+                    else
+                    {
+                        course.Status = 0;
+                    }
+                    context.Courses.Update(course);
                     context.SaveChanges();
                     return true;
                 }

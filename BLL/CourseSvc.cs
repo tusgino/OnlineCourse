@@ -31,7 +31,7 @@ namespace BLL
 
             var _data = _courseRep.GetAllCourse(offset, coursesPaginationReq.Limit, coursesPaginationReq.Title_like);
 
-            object res = new
+            rsp.Data = new
             {
                 data = _data,
                 pagination = new
@@ -41,7 +41,6 @@ namespace BLL
                     _totalRows = total,
                 }
             };
-            rsp.Data = res;
 
             return rsp;
         }
@@ -192,7 +191,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if (_courseRep.AddCourse(new Course
+            if (!_courseRep.AddCourse(new Course
             {
                 IdCategory = courseReq.IdCategory,
                 CourseName = courseReq.CourseName,
@@ -214,44 +213,15 @@ namespace BLL
             return rsp;
         }
 
-        /*        public SingleRsp RemoveCourse(Guid idCourse)
-                {
-                    var rsp = new SingleRsp();
-                    if(!_courseRep.RemoveCourse(idCourse))
-                    {
-                        rsp.SetError($"Can not remove course which has id = {idCourse}");
-                    }
-                    return rsp;
-                }*/
-
-        public SingleRsp GetAverageFeePercent()
+/*        public SingleRsp RemoveCourse(Guid idCourse)
         {
-            var data = _courseRep.GetAverageFeePercent();
             var rsp = new SingleRsp();
-            if (data == null)
+            if(!_courseRep.RemoveCourse(idCourse))
             {
-                rsp.SetError("Not found course");
-            }
-            else
-            {
-                rsp.Data = data;
+                rsp.SetError($"Can not remove course which has id = {idCourse}");
             }
             return rsp;
-        }
-        public SingleRsp GetBestCourses()
-        {
-            var data = _courseRep.GetBestCourses();
-            var rsp = new SingleRsp();
-            if(data == null)
-            {
-                rsp.SetError("Not found course");
-            }
-            else
-            {
-                rsp.Data = data;
-            }
-            return rsp;
-        }
+        }*/
     }
 
 }

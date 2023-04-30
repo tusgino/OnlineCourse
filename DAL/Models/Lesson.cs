@@ -8,6 +8,7 @@ namespace DAL.Models
         public Lesson()
         {
             Quizzes = new HashSet<Quiz>();
+            Studies = new HashSet<Study>();
         }
 
         public Guid IdLesson { get; set; }
@@ -20,5 +21,6 @@ namespace DAL.Models
 
         public virtual Chapter? IdChapterNavigation { get; set; }
         public virtual ICollection<Quiz> Quizzes { get; set; }
+        public virtual ICollection<Study> Studies { get; set; }
     }
 }

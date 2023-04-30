@@ -17,7 +17,7 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == _lesson_id);
-                var chapter = context.Chapters.Include(chapter => chapter.Lessons).FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
+                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdLesson);
 
                 if (lesson.Index == chapter.Lessons.Count)
                 {
@@ -34,8 +34,8 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == _lesson_id);
-                var chapter = context.Chapters.Include(chapter => chapter.Lessons).FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
-                var course = context.Courses.Include(course => course.Chapters).FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
+                var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdLesson);
+                var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
 
                 if (lesson.Index == chapter.Lessons.Count && chapter.Index == course.Chapters.Count)
                 {
@@ -59,6 +59,7 @@ namespace DAL
                     {
                         IdLesson = quiz.IdLesson,
                         Answer = quiz.Answer,
+                        Image = quiz.Image,
                         IdQuiz = quiz.IdQuiz,
                         Option1 = quiz.Option1,
                         Option2 = quiz.Option2,
@@ -75,7 +76,22 @@ namespace DAL
                     Index = lesson.Index,
                     Quizzes = quizDTOs,
                     Video = lesson.Video,
+                    Duration = lesson.Duration,
                 };
+            }
+        }
+
+        public bool ChangeStatus(Study study)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if (context.Studies.SingleOrDefault(s => s == study) == null)
+                {
+                    context.Studies.Add(study);
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
             }
         }
     }
