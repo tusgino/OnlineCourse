@@ -1,6 +1,7 @@
 ﻿using BLL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineCourse.Controllers
@@ -30,6 +31,19 @@ namespace OnlineCourse.Controllers
         {
             var res = _categorySvc.GetAllCategories(_title_like, page);
             if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpPatch("Update-category-by-{ID_Category}")]
+        public IActionResult UpdateCategory(Guid ID_Category, [FromBody] JsonPatchDocument patchDoc)
+        {
+            var res = _categorySvc.UpdateCategory(ID_Category, patchDoc);
+            if (res.Success)
             {
                 return Ok(res);
             }

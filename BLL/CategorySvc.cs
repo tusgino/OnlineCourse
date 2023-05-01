@@ -92,5 +92,16 @@ namespace BLL
             rsp.Data = courses;
             return rsp;
         }
+        public SingleRsp UpdateCategory(Guid _category_id, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_categoryRep.UpdateCategory(_category_id, patchDoc))
+            {
+                rsp.SetError("Update failed");
+            }
+
+            return rsp;
+        }
     }
 }
