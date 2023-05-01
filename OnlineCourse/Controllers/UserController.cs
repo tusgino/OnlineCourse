@@ -171,5 +171,33 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-best-students")]
+        public IActionResult GetBestStudents()
+        {
+            var res = _userSvc.GetBestStudents();
+
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-best-experts")]
+        public IActionResult GetBestExperts()
+        {
+            var res = _userSvc.GetBestExperts();
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

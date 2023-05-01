@@ -12,7 +12,7 @@ namespace DAL
 {
     public class TradeDetailRep : GenericRep<WebsiteKhoaHocOnline_V4Context, TradeDetail>
     {
-        public List<TradeDetailDTO> GetAllTradeDetailsByFiltering(bool? _is_rent, bool? _is_purchase, bool? _is_success, bool? _is_pending, bool? _is_failed, DateTime? _start_date, DateTime? _end_date, string? _start_balance, string? _end_balance)
+        public List<TradeDetailDTO> GetAllTradeDetailsByFiltering(bool? _is_rent, bool? _is_purchase, bool? _is_success, bool? _is_pending, bool? _is_failed, DateTime? _start_date, DateTime? _end_date, long? _start_balance, long? _end_balance)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
@@ -30,7 +30,7 @@ namespace DAL
                 foreach(var tradeDetail in context.TradeDetails.Where(trade => typesOfTrade.Contains(trade.TypeOfTrade ?? -1) &&
                     tradeStatus.Contains(trade.TradeStatus ?? -2) &&
                     (trade.DateOfTrade >= _start_date && trade.DateOfTrade <= _end_date) &&
-                    (String.Compare(trade.Balance, _start_balance) >= 0 && String.Compare(trade.Balance, _end_balance) <= 0)
+                    (Convert.ToInt64(trade.Balance) >= Convert.ToInt64(_start_balance) && Convert.ToInt64(trade.Balance) <= Convert.ToInt64(_end_balance))
                 ).ToList())
                 {
                     var user = context.Users.SingleOrDefault(u => u.IdUser == tradeDetail.IdUser);
@@ -54,9 +54,33 @@ namespace DAL
                     }
                     else
                     {
-                        
+                        double? requiredBalance = 0;
+
+                        var courses = context.Courses.Where(course => course.IdUser == tradeDetail.IdUser).ToList();
+                        foreach (Course course in courses)
+                        {
+                            var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse  && purchase.DateOfPurchase.Value.Month == DateTime.Now.Month - 1).ToList();
+                            foreach(Purchase purchase in purchases)
+                            {
+                                var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+
+                                requiredBalance += Convert.ToInt64(trade.Balance) * course.FeePercent  / 100;
+                            }
+                        }
+                        list.Add(new TradeDetailDTO
+                        {
+                            IdTrade = tradeDetail.IdTrade,
+                            Balance = tradeDetail.Balance,
+                            DateOfTrade = tradeDetail.DateOfTrade,
+                            RequiredBalance = Convert.ToString(requiredBalance),
+                            TradeStatus = tradeDetail.TradeStatus,
+                            TypeOfTrade = tradeDetail.TypeOfTrade ?? -1,
+                            User = new UserDTO
+                            {
+                                Name = user.Name
+                            }
+                        });
                     }
-                    
                 }
 
                 return list;

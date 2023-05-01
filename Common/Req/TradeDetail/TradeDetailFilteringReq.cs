@@ -15,7 +15,7 @@ namespace Common.Req.TradeDetail
         public bool? is_failed { get; set; }
         public DateTime? start_date { get; set; }
         public DateTime? end_date { get; set; }
-        public string? start_balance { get; set; }
-        public string? end_balance { get; set; }
+        public long? start_balance { get; set; }
+        public long? end_balance { get; set; }
     }
 }
