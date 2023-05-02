@@ -30,7 +30,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-users-by-filtering")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned, int page)
         {
             UserFilteringReq userFilteringReq = new UserFilteringReq
@@ -58,7 +58,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPatch("{ID_User}")]
-
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
         {
             var rsp = _userSvc.UpdateUser(ID_User, patchDoc);
@@ -73,6 +73,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpGet("Get-all-students-for-analytics")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetStudentsForAnalytics(string? _student_name_like, int? _start_purchase_course, int? _end_purchase_course, int? _start_finish_course, int? _end_finish_course, int page)
         {
             StudentAnalyticsReq studentAnalyticsReq = new StudentAnalyticsReq
@@ -103,6 +104,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-experts-for-analytics")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllExpertsForAnalytics(string? _expert_name_like, int? _start_upload_course, int? _end_upload_course, long? _start_revenue, long? _end_revenue, int page)
         {
             ExpertAnalyticsReq expertAnalyticsReq = new ExpertAnalyticsReq
@@ -131,6 +133,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-users-by-type")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllUsersByType()
         {
             var res = _userSvc.GetAllUsersByType();
@@ -145,6 +148,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-new-users")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetNewUsers()
         {
             var res = _userSvc.GetNewUsers();
@@ -158,6 +162,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-expert-requests")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to, int page)
         {
             var res = _userSvc.GetAllExpertRequests(_name, _date_create_from, _date_create_to, page);
@@ -172,6 +177,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-best-students")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetBestStudents()
         {
             var res = _userSvc.GetBestStudents();
@@ -186,6 +192,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-best-experts")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetBestExperts()
         {
             var res = _userSvc.GetBestExperts();

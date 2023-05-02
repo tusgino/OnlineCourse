@@ -239,6 +239,7 @@ namespace DAL
 
                     res.Add(new
                     {
+                        Avatar = user._User.Avatar,
                         IdUser = user._User.IdUser,
                         Name = user._User.Name,
                         DateOfBirth = user._User.DateOfBirth,

@@ -1,10 +1,12 @@
 ﻿using BLL;
 using Common.Req.Course;
 using Common.Req.TradeDetail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Data;
 
 namespace OnlineCourse.Controllers
 {
@@ -14,6 +16,7 @@ namespace OnlineCourse.Controllers
     {
         private readonly TradeDetailSvc _tradeDetailSvc = new TradeDetailSvc();
         [HttpGet("Get-all-tradedetail-by-filtering")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllTradeDetailByFiltering(bool? _is_rent, bool? _is_purchase, bool? _is_success, bool? _is_pending, bool? _is_failed, DateTime? _start_date, DateTime? _end_date, long? _start_balance, long? _end_balance, int page)
         {
             TradeDetailFilteringReq tradeDetailFilteringReq = new TradeDetailFilteringReq
@@ -48,6 +51,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpPatch("Update-trade-by-{ID_Trade}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateCourse(Guid ID_Trade, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _tradeDetailSvc.UpdateTrade(ID_Trade, patchDoc);
@@ -61,6 +65,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-system-revenue")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetSystemRevenue()
         {
             var res = _tradeDetailSvc.GetSystemRevenue();
