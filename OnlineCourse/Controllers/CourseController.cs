@@ -68,7 +68,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-by-filtering")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store, int page)
         {
             CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
@@ -126,6 +126,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-courses-for-analytics")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
         {
             CourseAnalyticsReq courseAnalyticsReq = new CourseAnalyticsReq
@@ -185,6 +186,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpGet("Get-average-feepercent")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAverageFeePercent()
         {
             var res = _courseSvc.GetAverageFeePercent();
@@ -198,6 +200,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-best-courses")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetBestCourses()
         {
             var res = _courseSvc.GetBestCourses();

@@ -213,5 +213,39 @@ namespace BLL
             }
             return rsp;
         }
+        public SingleRsp GetBestStudents()
+        {
+            var data = _userRep.GetBestStudents();
+
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Not found student");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetBestExperts()
+        {
+            var data = _userRep.GetBestExperts();
+
+            var rsp = new SingleRsp();
+
+            if (data == null)
+            {
+                rsp.SetError("Not found expert");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+
+            return rsp;
+        }
     }
 }

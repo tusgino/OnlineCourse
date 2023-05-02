@@ -21,8 +21,8 @@ namespace BLL
             if (tradeDetailFilteringReq.start_date == null) tradeDetailFilteringReq.start_date = new DateTime(1754, 1, 1);
             if (tradeDetailFilteringReq.end_date == null) tradeDetailFilteringReq.end_date = new DateTime(9999, 1, 1);
 
-            if (tradeDetailFilteringReq.start_balance == null) tradeDetailFilteringReq.start_balance = "0";
-            if (tradeDetailFilteringReq.end_balance == null) tradeDetailFilteringReq.end_balance = "999999999999";
+            if (tradeDetailFilteringReq.start_balance == null) tradeDetailFilteringReq.start_balance = 0;
+            if (tradeDetailFilteringReq.end_balance == null) tradeDetailFilteringReq.end_balance = 9999999999999999;
 
 
             var tradeDetails = _tradeDetailRep.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq.is_rent, 

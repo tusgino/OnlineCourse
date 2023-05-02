@@ -216,9 +216,11 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 int count_reg_user = 0;
-                foreach (Purchase purchase in context.Purchases)
+                var purchases = context.Purchases.ToList();
+                foreach (Purchase purchase in purchases)
                 {
-                    if (purchase.IdCourse == _course_id)
+                    var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+                    if (purchase.IdCourse == _course_id && trade.TradeStatus == 1)
                     {
                         count_reg_user++;
                     }
@@ -281,8 +283,6 @@ namespace DAL
                 }
 
                 return data;
-
-
             }
         }
 

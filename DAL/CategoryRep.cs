@@ -1,5 +1,6 @@
 ﻿using Common.DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
@@ -48,6 +49,22 @@ namespace DAL
                 }
 
                 //return category.Courses;
+            }
+        }
+        public bool UpdateCategory(Guid _category_id, JsonPatchDocument newCategory)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var category = context.Categories.FirstOrDefault(category => category.IdCategory == _category_id);
+
+                if (category != null)
+                {
+                    newCategory.ApplyTo(category);
+                    context.SaveChanges();
+                    return true;
+                }
+                Console.WriteLine(category);
+                return false;
             }
         }
     }
