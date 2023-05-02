@@ -105,7 +105,7 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                return context.TradeDetails.Where(trade => trade.TypeOfTrade == 1)
+                return context.TradeDetails.Where(trade => trade.TypeOfTrade == 1 && trade.DateOfTrade.Value.Year == DateTime.Now.Year)
                                            .OrderBy(trade => trade.DateOfTrade)
                                            .GroupBy(trade => trade.DateOfTrade.Value.Month)
                                            .Select(group => new { Month = group.Key, Revenue = group.Sum(trade => Convert.ToInt64(trade.Balance)) })
