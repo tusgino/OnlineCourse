@@ -144,10 +144,23 @@ namespace BLL
                 rsp.Data = res;
             }
 
-
+            return rsp;
+        }
+        public SingleRsp GetExpertRevenueByID(Guid IdExpert)
+        {
+            var data = _userRep.GetExpertRevenueByID(IdExpert);
+            
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Data not found");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
 
             return rsp;
-
         }
         public SingleRsp GetAllUsersByType()
         {

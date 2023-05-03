@@ -132,6 +132,20 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+        [HttpGet("Get-expert-revenue-by-id={IdExpert}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetExpertRevenueByID(Guid IdExpert)
+        {
+            var res = _userSvc.GetExpertRevenueByID(IdExpert);
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
         [HttpGet("Get-all-users-by-type")]
         [Authorize(Roles = "Admin")]
         public IActionResult GetAllUsersByType()

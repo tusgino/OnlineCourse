@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Globalization;
 using System.Security.Cryptography.Xml;
 
 namespace DAL
@@ -379,11 +380,11 @@ namespace DAL
             }
         }*/
 
-        public double? GetAverageFeePercent()
+        public string GetAverageFeePercent()
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                return context.Courses.Average(c => c.FeePercent);
+                return String.Format("{0:0.##}", context.Courses.Average(c => c.FeePercent));
             }
         }
         public List<string> GetBestCourses()

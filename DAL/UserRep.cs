@@ -145,59 +145,59 @@ namespace DAL
 
                 foreach(User expert in experts.ToList())
                 {
-                    long revenue = 0;
+                    List<long> revenue = new List<long>();
+                    for (int i = 0; i < DateTime.Now.Month; i++) revenue.Add(0);
+
                     var uploadedCourses = context.Courses.Where(course => course.IdUser == expert.IdUser).ToList();
                     foreach (Course course in uploadedCourses)
                     {
-                        var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == DateTime.Now.Month - 1).ToList();
-                        foreach (Purchase purchase in purchases)
+                        for (int i = 0; i < DateTime.Now.Month; i++)
                         {
-                            var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
-                            revenue += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
+                            var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
+                            foreach (Purchase purchase in purchases)
+                            {
+                                var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+                                revenue[i] += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
+                            }
                         }
                     }
-                    if(uploadedCourses.Count >= _start_upload_course && uploadedCourses.Count <= _end_upload_course && revenue >= _start_revenue && revenue <= _end_revenue)
+                    if (uploadedCourses.Count >= _start_upload_course && uploadedCourses.Count <= _end_upload_course && revenue[DateTime.Now.Month - 1] >= _start_revenue && revenue[DateTime.Now.Month - 1] <= _end_revenue)
                     {
                         data.Add(new ExpertDTO
                         {
+                            ID = expert.IdUser,
                             Name = expert.Name,
                             NumOfUploadedCourse = uploadedCourses.Count,
-                            LastMonthRevenue = revenue,
+                            CurrentYearRevenue = revenue,
                         });
                     } 
                 }
 
                 return data;
-
-                //List<object> data = new List<object>();
-                
-                //foreach(User user in experts)
-                //{
-                //    long revenue = 0;
-                //    var courses = context.Courses.Where(course => course.IdUser == user.IdUser).ToList();
-                //    foreach (Course course in courses)
-                //    {
-                //        var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == DateTime.Now.Month - 1).ToList();
-                //        foreach (Purchase purchase in purchases)
-                //        {
-                //            var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
-
-                //            revenue += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
-                //        }
-                //    }
-
-                //    data.Add(new
-                //    {
-                //        _expert_name = user.Name,
-                //        _numOfUploadCourse = courses.Count,
-                //        _revenue = revenue,
-                //    });
-                //}
-
-                //return data;
-
             }
-        
+        }
+        public List<long> GetExpertRevenueByID(Guid IdExpert)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<long> revenue = new List<long>(12);
+
+                var uploadedCourses = context.Courses.Where(course => course.IdUser == IdExpert).ToList();
+                foreach (Course course in uploadedCourses)
+                {
+                    for(int i = 0; i < 12; i++)
+                    {
+                        var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
+                        foreach (Purchase purchase in purchases)
+                        {
+                            var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+                            revenue[i] += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
+                        }
+                    }
+                }
+
+                return revenue;
+            }
         }
         public List<object> GetAllUsersByType()
         {
@@ -265,7 +265,7 @@ namespace DAL
         public List<ExpertDTO> GetBestExperts()
         {
             var experts = GetAllExpertsForAnalytics(null, 0, 99999, 0, 999999999999999);
-            return experts.OrderByDescending(expert => expert.LastMonthRevenue).Take(4).ToList();
+            return experts.OrderByDescending(expert => expert.CurrentYearRevenue[DateTime.Now.Month - 1]).Take(4).ToList();
         }
     }
 }
