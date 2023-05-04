@@ -224,7 +224,6 @@ namespace DAL
                     context.SaveChanges();
                     return true;
                 }
-                Console.WriteLine(course);
                 return false;
             }
         }
