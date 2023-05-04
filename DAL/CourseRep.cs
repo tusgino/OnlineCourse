@@ -137,6 +137,7 @@ namespace DAL
                     Price = course.Price,
                     Status = course.Status,
                     Thumbnail = course.Thumbnail,
+                    VideoPreview = course.VideoPreview,
                     User = new UserDTO
                     {
                         IdUser = course.IdUserNavigation.IdUser,

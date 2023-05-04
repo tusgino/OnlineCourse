@@ -26,7 +26,7 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-all-categories")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public IActionResult GetAllCategories (string? _title_like, int page)
         {
             var res = _categorySvc.GetAllCategories(_title_like, page);
