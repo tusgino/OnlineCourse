@@ -113,7 +113,7 @@ namespace DAL
             return All.Where(course => course.CourseName!.Contains(_title_like==null?"":_title_like));
         }
 
-        public object GetCourseByID(Guid id)
+        public CourseDTO GetCourseByID(Guid id)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
@@ -122,15 +122,32 @@ namespace DAL
                 {
                     return null!;
                 }
-                var user = context.Users.Where(u => u.IdUser == course.IdUser).FirstOrDefault();
+                context.Entry(course).Reference(c => c.IdUserNavigation).Load();
+                context.Entry(course).Reference(c => c.IdCategoryNavigation).Load();
 
-                return new
+                //var user = context.Users.Where(u => u.IdUser == course.IdUser).FirstOrDefault();
+
+                return new CourseDTO
                 {
-                    Title = course.CourseName,
+                    CourseName = course.CourseName,
+                    Description = course.Description,
                     Discount = course.Discount,
-                    Price = course.Price,   
-                    Author = user?.Name,
-                    VideoPreview = course.VideoPreview,
+                    FeePercent = course.FeePercent,
+                    IdCourse = course.IdCourse,
+                    Price = course.Price,
+                    Status = course.Status,
+                    Thumbnail = course.Thumbnail,
+                    User = new UserDTO
+                    {
+                        IdUser = course.IdUserNavigation.IdUser,
+                        Avatar = course.IdUserNavigation.Avatar,
+                        Name = course.IdUserNavigation.Name
+                    },
+                    Category = new CategoryDTO
+                    {
+                        IdCategory = course.IdCategoryNavigation.IdCategory,
+                        Name = course.IdCategoryNavigation.Name
+                    }
                 };
 
             }
