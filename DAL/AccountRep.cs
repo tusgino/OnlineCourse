@@ -24,7 +24,7 @@ namespace DAL
                 if(All.SingleOrDefault(acc => acc.Username== username && acc.Password == password) != null)
                 {
                     var account = All.SingleOrDefault(acc => acc.Username == username && acc.Password == password);
-                    var user = context.Users.SingleOrDefault(user => user.IdAccountNavigation == account);
+                    var user = context.Users.SingleOrDefault(user => user.IdAccountNavigation == account && user.Status == 1);
                     context?.Entry(user).Reference(u => u.IdTypeOfUserNavigation).Load();
                     return user;
                 }
