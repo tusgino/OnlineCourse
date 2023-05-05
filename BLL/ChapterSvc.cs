@@ -34,7 +34,7 @@ namespace BLL
             return rsp;
         }
 
-        public void DeleteChapter(Guid idChapter)
+        public SingleRsp DeleteChapter(Guid idChapter)
         {
             var rsp = new SingleRsp();
             if (!_chapterRep.DeleteChapter(idChapter))

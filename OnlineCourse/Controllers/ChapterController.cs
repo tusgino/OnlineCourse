@@ -11,7 +11,7 @@ namespace OnlineCourse.Controllers
     public class ChapterController : ControllerBase
     {
         private ChapterSvc _chapterSvc = new ChapterSvc();
-        [HttpGet("AddChapter")]
+        [HttpPost("AddChapter")]
         public IActionResult AddChapter(ChapterReq chapterReq) {
             var res = _chapterSvc.AddChapter(chapterReq);
             return Ok(res);
@@ -32,10 +32,10 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpDelete("{idChapter}")]
+/*        [HttpDelete("{idChapter}")]
         public IActionResult DeleteChapter(Guid idChapter)
         {
             var res = _chapterSvc.DeleteChapter(idChapter);
-        }
+        }*/
     }
 }
