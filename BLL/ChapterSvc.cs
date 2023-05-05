@@ -44,6 +44,15 @@ namespace BLL
             return rsp; 
         }
 
+        public object GetChaptersByIDCourse(Guid idCourse)
+        {
+            var rsp = new SingleRsp();
+
+            rsp.Data = _chapterRep.GetChaptersByIDCourse(idCourse);
+
+            return rsp;
+        }
+
         public SingleRsp UpdateChapter(Guid idChapter, JsonPatchDocument patchDoc)
         {
             var rsp = new SingleRsp();

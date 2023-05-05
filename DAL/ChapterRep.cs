@@ -1,4 +1,5 @@
 ﻿using Common.DAL;
+using Common.Rsp.DTO;
 using DAL.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using System;
@@ -48,6 +49,57 @@ namespace DAL
 
                 context.SaveChanges();
                 return true;
+            }
+        }
+
+        public List<ChapterDTO> GetChaptersByIDCourse(Guid idCourse)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<ChapterDTO> chapters = new List<ChapterDTO>();
+                List<Chapter> chapterTemp = context.Chapters.Where(ch => ch.IdCourse == idCourse).OrderBy(ch => ch.Index).ToList();
+                foreach (var chapter in chapterTemp)
+                {
+                    List<LessonDTO> lessons = new List<LessonDTO>();
+                    List<Lesson> lessonTemp = context.Lessons.Where(l => l.IdChapter == chapter.IdChapter).OrderBy(l => l.Index).ToList();
+                    foreach (var lesson in lessonTemp) {
+                        List<QuizDTO> quizzes = new List<QuizDTO>();
+                        List<Quiz> quizzesTemp = context.Quizzes.Where(q => q.IdLesson == lesson.IdLesson).ToList();
+                        foreach (var quizz in quizzesTemp)
+                        {
+                            quizzes.Add(new QuizDTO
+                            {
+                                IdLesson = lesson.IdLesson,
+                                IdQuiz = quizz.IdQuiz,
+                                Image = quizz.Image,
+                                Answer = quizz.Answer,
+                                Option1 = quizz.Option1,
+                                Option2 = quizz.Option2,
+                                Option3 = quizz.Option3,
+                                Option4 = quizz.Option4,
+                                Question = quizz.Question,
+                            });
+                        }
+                        lessons.Add(new LessonDTO
+                        {
+                            Desc = lesson.Description,
+                            Duration = lesson.Duration,
+                            IdLesson = lesson.IdLesson,
+                            Index = lesson.Index,
+                            Quizzes = quizzes,
+                            Title = lesson.Title,
+                            Video = lesson.Video,
+                        });
+                    }
+                    chapters.Add(new ChapterDTO
+                    {
+                        IdChapter = chapter.IdChapter,
+                        Index = chapter.Index,
+                        Name = chapter.Name,
+                        Lessons = lessons,
+                    });
+                }
+                return chapters;
             }
         }
 

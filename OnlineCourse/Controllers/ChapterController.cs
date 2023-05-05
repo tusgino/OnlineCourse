@@ -32,10 +32,18 @@ namespace OnlineCourse.Controllers
             }
         }
 
-/*        [HttpDelete("{idChapter}")]
-        public IActionResult DeleteChapter(Guid idChapter)
+        /*        [HttpDelete("{idChapter}")]
+                public IActionResult DeleteChapter(Guid idChapter)
+                {
+                    var res = _chapterSvc.DeleteChapter(idChapter);
+                }*/
+
+        [HttpGet("Get-chapters-by-IdCourse")]
+        public IActionResult GetChaptersByIDCourse(Guid idCourse)
         {
-            var res = _chapterSvc.DeleteChapter(idChapter);
-        }*/
+            var res = _chapterSvc.GetChaptersByIDCourse(idCourse);
+
+            return Ok(res);
+        }
     }
 }
