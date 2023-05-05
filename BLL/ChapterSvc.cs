@@ -3,6 +3,7 @@ using Common.Req.Chapter;
 using Common.Rsp;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,28 @@ namespace BLL
             }))
             {
                 rsp.SetError("Can not add this chapter");
+            }
+
+            return rsp;
+        }
+
+        public void DeleteChapter(Guid idChapter)
+        {
+            var rsp = new SingleRsp();
+            if (!_chapterRep.DeleteChapter(idChapter))
+            {
+                rsp.SetError("Can not update this chapter");
+            }
+            return rsp; 
+        }
+
+        public SingleRsp UpdateChapter(Guid idChapter, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_chapterRep.UpdateChapter(idChapter, patchDoc))
+            {
+                rsp.SetError("Can not update this chapter");
             }
 
             return rsp;

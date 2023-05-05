@@ -17,10 +17,25 @@ namespace OnlineCourse.Controllers
             return Ok(res);
         }
 
-        /*[HttpPatch("Update")]
+        [HttpPatch("Update")]
         public IActionResult UpdateChapter(Guid idChapter, JsonPatchDocument patchDoc)
         {
-            var res = _chapterSvc.Update(chapterRsp )
-        }*/
+            var res = _chapterSvc.UpdateChapter(idChapter, patchDoc);
+
+            if(res.Success) 
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+
+        [HttpDelete("{idChapter}")]
+        public IActionResult DeleteChapter(Guid idChapter)
+        {
+            var res = _chapterSvc.DeleteChapter(idChapter);
+        }
     }
 }
