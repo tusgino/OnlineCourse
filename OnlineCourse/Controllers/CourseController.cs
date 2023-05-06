@@ -210,5 +210,33 @@ namespace OnlineCourse.Controllers
             }
             else return BadRequest(res.Message);
         }
+        [HttpGet("Get-num-of-uploaded-course-by-month")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetNumOfUploadedCourseByMonth(int year)
+        {
+            var res = _courseSvc.GetNumOfUploadedCourseByMonth(year);
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Overview-course")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult OverviewCourse()
+        {
+            var res = _courseSvc.OverviewCourse();
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

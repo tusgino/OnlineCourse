@@ -148,9 +148,19 @@ namespace DAL
                     List<long> revenue = new List<long>();
                     for (int i = 0; i < DateTime.Now.Month; i++) revenue.Add(0);
 
+                    int totalSales = 0;
+                    string bestSalesCourse = ""; int count = 0;
                     var uploadedCourses = context.Courses.Where(course => course.IdUser == expert.IdUser).ToList();
                     foreach (Course course in uploadedCourses)
                     {
+                        int salepercourse = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse).Count();
+                        totalSales += salepercourse;
+                        if(salepercourse > count)
+                        {
+                            count = salepercourse;
+                            bestSalesCourse = course.CourseName;
+                        }
+
                         for (int i = 0; i < DateTime.Now.Month; i++)
                         {
                             var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
@@ -167,8 +177,10 @@ namespace DAL
                         {
                             ID = expert.IdUser,
                             Name = expert.Name,
-                            NumOfUploadedCourse = uploadedCourses.Count,
                             CurrentYearRevenue = revenue,
+                            NumOfUploadedCourse = uploadedCourses.Count,
+                            TotalSales = totalSales,
+                            BestSalesCourse = bestSalesCourse
                         });
                     } 
                 }
