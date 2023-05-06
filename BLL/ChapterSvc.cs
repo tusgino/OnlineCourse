@@ -20,7 +20,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if(_chapterRep.AddChapter(new Chapter
+            if(!_chapterRep.AddChapter(new Chapter
             {
                 IdChapter = Guid.NewGuid(),
                 IdCourse = chapterReq.IdCourse,

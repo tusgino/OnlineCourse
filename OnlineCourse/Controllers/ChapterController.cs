@@ -1,5 +1,6 @@
 ﻿using BLL;
 using Common.Req.Chapter;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace OnlineCourse.Controllers
             return Ok(res);
         }
 
-        [HttpPatch("Update")]
+        [HttpPatch("Update/{idChapter}")]
         public IActionResult UpdateChapter(Guid idChapter, JsonPatchDocument patchDoc)
         {
             var res = _chapterSvc.UpdateChapter(idChapter, patchDoc);
@@ -46,7 +47,8 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpGet("Get-chapters-by-IdCourse")]
+        [HttpGet("Get-chapters-by-IdCourse/{idCourse}")]
+        [Authorize]
         public IActionResult GetChaptersByIDCourse(Guid idCourse)
         {
             var res = _chapterSvc.GetChaptersByIDCourse(idCourse);
