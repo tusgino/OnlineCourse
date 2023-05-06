@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Rsp;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace BLL
 {
@@ -38,6 +39,18 @@ namespace BLL
             return rsp;
         }
 
+        public SingleRsp DeleteLesson(Guid idLesson)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_lessonRep.DeleteLesson(idLesson))
+            {
+                rsp.SetError("Can not update this Lesson");
+            }
+
+            return rsp;
+        }
+
         public SingleRsp GetLessonByID(Guid idLesson)
         {
             var rsp = new SingleRsp();
@@ -48,5 +61,19 @@ namespace BLL
 
             return rsp;
         }
+
+        public SingleRsp UpdateLesson(Guid idLesson, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_lessonRep.UpdateLesson(idLesson, patchDoc))
+            {
+                rsp.SetError("Can not update this Lesson");
+            }
+
+            return rsp;
+        }
+
+
     }
 }
