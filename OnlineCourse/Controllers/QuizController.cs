@@ -27,7 +27,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("update-quiz")]
+        [HttpPatch("Update/{idQuiz}")]
         public IActionResult UpdateQuiz(Guid idQuiz, JsonPatchDocument patchDoc)
         {
             var rsp = _quizSvc.UpdateQuiz(idQuiz, patchDoc);
@@ -55,7 +55,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpDelete("delete-quiz")]
+        [HttpDelete("{idQuiz}")]
         public IActionResult DeleteQuiz(Guid idQuiz) {
             var rsp = _quizSvc.DeleteQuiz(idQuiz);
             if (rsp.Success)

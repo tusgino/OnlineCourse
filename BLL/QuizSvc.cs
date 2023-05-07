@@ -20,22 +20,27 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if(!_quizRep.AddQuiz(new Quiz
+            var quiz = new Quiz
             {
-                Answer= quizReq.Answer,
-                IdLesson= quizReq.IdLesson,
-                IdQuiz= Guid.NewGuid(),
-                 Image= quizReq.Image,
-                 Option1 = quizReq.Option1,
-                 Option2 = quizReq.Option2,
-                 Option3 = quizReq.Option3,
-                 Option4 = quizReq.Option4,
-                 Question= quizReq.Question,
-            }))
+                IdQuiz = Guid.NewGuid(),
+                IdLesson = quizReq.IdLesson,
+                Question = quizReq.Question,
+                Image = quizReq.Image,
+                Option1 = quizReq.Option1,
+                Option2 = quizReq.Option2,
+                Option3 = quizReq.Option3,
+                Option4 = quizReq.Option4,
+                Answer = quizReq.Answer,
+            };  
+
+            if(_quizRep.AddQuiz(quiz))
+            {
+                rsp.Data = quiz;
+            }
+            else
             {
                 rsp.SetError("Can not add this quiz");
             }
-
             return rsp;
         }
 

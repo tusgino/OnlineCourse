@@ -20,17 +20,24 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if(!_chapterRep.AddChapter(new Chapter
+            var chapter = new Chapter
             {
                 IdChapter = Guid.NewGuid(),
                 IdCourse = chapterReq.IdCourse,
-                Index= chapterReq.Index,
-                Name= chapterReq.Name,
-            }))
+                Index = chapterReq.Index,
+                Name = chapterReq.Name,
+
+            };
+
+            if(!_chapterRep.AddChapter(chapter))
             {
                 rsp.SetError("Can not add this chapter");
             }
-
+            else
+            {
+                rsp.Data = chapter;
+            }
+            
             return rsp;
         }
 
