@@ -1,6 +1,7 @@
 ﻿using Common.DAL;
 using Common.Rsp.DTO;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,61 @@ namespace DAL
                     return true;
                 }
                 return false;
+            }
+        }
+
+        public bool UpdateLesson(Guid idLesson, JsonPatchDocument patchDoc)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var lesson = context.Lessons.SingleOrDefault(l => l.IdLesson== idLesson);
+                if (lesson != null)
+                {
+                    patchDoc.ApplyTo(lesson);
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public bool DeleteLesson(Guid idLesson)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var lesson = context.Lessons.SingleOrDefault(l => l.IdLesson == idLesson);
+                if (lesson != null)
+                {
+                    var quizzes = context.Quizzes.Where(q => q.IdLesson == idLesson);
+                    context.Quizzes.RemoveRange(quizzes);
+                    var studies = context.Studies.Where(s => s.IdLesson == idLesson);
+                    context.Studies.RemoveRange(studies);
+                    context.Lessons.Remove(lesson);
+
+                    var lessons = context.Lessons.Where(l => l.IdChapter == lesson.IdChapter && l.Index > lesson.Index);
+
+                    foreach(var l in lessons)
+                    {
+                        l.Index--;
+                    }
+                    context.SaveChanges();
+                }
+                return false;
+            }
+        }
+
+        public bool AddLesson(Lesson lesson)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Lessons.SingleOrDefault(l => l.IdChapter == lesson.IdChapter && l.Index == lesson.Index) == null)
+                {
+                    context.Lessons.Add(lesson);    
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
+
             }
         }
     }

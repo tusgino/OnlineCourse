@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Rsp.DTO
+namespace Common.Req.Chapter
 {
-    public class ChapterDTO
+    public class ChapterReq
     {
-        public Guid IdChapter { get; set; }
         public string? Name { get; set; }
         public int? Index { get; set; }
-
-        public List<LessonDTO>? Lessons { get; set; }
+        public Guid? IdCourse { get; set; }
     }
 }

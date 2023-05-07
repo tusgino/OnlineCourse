@@ -7,12 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Rsp;
+using Microsoft.AspNetCore.JsonPatch;
+using Common.Req.Lesson;
 
 namespace BLL
 {
     public class LessonSvc : GenericSvc<LessonRep, Lesson>
     {
         private LessonRep _lessonRep = new LessonRep();
+
+        public SingleRsp AddLesson(LessonReq lessonReq)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_lessonRep.AddLesson(new Lesson
+            {
+                Description= lessonReq.Description,
+                Duration= lessonReq.Duration,
+                IdChapter= lessonReq.IdChapter,
+                IdLesson= Guid.NewGuid(),
+                Index= lessonReq.Index,
+                Title= lessonReq.Title,
+                Video= lessonReq.Video,
+            }))
+            {
+                rsp.SetError("Can not add this lesson");
+            }
+
+            return rsp;
+        }
 
         public SingleRsp ChangeStatus(Guid idUser, Guid idLesson)
         {
@@ -38,6 +61,18 @@ namespace BLL
             return rsp;
         }
 
+        public SingleRsp DeleteLesson(Guid idLesson)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_lessonRep.DeleteLesson(idLesson))
+            {
+                rsp.SetError("Can not update this Lesson");
+            }
+
+            return rsp;
+        }
+
         public SingleRsp GetLessonByID(Guid idLesson)
         {
             var rsp = new SingleRsp();
@@ -48,5 +83,19 @@ namespace BLL
 
             return rsp;
         }
+
+        public SingleRsp UpdateLesson(Guid idLesson, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if(!_lessonRep.UpdateLesson(idLesson, patchDoc))
+            {
+                rsp.SetError("Can not update this Lesson");
+            }
+
+            return rsp;
+        }
+
+
     }
 }

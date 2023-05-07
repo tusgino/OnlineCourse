@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Common.Rsp.DTO
 {
-    public class ChapterDTO
+    public class CategoryDTO
     {
-        public Guid IdChapter { get; set; }
+        public Guid IdCategory { get; set; }
         public string? Name { get; set; }
-        public int? Index { get; set; }
-
-        public List<LessonDTO>? Lessons { get; set; }
+        public string? Description { get; set; }
     }
 }
