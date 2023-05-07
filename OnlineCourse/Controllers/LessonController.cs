@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace OnlineCourse.Controllers
 {
@@ -80,7 +81,7 @@ namespace OnlineCourse.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(rsp.Message);
             }
         }
     }

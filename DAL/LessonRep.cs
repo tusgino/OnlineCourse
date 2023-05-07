@@ -140,7 +140,7 @@ namespace DAL
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                if(context.Lessons.SingleOrDefault(l => l.IdChapter == lesson.IdChapter && l.Index == l.Index) != null)
+                if(context.Lessons.SingleOrDefault(l => l.IdChapter == lesson.IdChapter && l.Index == lesson.Index) == null)
                 {
                     context.Lessons.Add(lesson);    
                     context.SaveChanges();
