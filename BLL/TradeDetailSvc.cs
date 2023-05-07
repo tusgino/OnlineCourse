@@ -36,7 +36,7 @@ namespace BLL
                                                                             tradeDetailFilteringReq.end_balance);
 
             int limit = 10;
-            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int offset = (coursesPaginationReq.Page - 1) * limit;
             int total = tradeDetails.Count;
             int totalPages = (total % limit) == 0 ? (int)(total /limit) :
                 (int)(1 + (total / limit));

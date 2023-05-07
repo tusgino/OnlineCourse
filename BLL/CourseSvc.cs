@@ -251,6 +251,36 @@ namespace BLL
 
             return rsp;
         }
+        public SingleRsp GetNumOfUploadedCourseByMonth(int year)
+        {
+            var data = _courseRep.GetNumOfUploadedCourseByMonth(year);
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+        public SingleRsp OverviewCourse()
+        {
+            var data = _courseRep.OverviewCourse();
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("No information");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
 
 }

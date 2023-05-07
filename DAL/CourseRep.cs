@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Globalization;
 using System.Security.Cryptography.Xml;
 
 namespace DAL
@@ -233,11 +234,11 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 int count_reg_user = 0;
-                var purchases = context.Purchases.ToList();
+                var purchases = context.Purchases.Where(purchase => purchase.IdCourse == _course_id).ToList();
                 foreach (Purchase purchase in purchases)
                 {
-                    var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
-                    if (purchase.IdCourse == _course_id && trade.TradeStatus == 1)
+                    var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade && trade.TradeStatus == 1);
+                    if (trade != null)
                     {
                         count_reg_user++;
                     }
@@ -267,36 +268,39 @@ namespace DAL
             {
                 List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like == null? "" : _title_like)).ToList();
 
-
-                // filter courses by number of registered users
-                foreach(Course course in courses.ToList())
-                {
-                    if(GetNumberOfRegisterdUser(course.IdCourse) < _start_reg_user || GetNumberOfRegisterdUser(course.IdCourse) > _end_reg_user)
-                    {
-                        courses.Remove(course);
-                    }
-                }
-
-
-                // filter courses by rate
-                foreach(Course course in courses.ToList())
-                {
-                    if(GetCourseRate(course.IdCourse) < _start_rate || GetCourseRate(course.IdCourse) > _end_rate)
-                    {
-                        courses.Remove(course) ;
-                    }
-                }
-
-
                 List<object> data = new List<object>();
-                foreach(Course course in courses)
+                foreach(Course course in courses.ToList())
                 {
-                    data.Add(new
+                    List<int> regUsers = new List<int>();
+                    List<long> revenue = new List<long>();
+                    for (int i = 0; i < DateTime.Now.Month; i++)
                     {
-                        course_name = course.CourseName,
-                        num_of_reg = GetNumberOfRegisterdUser(course.IdCourse),
-                        rate = GetCourseRate(course.IdCourse)
-                    });
+                        regUsers.Add(0);
+                        revenue.Add(0);
+                    }
+                    var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Year == DateTime.Now.Year).ToList();
+                    foreach(Purchase purchase in purchases)
+                    {
+                        var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade && trade.TradeStatus == 1);
+                        if (trade != null)
+                        {
+                            regUsers[trade.DateOfTrade.Value.Month - 1]++;
+                            revenue[trade.DateOfTrade.Value.Month - 1] += Convert.ToInt64(trade.Balance);
+                        }
+                    }
+                    Console.WriteLine(GetNumberOfRegisterdUser(course.IdCourse));
+                    Console.WriteLine(GetCourseRate(course.IdCourse));
+                    if(GetNumberOfRegisterdUser(course.IdCourse) >= _start_reg_user && GetNumberOfRegisterdUser(course.IdCourse) <= _end_reg_user && GetCourseRate(course.IdCourse) >= _start_rate && GetCourseRate(course.IdCourse) <= _end_rate)
+                    {
+                        data.Add(new
+                        {
+                            course_name = course.CourseName,
+                            total_reg = GetNumberOfRegisterdUser(course.IdCourse),
+                            reg_users_by_month = regUsers,
+                            revenue_by_month = revenue,
+                            rate = GetCourseRate(course.IdCourse),
+                        });
+                    }
                 }
 
                 return data;
@@ -396,11 +400,11 @@ namespace DAL
             }
         }*/
 
-        public double? GetAverageFeePercent()
+        public string GetAverageFeePercent()
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                return context.Courses.Average(c => c.FeePercent);
+                return String.Format("{0:0.##}", context.Courses.Average(c => c.FeePercent));
             }
         }
         public List<string> GetBestCourses()
@@ -416,6 +420,53 @@ namespace DAL
                                      .Select(course => course.CourseName)
                                      .ToList();
             }
+        }
+        public List<object> GetNumOfUploadedCourseByMonth(int year)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Courses.Where(course => course.DateOfUpload.Value.Year == year)
+                                      .GroupBy(course => course.DateOfUpload.Value.Month)
+                                      .Select(group => new {month = group.Key, numOfCourses =  group.Count()})
+                                      .ToList<object>();
+            }
+        } 
+        public object OverviewCourse ()
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var totalCourse = context.Courses.Count();
+
+                var bestSaleCourses = context.Courses.Join(context.Purchases, course => course.IdCourse, purchase => purchase.IdCourse, (course, purchase) => new { course, purchase})
+                                                    .GroupBy(group => new { group.course.IdCourse, group.course.CourseName })
+                                                    .Select(group => new {group.Key, totalreg = group.Count()})
+                                                    .OrderByDescending(group => group.totalreg)
+                                                    .Take(1).ToList();
+                var bestSaleCourse = bestSaleCourses[0].Key.CourseName;
+
+                var uploadPerExpert = context.Courses.Join(context.Users, course => course.IdUser, user => user.IdUser, (course, user) => new { course, user })
+                                                .GroupBy(group => new { group.user.IdUser, group.user.Name })
+                                                .Select(group => new { group.Key, totalUpload = group.Count() })
+                                                .OrderByDescending(group => group.totalUpload)
+                                                .Take(1).ToList();
+                var mostUpload = uploadPerExpert[0].Key.Name;
+
+
+                var avgrate = 0;
+                foreach(Course course in context.Courses)
+                {
+                    avgrate += GetCourseRate(course.IdCourse);
+                }
+                avgrate /= totalCourse;
+
+                return new
+                {
+                    totalCourse,
+                    bestSaleCourse,
+                    mostUpload,
+                    avgrate,
+                };
+            } 
         }
     }
 }
