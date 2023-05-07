@@ -63,7 +63,7 @@ namespace DAL
             {
                 var courses = GetAllCourseByName(_title_like); // Get all course whose name contains _title_like
 
-                var data = courses.OrderBy(x => x.CourseName).Skip(offset).Take(limit).ToList(); // pagination
+                var data = courses.OrderBy(x => x.CourseName).Where(x=>x.IdUserNavigation.Status == 1).Skip(offset).Take(limit).ToList(); // pagination
 
                 foreach(var course in data)
                 {

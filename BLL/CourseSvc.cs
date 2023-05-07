@@ -191,7 +191,7 @@ namespace BLL
         {
             var rsp = new SingleRsp();
 
-            if (!_courseRep.AddCourse(new Course
+            Course course = new Course
             {
                 IdCategory = courseReq.IdCategory,
                 CourseName = courseReq.CourseName,
@@ -205,7 +205,13 @@ namespace BLL
                 Status = courseReq.Status,
                 Thumbnail = courseReq.Thumbnail,
                 VideoPreview = courseReq.VideoPreview,
-            }))
+            };
+
+            if (_courseRep.AddCourse(course))
+            {
+                rsp.Data = course.IdCourse;
+            }
+            else
             {
                 rsp.SetError("Not found any category");
             }
