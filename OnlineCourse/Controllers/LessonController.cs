@@ -1,5 +1,6 @@
 ﻿using BLL;
 using Common.Req.Lesson;
+using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -59,6 +60,20 @@ namespace OnlineCourse.Controllers
         public IActionResult DeleteLesson(Guid idLesson)
         {
             var rsp = _lessonSvc.DeleteLesson(idLesson);
+            if (rsp.Success)
+            {
+                return Ok(rsp);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("add-lesson")]
+        public IActionResult AddLesson(LessonReq lessonReq)
+        {
+            var rsp = _lessonSvc.AddLesson(lessonReq);
             if (rsp.Success)
             {
                 return Ok(rsp);

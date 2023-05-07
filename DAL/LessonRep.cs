@@ -120,6 +120,8 @@ namespace DAL
                 {
                     var quizzes = context.Quizzes.Where(q => q.IdLesson == idLesson);
                     context.Quizzes.RemoveRange(quizzes);
+                    var studies = context.Studies.Where(s => s.IdLesson == idLesson);
+                    context.Studies.RemoveRange(studies);
                     context.Lessons.Remove(lesson);
 
                     var lessons = context.Lessons.Where(l => l.IdChapter == lesson.IdChapter && l.Index > lesson.Index);
@@ -131,6 +133,21 @@ namespace DAL
                     context.SaveChanges();
                 }
                 return false;
+            }
+        }
+
+        public bool AddLesson(Lesson lesson)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                if(context.Lessons.SingleOrDefault(l => l.IdChapter == lesson.IdChapter && l.Index == l.Index) != null)
+                {
+                    context.Lessons.Add(lesson);    
+                    context.SaveChanges();
+                    return true;
+                }
+                return false;
+
             }
         }
     }
