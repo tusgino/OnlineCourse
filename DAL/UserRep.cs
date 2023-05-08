@@ -224,7 +224,8 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                return context.Users.Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { User = user, Account = account })
+                return context.Users.Where(user => user.Status == 1)
+                                    .Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { User = user, Account = account })
                                     .OrderByDescending(element => element.Account.DateCreate)
                                     .Select(element => element.User.Name)
                                     .Take(6)
