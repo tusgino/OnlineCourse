@@ -52,7 +52,7 @@ namespace OnlineCourse.Controllers
         }
         [HttpPatch("Update-trade-by-{ID_Trade}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult UpdateCourse(Guid ID_Trade, [FromBody] JsonPatchDocument patchDoc)
+        public IActionResult UpdateTrade(Guid ID_Trade, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _tradeDetailSvc.UpdateTrade(ID_Trade, patchDoc);
             if (res.Success)
@@ -70,6 +70,20 @@ namespace OnlineCourse.Controllers
         {
             var res = _tradeDetailSvc.GetSystemRevenue();
             if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-trade-by-id-{ID_Trade}")]
+        [Authorize]
+        public IActionResult GetTradeByID(Guid ID_Trade)
+        {
+            var res = _tradeDetailSvc.GetTradeByID(ID_Trade);
+            if(res.Success)
             {
                 return Ok(res.Data);
             }

@@ -112,5 +112,12 @@ namespace DAL
                                            .ToList<object>();
             }
         }
+        public TradeDetail? GetTradeByID(Guid IdTrade)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == IdTrade);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Req.Course;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Common.Rsp.DTO;
 
 namespace BLL
 {
@@ -258,6 +259,22 @@ namespace BLL
                 rsp.Data = data;
             }
 
+            return rsp;
+        }
+        public SingleRsp SendMail(EmailDTO emailDTO)
+        {
+            var data = _userRep.SendMail(emailDTO);
+
+            var rsp = new SingleRsp();
+            
+            if(data == null)
+            {
+                rsp.SetError("Can not send mail");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
             return rsp;
         }
     }

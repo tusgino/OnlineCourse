@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -279,6 +281,34 @@ namespace DAL
         {
             var experts = GetAllExpertsForAnalytics(null, 0, 99999, 0, 999999999999999);
             return experts.OrderByDescending(expert => expert.CurrentYearRevenue[DateTime.Now.Month - 1]).Take(4).ToList();
+        }
+        public MailMessage SendMail(EmailDTO emailDTO)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                var target = context.Users.FirstOrDefault(user => user.IdUser == emailDTO.IdUser);
+
+                string senderEmail = "thhonlinecourse@gmail.com";
+                string senderPassword = "rlzbjtvrqjnuftyt"; // su dung app password thay vi password binh thuong
+
+                MailMessage message = new MailMessage(senderEmail, target.Email);
+
+                message.Subject = emailDTO.Subject;
+                message.Body = emailDTO.Body;
+                message.BodyEncoding = Encoding.UTF8;
+                message.IsBodyHtml = true;
+                SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
+                System.Net.NetworkCredential basicCredential1 = new
+                System.Net.NetworkCredential(senderEmail, senderPassword);
+                client.EnableSsl = true;
+                client.UseDefaultCredentials = false;
+                client.Credentials = basicCredential1;
+                
+
+                client.Send(message);
+
+                return message;
+            }
         }
     }
 }
