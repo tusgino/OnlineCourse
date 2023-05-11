@@ -89,6 +89,21 @@ namespace BLL
 
             return rsp;
         }
+        public SingleRsp GetTradeByID(Guid IdTrade)
+        {
+            var data = _tradeDetailRep.GetTradeByID(IdTrade);
 
+            var rsp = new SingleRsp();
+
+            if(data == null)
+            {
+                rsp.SetError("Not found trade");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
 }

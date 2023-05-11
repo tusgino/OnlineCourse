@@ -1,6 +1,7 @@
 ﻿using BLL;
 using Common.Req.Course;
 using Common.Req.User;
+using Common.Rsp.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -210,6 +211,20 @@ namespace OnlineCourse.Controllers
         public IActionResult GetBestExperts()
         {
             var res = _userSvc.GetBestExperts();
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpPost("Send-mail")]
+        public IActionResult SendMail(EmailDTO emailDTO)
+        {
+            var res = _userSvc.SendMail(emailDTO);
 
             if (res.Success)
             {
