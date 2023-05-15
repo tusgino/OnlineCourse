@@ -120,7 +120,7 @@ namespace DAL
             }
         }
 
-        public object GetRentByIdExpert(Guid idExpert)
+        public List<TradeDetailDTO> GetRentByIdExpert(Guid idExpert)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {

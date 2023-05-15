@@ -236,14 +236,15 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpGet("statistics-experts")]
+        [HttpGet("Statistics-experts-by-{idExpert}")]
+        [Authorize]
         public IActionResult StatisticsExpert(Guid idExpert)
         {
             var res = _userSvc.StatisticsExpert(idExpert);
 
             if (res.Success)
             {
-                return Ok(res);
+                return Ok(res.Data);
             }
             else
             {
