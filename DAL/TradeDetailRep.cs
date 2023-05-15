@@ -119,5 +119,49 @@ namespace DAL
                 return context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == IdTrade);
             }
         }
+
+        public object GetRentByIdExpert(Guid idExpert)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<TradeDetailDTO> list = new List<TradeDetailDTO>();
+
+                foreach (var tradeDetail in context.TradeDetails.Where(trade => trade.TypeOfTrade == 1 && trade.IdUser == idExpert).ToList())
+                {
+                    var user = context.Users.SingleOrDefault(u => u.IdUser == tradeDetail.IdUser);
+
+                        double? requiredBalance = 0;
+
+                        var courses = context.Courses.Where(course => course.IdUser == tradeDetail.IdUser).ToList();
+                        foreach (Course course in courses)
+                        {
+                            var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == DateTime.Now.Month - 1).ToList();
+                            foreach (Purchase purchase in purchases)
+                            {
+                                var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+
+                                requiredBalance += Convert.ToInt64(trade.Balance) * course.FeePercent / 100;
+                            }
+                        }
+
+                        list.Add(new TradeDetailDTO
+                        {
+                            IdTrade = tradeDetail.IdTrade,
+                            Balance = tradeDetail.Balance,
+                            DateOfTrade = tradeDetail.DateOfTrade,
+                            RequiredBalance = Convert.ToString(requiredBalance),
+                            TradeStatus = tradeDetail.TradeStatus,
+                            TypeOfTrade = tradeDetail.TypeOfTrade ?? -1,
+                            User = new UserDTO
+                            {
+                                Name = user.Name
+                            }
+                        });
+                    
+                }
+
+                return list;
+            }
+        }
     }
 }

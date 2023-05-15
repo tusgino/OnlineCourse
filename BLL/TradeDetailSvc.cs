@@ -105,5 +105,17 @@ namespace BLL
             }
             return rsp;
         }
+
+        public SingleRsp GetRentByIdExpert(Guid idExpert)
+        {
+            var rsp = new SingleRsp();
+
+            if ((rsp.Data = _tradeDetailRep.GetRentByIdExpert(idExpert)) == null)
+            {
+                rsp.SetError("Not found trade");
+            }
+
+            return rsp;
+        }
     }
 }
