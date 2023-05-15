@@ -310,5 +310,53 @@ namespace DAL
                 return message;
             }
         }
+
+        public object StatisticExpert(Guid idExpert)
+        {
+            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                List<ExpertDTO> data = new List<ExpertDTO>();
+
+                List<long> revenue = new List<long>();
+                for (int i = 0; i < DateTime.Now.Month; i++) revenue.Add(0);
+
+                int totalSales = 0;
+                string bestSalesCourse = ""; int count = 0;
+                var uploadedCourses = context.Courses.Where(course => course.IdUser == idExpert).ToList();
+                foreach (Course course in uploadedCourses)
+                {
+                    int salepercourse = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse).Count();
+                    totalSales += salepercourse;
+                    if (salepercourse > count)
+                    {
+                        count = salepercourse;
+                        bestSalesCourse = course.CourseName;
+                    }
+
+                    for (int i = 0; i < DateTime.Now.Month; i++)
+                    {
+                        var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
+                        foreach (Purchase purchase in purchases)
+                        {
+                            var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
+                            revenue[i] += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
+                        }
+                    }
+                }
+
+                    data.Add(new ExpertDTO
+                    {
+                        ID = idExpert,
+                        Name = "alo",
+                        CurrentYearRevenue = revenue,
+                        NumOfUploadedCourse = uploadedCourses.Count,
+                        TotalSales = totalSales,
+                        BestSalesCourse = bestSalesCourse
+                    });
+
+                return data;
+            }
+            
+        }
     }
 }

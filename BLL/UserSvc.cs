@@ -277,5 +277,17 @@ namespace BLL
             }
             return rsp;
         }
+
+        public SingleRsp StatisticsExpert(Guid idExpert)
+        {
+            var rsp = new SingleRsp();
+
+            if ((rsp.Data = _userRep.StatisticExpert(idExpert)) == null)
+            {
+                rsp.SetError("Can not send mail");
+            }
+
+            return rsp;
+        }
     }
 }
