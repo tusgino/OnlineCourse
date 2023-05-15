@@ -315,7 +315,7 @@ namespace DAL
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                List<ExpertDTO> data = new List<ExpertDTO>();
+                ExpertDTO data = new ExpertDTO();
 
                 List<long> revenue = new List<long>();
                 for (int i = 0; i < DateTime.Now.Month; i++) revenue.Add(0);
@@ -344,15 +344,15 @@ namespace DAL
                     }
                 }
 
-                    data.Add(new ExpertDTO
-                    {
-                        ID = idExpert,
-                        Name = "alo",
-                        CurrentYearRevenue = revenue,
-                        NumOfUploadedCourse = uploadedCourses.Count,
-                        TotalSales = totalSales,
-                        BestSalesCourse = bestSalesCourse
-                    });
+                data = new ExpertDTO
+                {
+                    ID = idExpert,
+                    Name = "alo",
+                    CurrentYearRevenue = revenue,
+                    NumOfUploadedCourse = uploadedCourses.Count,
+                    TotalSales = totalSales,
+                    BestSalesCourse = bestSalesCourse
+                };
 
                 return data;
             }
