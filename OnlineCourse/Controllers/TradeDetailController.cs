@@ -92,5 +92,20 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
+        [HttpGet("Get-rents-by-{IdExpert}")]
+        [Authorize]
+        public IActionResult GetRentByIdExpert(Guid IdExpert, int page)
+        {
+            var res = _tradeDetailSvc.GetRentByIdExpert(IdExpert, page);
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
     }
 }

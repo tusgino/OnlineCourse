@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace BLL
 {
@@ -96,6 +97,36 @@ namespace BLL
             var rsp = new SingleRsp();
 
             if(data == null)
+            {
+                rsp.SetError("Not found trade");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+
+        public SingleRsp GetRentByIdExpert(Guid idExpert, int page)
+        {
+            var experts = _tradeDetailRep.GetRentByIdExpert(idExpert);
+
+            int limit = 10;
+            int offset = (page - 1) * limit;
+            int total = experts.Count;
+            int totalPages = total % limit == 0 ? total / limit : total / limit + 1;
+
+            var res = experts.Skip(offset).Take(limit).ToList();
+
+            object data = new
+            {
+                _data = res,
+                _totalRows = total,
+            };
+
+            var rsp = new SingleRsp();
+
+            if (data == null)
             {
                 rsp.SetError("Not found trade");
             }
