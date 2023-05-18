@@ -307,9 +307,18 @@ namespace DAL
             }
         }
 
+        private int getNumberLearnerOfCourse(Guid idCourse)
+        {
+            using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
+            {
+                return context.Purchases.Where(p => p.IdCourse == idCourse && p.IdTradeNavigation.TradeStatus == 1).Count();
+            }
+        }
+
         public List<CourseComponent> GetAllCourseByIdUser(Guid id)
         {
             List<CourseComponent> courses = new List<CourseComponent>();
+
 
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
@@ -318,6 +327,7 @@ namespace DAL
                 {
                     foreach(var course in context.Courses.Where(c => c.IdUser == id).ToList())
                     {
+                        
                         courses.Add(new CourseComponent
                         {
                             AvatarUser = expert.Avatar,
@@ -325,14 +335,16 @@ namespace DAL
                             Thumbnail = course.Thumbnail,
                             NameUser = null,
                             Title = course.CourseName,
-                        });
+                            numberOfLearner = getNumberLearnerOfCourse(course.IdCourse),
+                        }) ;
                     }
                 }
                 else
                 {
-                    var purchases = context.Purchases.Where(p => p.IdUser == id && p.IdTradeNavigation.TradeStatus == 1).ToList();
+                    var purchases = context.Purchases.Where(p => p.IdUser == id && p.IdTradeNavigation.TradeStatus == 1 || p.IdTradeNavigation.TradeStatus == 0).ToList();
                     foreach (var purchase in purchases)
                     {
+                        context.Entry(purchase).Reference(p => p.IdTradeNavigation).Load();
                         var course = context.Courses.SingleOrDefault(c => c.IdCourse == purchase.IdCourse);
                         context.Entry(course).Reference(c => c.IdUserNavigation).Load();
                         courses.Add(new CourseComponent
@@ -340,9 +352,11 @@ namespace DAL
                             AvatarUser = course.IdUserNavigation!.Avatar,
                             Id = course.IdCourse,
                             NameUser = course.IdUserNavigation.Name,
-                            Thumbnail= course.Thumbnail,
-                            Title= course.CourseName,
-                        });
+                            Thumbnail = course.Thumbnail,
+                            Title = course.CourseName,
+                            statusPurchase = purchase.IdTradeNavigation.TradeStatus,
+                            datePurchase = purchase.IdTradeNavigation.DateOfTrade?? DateTime.Now,
+                        }) ;
                     }
                 }
             }

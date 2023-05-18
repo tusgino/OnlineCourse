@@ -15,5 +15,11 @@ namespace Common.Rsp.DTO
         public string? NameUser { get; set; } = string.Empty;
 
         public string? AvatarUser { get; set; } = string.Empty;
+
+        public int? statusPurchase { get; set; } = 0;
+
+        public DateTime datePurchase { get; set; } = DateTime.Now;
+
+        public int numberOfLearner { get; set; } = 0;
     }
 }
