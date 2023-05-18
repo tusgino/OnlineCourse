@@ -59,7 +59,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPatch("{ID_User}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
         {
             var rsp = _userSvc.UpdateUser(ID_User, patchDoc);
