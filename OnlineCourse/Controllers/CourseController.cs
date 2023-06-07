@@ -15,12 +15,8 @@ namespace OnlineCourse.Controllers
         private readonly CourseSvc _courseSvc = new CourseSvc();
 
         [HttpGet("Get-all-course-for")]
-        public IActionResult GetAllCourse(int _page, int _limit, string? title_like)
+        public IActionResult GetAllCourse([FromQuery] CoursesPaginationReq coursesPaginationReq)
         {
-            var coursesPaginationReq = new CoursesPaginationReq
-            {
-                Page = _page, Limit = _limit, Title_like = title_like,
-            };
             var res = _courseSvc.GetAllCourse(coursesPaginationReq);
             return Ok(res);
         }
@@ -53,11 +49,13 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
         [Authorize]
         [HttpGet("Get-course-by-IdCourse-for-Student")]
         public IActionResult GetCourseByIDCourse(Guid idCourse, Guid idUser)
         {
             var res = _courseSvc.GetACourse(idCourse, idUser); // res.Data: CourseDTO 
+
             if (res.Success)
             {
                 return Ok(res);
@@ -67,28 +65,12 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
         [HttpGet("Get-all-courses-by-filtering")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetALLCoursesByFiltering(string? _title_like, string? _category_name, DateTime? _start_upload_day, DateTime? _end_upload_day, bool? _status_active, bool? _status_store, int page)
+        public IActionResult GetALLCoursesByFiltering([FromQuery] CoursesFilteringReq coursesFilteringReq)
         {
-            CoursesFilteringReq coursesFilteringReq = new CoursesFilteringReq
-            {
-                text = _title_like,
-                category_name = _category_name,
-                start_day = _start_upload_day,
-                end_day = _end_upload_day,
-                status_active = _status_active,
-                status_store = _status_store,
-            };
-            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
-            {
-                Page = page,
-                Limit = 10,
-                Title_like = _title_like,
-            };
-
-
-            var res = _courseSvc.GetAllCoursesByFiltering(coursesFilteringReq, coursesPaginationReq);
+            var res = _courseSvc.GetAllCoursesByFiltering(coursesFilteringReq);
 
             if (res.Success)
             {
@@ -99,10 +81,12 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
         [HttpGet("Get-all-courses-by-categoryid{_category_id}")]
         public IActionResult GetAllCoursesByCategoryID(Guid _category_id)
         {
             var res = _courseSvc.GetCoursesByCategoryID(_category_id);
+
             if (res.Success)
             {
                 return Ok(res.Data);
@@ -112,10 +96,12 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
         [HttpPatch("Update-course-by-{ID_Course}")]
         public IActionResult UpdateCourse(Guid ID_Course, [FromBody] JsonPatchDocument patchDoc)
         {
             var res = _courseSvc.UpdateCourse(ID_Course, patchDoc);
+
             if (res.Success)
             {
                 return Ok(res);
@@ -125,26 +111,13 @@ namespace OnlineCourse.Controllers
                 return BadRequest(res.Message);
             }
         }
+
         [HttpGet("Get-all-courses-for-analytics")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate, int page)
+        public IActionResult GetAllCoursesForAnalytics([FromQuery] CourseAnalyticsReq courseAnalyticsReq)
         {
-            CourseAnalyticsReq courseAnalyticsReq = new CourseAnalyticsReq
-            {
-                title_like = _title_like,
-                start_reg_user = _start_reg_user,
-                end_reg_user = _end_reg_user,
-                start_rate = _start_rate,
-                end_rate = _end_rate,
-            };
-            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
-            {
-                Page = page,
-                Limit = 10,
-                Title_like = _title_like,
-            };
+            var res = _courseSvc.GetAllCourseForAnalytics(courseAnalyticsReq);
 
-            var res = _courseSvc.GetAllCourseForAnalytics(courseAnalyticsReq, coursesPaginationReq);
             if (res.Success)
             {
                 return Ok(res);
@@ -153,8 +126,6 @@ namespace OnlineCourse.Controllers
             {
                 return BadRequest(res.Message);
             }
-
-
         }
 
         [HttpPost("Add-course")]

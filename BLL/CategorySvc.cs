@@ -46,7 +46,6 @@ namespace BLL
             int limit = 10;
             int offset = (page - 1) * limit;
             int total = categories.Count;
-            int totalPages = (total % limit == 0) ? total / limit : 1 + total / limit;
 
             var data = categories.OrderBy(category => category.Name).Skip(offset).Take(limit).ToList();
 
@@ -60,7 +59,7 @@ namespace BLL
 
             if (data == null)
             {
-                rsp.SetError("Not found category");
+                rsp.SetError("Category not found");
             }
             else
             {

@@ -21,7 +21,7 @@ namespace OnlineCourse.Controllers
         public IActionResult GetUserByID(Guid? id) {
             var rsp = _userSvc.GetUserByID(id);
 
-            if(rsp.Success)
+            if (rsp.Success)
             {
                 return Ok(rsp);
             }
@@ -32,21 +32,9 @@ namespace OnlineCourse.Controllers
         }
         [HttpGet("Get-all-users-by-filtering")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned, int page)
+        public IActionResult GetAllUsersByFiltering([FromQuery] UserFilteringReq userFilteringReq)
         {
-            UserFilteringReq userFilteringReq = new UserFilteringReq
-            {
-                text = _title_like,
-                start_date_create = _start_date_create,
-                end_date_create = _end_date_create,
-                is_student = _is_student,
-                is_expert = _is_expert,
-                is_admin = _is_admin,
-                status_active = _status_active,
-                status_banned = _status_banned,
-            };
-
-            var rsp = _userSvc.GetAllUsersByFiltering(userFilteringReq, page);
+            var rsp = _userSvc.GetAllUsersByFiltering(userFilteringReq);
 
             if (rsp.Success)
             {
@@ -75,27 +63,11 @@ namespace OnlineCourse.Controllers
 
         [HttpGet("Get-all-students-for-analytics")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetStudentsForAnalytics(string? _student_name_like, int? _start_purchase_course, int? _end_purchase_course, int? _start_finish_course, int? _end_finish_course, int page)
+        public IActionResult GetStudentsForAnalytics([FromQuery] StudentAnalyticsReq studentAnalyticsReq)
         {
-            StudentAnalyticsReq studentAnalyticsReq = new StudentAnalyticsReq
-            {
-                student_name_like = _student_name_like,
-                start_purchase_course = _start_purchase_course,
-                end_purchase_course = _end_purchase_course,
-                start_finish_course = _start_finish_course,
-                end_finish_course = _end_finish_course,
-            };
+            var res = _userSvc.GetAllStudentForAnalytics(studentAnalyticsReq);
 
-            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
-            {
-                Limit = 10,
-                Page = page,
-                Title_like = _student_name_like,
-            };
-
-
-            var res = _userSvc.GetAllStudentForAnalytics(studentAnalyticsReq, coursesPaginationReq);
-            if(res.Success)
+            if (res.Success)
             {
                 return Ok(res);
             }
@@ -106,24 +78,10 @@ namespace OnlineCourse.Controllers
         }
         [HttpGet("Get-all-experts-for-analytics")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllExpertsForAnalytics(string? _expert_name_like, int? _start_upload_course, int? _end_upload_course, long? _start_revenue, long? _end_revenue, int page)
+        public IActionResult GetAllExpertsForAnalytics([FromQuery] ExpertAnalyticsReq expertAnalyticsReq)
         {
-            ExpertAnalyticsReq expertAnalyticsReq = new ExpertAnalyticsReq
-            {
-                expert_name = _expert_name_like,
-                start_upload_course = _start_upload_course,
-                end_upload_course = _end_upload_course,
-                start_revenue = _start_revenue,
-                end_revenue = _end_revenue,
-            };
-            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
-            {
-                Page = page,
-                Limit = 10,
-                Title_like = ""
-            };
+            var res = _userSvc.GetAllExpertsForAnalytics(expertAnalyticsReq);
 
-            var res = _userSvc.GetAllExpertsForAnalytics(expertAnalyticsReq, coursesPaginationReq);
             if(res.Success)
             {
                 return Ok(res);
@@ -178,9 +136,9 @@ namespace OnlineCourse.Controllers
         }
         [HttpGet("Get-all-expert-requests")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to, int page)
+        public IActionResult GetAllExpertRequests([FromQuery] ExpertRegisterReq expertRegisterReq)
         {
-            var res = _userSvc.GetAllExpertRequests(_name, _date_create_from, _date_create_to, page);
+            var res = _userSvc.GetAllExpertRequests(expertRegisterReq);
 
             if (res.Success)
             {

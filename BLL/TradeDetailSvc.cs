@@ -16,14 +16,9 @@ namespace BLL
     public class TradeDetailSvc : GenericSvc<TradeDetailRep, TradeDetail>
     {
         private readonly TradeDetailRep _tradeDetailRep = new TradeDetailRep();
-        public SingleRsp GetAllTradeDetailsByFiltering(TradeDetailFilteringReq tradeDetailFilteringReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllTradeDetailsByFiltering(TradeDetailFilteringReq tradeDetailFilteringReq)
         {
-            if (tradeDetailFilteringReq.start_date == null) tradeDetailFilteringReq.start_date = new DateTime(1754, 1, 1);
-            if (tradeDetailFilteringReq.end_date == null) tradeDetailFilteringReq.end_date = new DateTime(9999, 1, 1);
-
-            if (tradeDetailFilteringReq.start_balance == null) tradeDetailFilteringReq.start_balance = 0;
-            if (tradeDetailFilteringReq.end_balance == null) tradeDetailFilteringReq.end_balance = 9999999999999999;
-
+            tradeDetailFilteringReq.ValidateData();
 
             var tradeDetails = _tradeDetailRep.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq.is_rent, 
                                                                             tradeDetailFilteringReq.is_purchase, 
@@ -36,10 +31,8 @@ namespace BLL
                                                                             tradeDetailFilteringReq.end_balance);
 
             int limit = 10;
-            int offset = (coursesPaginationReq.Page - 1) * limit;
+            int offset = (tradeDetailFilteringReq.Page - 1) * limit;
             int total = tradeDetails.Count;
-            int totalPages = (total % limit) == 0 ? (int)(total /limit) :
-                (int)(1 + (total / limit));
 
             var data = tradeDetails.Skip(offset).Take(limit).ToList();
 
@@ -53,7 +46,7 @@ namespace BLL
 
             if(data == null)
             {
-                rsp.SetError("Not found trade");
+                rsp.SetError("Trade not found");
             }
             else
             {
@@ -97,7 +90,7 @@ namespace BLL
 
             if(data == null)
             {
-                rsp.SetError("Not found trade");
+                rsp.SetError("Trade not found");
             }
             else
             {

@@ -17,29 +17,9 @@ namespace OnlineCourse.Controllers
         private readonly TradeDetailSvc _tradeDetailSvc = new TradeDetailSvc();
         [HttpGet("Get-all-tradedetail-by-filtering")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllTradeDetailByFiltering(bool? _is_rent, bool? _is_purchase, bool? _is_success, bool? _is_pending, bool? _is_failed, DateTime? _start_date, DateTime? _end_date, long? _start_balance, long? _end_balance, int page)
+        public IActionResult GetAllTradeDetailByFiltering(TradeDetailFilteringReq tradeDetailFilteringReq)
         {
-            TradeDetailFilteringReq tradeDetailFilteringReq = new TradeDetailFilteringReq
-            {
-                is_rent = _is_rent,
-                is_purchase = _is_purchase,
-                is_success = _is_success,
-                is_pending = _is_pending,
-                is_failed = _is_failed,
-                start_date = _start_date,
-                end_date = _end_date,
-                start_balance = _start_balance,
-                end_balance = _end_balance
-            };
-
-            CoursesPaginationReq coursesPaginationReq = new CoursesPaginationReq
-            {
-                Page = page,
-                Limit = 10,
-                Title_like = "",
-            };
-
-            var res = _tradeDetailSvc.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq, coursesPaginationReq);
+            var res = _tradeDetailSvc.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq);
 
             if (res.Success)
             {

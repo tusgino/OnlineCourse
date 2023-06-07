@@ -24,21 +24,26 @@ namespace BLL
             var rsp = new SingleRsp();
             if((rsp.Data = _userRep.GetUserByID(id)) == null)
             {
-                rsp.SetError("Not found user");
+                rsp.SetError("User not found");
             }
             return rsp;
         }
-        public SingleRsp GetAllUsersByFiltering(UserFilteringReq userFilteringReq, int page)
+        public SingleRsp GetAllUsersByFiltering(UserFilteringReq userFilteringReq)
         {
-            if (userFilteringReq.start_date_create == null) userFilteringReq.start_date_create = new DateTime(1, 1, 1);
-            if (userFilteringReq.end_date_create == null) userFilteringReq.end_date_create = new DateTime(9999, 1, 1);
+            userFilteringReq.ValidateData();
 
-            var users = _userRep.GetAllUsersByFiltering(userFilteringReq.text, userFilteringReq.start_date_create, userFilteringReq.end_date_create, userFilteringReq.is_student, userFilteringReq.is_expert, userFilteringReq.is_admin, userFilteringReq.status_active, userFilteringReq.status_banned);
+            var users = _userRep.GetAllUsersByFiltering(userFilteringReq.title_like,
+                                                        userFilteringReq.start_date_create,
+                                                        userFilteringReq.end_date_create,
+                                                        userFilteringReq.is_student,
+                                                        userFilteringReq.is_expert,
+                                                        userFilteringReq.is_admin,
+                                                        userFilteringReq.status_active,
+                                                        userFilteringReq.status_banned);
 
             int limit = 10;
-            int offset = (page - 1) * limit;
+            int offset = (userFilteringReq.Page - 1) * limit;
             int total = users.Count;
-            int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
 
             var data = users.OrderBy(user => user.Name).Skip(offset).Take(limit).ToList();
 
@@ -52,7 +57,7 @@ namespace BLL
 
             if (data == null)
             {
-                rsp.SetError("Not found user");
+                rsp.SetError("User not found");
             }
             else
             {
@@ -69,13 +74,9 @@ namespace BLL
             }
             return rsp;
         }
-        public SingleRsp GetAllStudentForAnalytics(StudentAnalyticsReq studentAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllStudentForAnalytics(StudentAnalyticsReq studentAnalyticsReq)
         {
-            if (studentAnalyticsReq.start_purchase_course == null) studentAnalyticsReq.start_purchase_course = 0;
-            if (studentAnalyticsReq.end_purchase_course == null) studentAnalyticsReq.end_purchase_course = int.MaxValue;
-
-            if (studentAnalyticsReq.start_finish_course == null) studentAnalyticsReq.start_finish_course = 0;
-            if (studentAnalyticsReq.end_finish_course == null) studentAnalyticsReq.end_finish_course = int.MaxValue;
+            studentAnalyticsReq.ValidateData();
 
             var students = _userRep.GetAllStudentForAnalytics(studentAnalyticsReq.student_name_like,
                                                           studentAnalyticsReq.start_purchase_course,
@@ -84,9 +85,8 @@ namespace BLL
                                                           studentAnalyticsReq.end_finish_course);
 
             int limit = 10;
-            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int offset = (studentAnalyticsReq.Page - 1) * limit;
             int total = students.Count;
-            int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
 
             var data = students.Skip(offset).Take(limit).ToList();
 
@@ -108,13 +108,9 @@ namespace BLL
 
             return rsp;
         }
-        public SingleRsp GetAllExpertsForAnalytics (ExpertAnalyticsReq expertAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllExpertsForAnalytics (ExpertAnalyticsReq expertAnalyticsReq)
         {
-            if (expertAnalyticsReq.start_upload_course == null) expertAnalyticsReq.start_upload_course = 0;
-            if (expertAnalyticsReq.end_upload_course == null) expertAnalyticsReq.end_upload_course = int.MaxValue;
-
-            if (expertAnalyticsReq.start_revenue == null) expertAnalyticsReq.start_revenue = 0;
-            if(expertAnalyticsReq.end_revenue == null) expertAnalyticsReq.end_revenue = int.MaxValue;
+            expertAnalyticsReq.ValidateData();
 
             var experts = _userRep.GetAllExpertsForAnalytics(expertAnalyticsReq.expert_name,
                                                              expertAnalyticsReq.start_upload_course,
@@ -123,9 +119,8 @@ namespace BLL
                                                              expertAnalyticsReq.end_revenue);
 
             int limit = 10;
-            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            int offset = (expertAnalyticsReq.Page - 1) * limit;
             int total = experts.Count;
-            int totalPage = (total % limit == 0) ? (total / limit) : (1 + total / limit);
 
             var data = experts.Skip(offset).Take(limit).ToList();
 
@@ -195,17 +190,17 @@ namespace BLL
             }
             return rsp;
         }
-        public SingleRsp GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to, int page)
+        public SingleRsp GetAllExpertRequests(ExpertRegisterReq expertRegisterReq)
         {
-            if (_date_create_from == null) _date_create_from = new DateTime(1800, 1, 1);
-            if (_date_create_to == null) _date_create_to = new DateTime(9999, 1, 1);
+            expertRegisterReq.ValidateData();
 
-            var experts = _userRep.GetAllExpertRequests(_name ?? "", _date_create_from ?? DateTime.Now, _date_create_to ?? DateTime.Now);
+            var experts = _userRep.GetAllExpertRequests(expertRegisterReq.name,
+                                                        expertRegisterReq.date_create_from,
+                                                        expertRegisterReq.date_create_to);
 
             int limit = 10;
-            int offset = (page - 1) * limit;
+            int offset = (expertRegisterReq.Page - 1) * limit;
             int total = experts.Count;
-            int totalPages = total % limit == 0 ? total / limit : total / limit + 1;
 
             var res = experts.Skip(offset).Take(limit).ToList();
 

@@ -145,7 +145,7 @@ namespace DAL
                         Avatar = course.IdUserNavigation.Avatar,
                         Name = course.IdUserNavigation.Name
                     },
-                    Category = new CategoryDTO
+                    Category = course.IdCategoryNavigation == null ? null : new CategoryDTO
                     {
                         IdCategory = course.IdCategoryNavigation.IdCategory,
                         Name = course.IdCategoryNavigation.Name
@@ -266,7 +266,7 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like == null? "" : _title_like)).ToList();
+                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like)).ToList();
 
                 List<object> data = new List<object>();
                 foreach(Course course in courses.ToList())
@@ -288,8 +288,6 @@ namespace DAL
                             revenue[trade.DateOfTrade.Value.Month - 1] += Convert.ToInt64(trade.Balance);
                         }
                     }
-                    Console.WriteLine(GetNumberOfRegisterdUser(course.IdCourse));
-                    Console.WriteLine(GetCourseRate(course.IdCourse));
                     if(GetNumberOfRegisterdUser(course.IdCourse) >= _start_reg_user && GetNumberOfRegisterdUser(course.IdCourse) <= _end_reg_user && GetCourseRate(course.IdCourse) >= _start_rate && GetCourseRate(course.IdCourse) <= _end_rate)
                     {
                         data.Add(new
@@ -302,7 +300,6 @@ namespace DAL
                         });
                     }
                 }
-
                 return data;
             }
         }

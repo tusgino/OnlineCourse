@@ -28,9 +28,10 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-
-                var id_accounts = context.Accounts.Where(account => account.DateCreate >= _start_date_create && account.DateCreate <= _end_date_create).Select(account => account.IdAccount).ToList();
-
+                var id_accounts = context.Accounts.Where(account =>
+                                    account.DateCreate >= _start_date_create && 
+                                    account.DateCreate <= _end_date_create)
+                                    .Select(account => account.IdAccount).ToList();
 
                 List<int> user_types = new List<int>();
                 if (_is_admin == true) user_types.Add(0);
@@ -42,7 +43,7 @@ namespace DAL
                 if (_status_banned == true) user_status.Add(0);
 
                 List<User> data = context.Users.Where(user =>
-                    user.Name.Contains(_title_like == null ? "" : _title_like) &&
+                    user.Name.Contains(_title_like) &&
                     id_accounts.Contains(user.IdAccount ?? Guid.Empty) &&
                     user_types.Contains(user.IdTypeOfUser ?? -1) &&
                     user_status.Contains(user.Status ?? -1)
@@ -89,9 +90,8 @@ namespace DAL
             {
                 LessonRep lessonRep = new LessonRep();
 
-                List<User> students = context.Users.Where(user => user.Name.Contains(_student_name_like == null? "" : _student_name_like) &&
-                                                       user.IdTypeOfUser == 2).ToList();
-
+                List<User> students = context.Users.Where(user => user.Name.Contains(_student_name_like) &&
+                                                                  user.IdTypeOfUser == 2).ToList();
                 List<StudentDTO> data = new List<StudentDTO>();
                 foreach(User student in students.ToList())
                 {
@@ -141,7 +141,7 @@ namespace DAL
             {
                 CourseRep courseRep = new CourseRep();
 
-                List<User> experts = context.Users.Where(user => user.Name.Contains(_expert_name_like == null ? "" : _expert_name_like) && user.IdTypeOfUser == 1).ToList();
+                List<User> experts = context.Users.Where(user => user.Name.Contains(_expert_name_like) && user.IdTypeOfUser == 1).ToList();
 
                 List<ExpertDTO> data = new List<ExpertDTO>();
 
@@ -234,7 +234,7 @@ namespace DAL
                                     .ToList<object>();
             }
         } 
-        public List<object> GetAllExpertRequests(string _name, DateTime _date_create_from, DateTime _date_create_to)
+        public List<object> GetAllExpertRequests(string? _name, DateTime? _date_create_from, DateTime? _date_create_to)
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
@@ -274,12 +274,12 @@ namespace DAL
         }
         public List<StudentDTO> GetBestStudents()
         {
-            var students = GetAllStudentForAnalytics(null, 0, 99999, 0, 99999);
+            var students = GetAllStudentForAnalytics("", 0, 99999, 0, 99999);
             return students.OrderByDescending(student => student.NumOfFinishedCourse).Take(4).ToList();
         }
         public List<ExpertDTO> GetBestExperts()
         {
-            var experts = GetAllExpertsForAnalytics(null, 0, 99999, 0, 999999999999999);
+            var experts = GetAllExpertsForAnalytics("", 0, 99999, 0, 999999999999999);
             return experts.OrderByDescending(expert => expert.CurrentYearRevenue[DateTime.Now.Month - 1]).Take(4).ToList();
         }
         public MailMessage SendMail(EmailDTO emailDTO)
