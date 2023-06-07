@@ -95,39 +95,27 @@ namespace DAL
                 List<StudentDTO> data = new List<StudentDTO>();
                 foreach(User student in students.ToList())
                 {
-                    List<Purchase> purchases = context.Purchases.Where(purchase => purchase.IdUser == student.IdUser).ToList();
-                    List<Course> purchasedcourses = new List<Course>();
-                    foreach (Purchase purchase in purchases)
-                    {
-                        var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
-                        if (trade.TradeStatus == 1)
-                        {
-                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == purchase.IdCourse);
-                            purchasedcourses.Add(course!);
-                        }
-                    }
+                    // find purchased courses
+                    int NumOfPurchasedCourse = context.Purchases.Where(purchase => purchase.IdUser == student.IdUser && purchase.IdTradeNavigation.TradeStatus == 1).Count();
 
+                    // find finished courses
+                    int NumOfFinishedCourse = 0;
                     List<Study> studies = context.Studies.Where(study => study.IdUser == student.IdUser && study.Status == 1).ToList();
-                    List<Course> finishedcourses = new List<Course>();
                     foreach (Study study in studies)
                     {
                         if (lessonRep.IsLastOfCourse(study.IdLesson) == true)
                         {
-                            var lesson = context.Lessons.FirstOrDefault(lesson => lesson.IdLesson == study.IdLesson);
-                            var chapter = context.Chapters.FirstOrDefault(chapter => chapter.IdChapter == lesson.IdChapter);
-                            var course = context.Courses.FirstOrDefault(course => course.IdCourse == chapter.IdCourse);
-
-                            finishedcourses.Add(course!);
+                            ++NumOfFinishedCourse;
                         }
                     }
 
-                    if (purchasedcourses.Count >= _start_purchase_course && purchasedcourses.Count <= _end_purchase_course && finishedcourses.Count >= _start_finish_course && finishedcourses.Count <= _end_finish_course)
+                    if (NumOfPurchasedCourse >= _start_purchase_course && NumOfPurchasedCourse <= _end_purchase_course && NumOfFinishedCourse >= _start_finish_course && NumOfFinishedCourse <= _end_finish_course)
                     {
                         data.Add(new StudentDTO
                         {
                             Name = student.Name,
-                            NumOfPurchasedCourse = purchasedcourses.Count,
-                            NumOfFinishedCourse = finishedcourses.Count,
+                            NumOfPurchasedCourse = NumOfPurchasedCourse,
+                            NumOfFinishedCourse = NumOfFinishedCourse,
                         });
                     }
                 }
@@ -147,6 +135,7 @@ namespace DAL
 
                 foreach(User expert in experts.ToList())
                 {
+                    // find revenue of expert
                     List<long> revenue = new List<long>();
                     for (int i = 0; i < DateTime.Now.Month; i++) revenue.Add(0);
 
@@ -155,7 +144,8 @@ namespace DAL
                     var uploadedCourses = context.Courses.Where(course => course.IdUser == expert.IdUser).ToList();
                     foreach (Course course in uploadedCourses)
                     {
-                        int salepercourse = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse).Count();
+                        // find best sales course
+                        int salepercourse = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.IdTradeNavigation.TradeStatus == 1).Count();
                         totalSales += salepercourse;
                         if(salepercourse > count)
                         {
@@ -163,9 +153,10 @@ namespace DAL
                             bestSalesCourse = course.CourseName;
                         }
 
+                        // find expert current year revenue
                         for (int i = 0; i < DateTime.Now.Month; i++)
                         {
-                            var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
+                            var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1 && purchase.DateOfPurchase.Value.Year == DateTime.Now.Year).ToList();
                             foreach (Purchase purchase in purchases)
                             {
                                 var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
@@ -190,29 +181,7 @@ namespace DAL
                 return data;
             }
         }
-        public List<long> GetExpertRevenueByID(Guid IdExpert)
-        {
-            using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
-            {
-                List<long> revenue = new List<long>(12);
-
-                var uploadedCourses = context.Courses.Where(course => course.IdUser == IdExpert).ToList();
-                foreach (Course course in uploadedCourses)
-                {
-                    for(int i = 0; i < 12; i++)
-                    {
-                        var purchases = context.Purchases.Where(purchase => purchase.IdCourse == course.IdCourse && purchase.DateOfPurchase.Value.Month == i + 1).ToList();
-                        foreach (Purchase purchase in purchases)
-                        {
-                            var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade);
-                            revenue[i] += Convert.ToInt64(Convert.ToInt64(trade.Balance) * (100 - course.FeePercent) / 100);
-                        }
-                    }
-                }
-
-                return revenue;
-            }
-        }
+        
         public List<object> GetAllUsersByType()
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
@@ -227,9 +196,8 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 return context.Users.Where(user => user.Status == 1)
-                                    .Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { User = user, Account = account })
-                                    .OrderByDescending(element => element.Account.DateCreate)
-                                    .Select(element => element.User.Name)
+                                    .OrderByDescending(user => user.IdAccountNavigation.DateCreate)
+                                    .Select(user => user.Name)
                                     .Take(6)
                                     .ToList<object>();
             }
@@ -238,32 +206,34 @@ namespace DAL
         {
             using(WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                AccountRep accountRep = new AccountRep();
-                BankInfoRep bankInfoRep = new BankInfoRep();
                 DegreeRep degreeRep = new DegreeRep();
 
                 List<object> res = new List<object>();
 
-                foreach(var user in context.Users.Where(user => user.Name.Contains(_name) && user.IdTypeOfUser == 1 && user.Status == -2)
-                             .Join(context.Accounts, user => user.IdAccount, account => account.IdAccount, (user, account) => new { _User = user, _Account = account })
-                             .Where(group => group._Account.DateCreate >= _date_create_from && group._Account.DateCreate <= _date_create_to)
-                             .Select(group => new { group._User, group._Account.DateCreate}).ToList())
+                foreach(var user in context.Users.Where(user => user.Name.Contains(_name) && 
+                                                                user.IdTypeOfUser == 1 && 
+                                                                user.Status == -2 &&
+                                                                user.IdAccountNavigation.DateCreate >= _date_create_from && 
+                                                                user.IdAccountNavigation.DateCreate <= _date_create_to)
+                                                 .ToList())
                 {
-                    BankInfo bankInfo = bankInfoRep.GetBankInfoByID(user._User.IdBankAccount ?? Guid.Empty);
-                    List<Degree> degrees = degreeRep.GetDegreesByIdUser(user._User.IdUser);
+                    context.Entry(user).Reference(user => user.IdAccountNavigation).Load();
+                    context.Entry(user).Reference(user => user.IdBankAccountNavigation).Load();
+
+                    List<Degree> degrees = degreeRep.GetDegreesByIdUser(user.IdUser);
 
                     res.Add(new
                     {
-                        Avatar = user._User.Avatar,
-                        IdUser = user._User.IdUser,
-                        Name = user._User.Name,
-                        DateOfBirth = user._User.DateOfBirth,
-                        PhoneNumber = user._User.PhoneNumber,
-                        IdCard = user._User.IdCard,
-                        Email = user._User.Email,
-                        DateCreate = user.DateCreate,
-                        BankNumber = bankInfo != null ? bankInfo.BankAccountNumber : "",
-                        BankName = bankInfo != null ? bankInfo.BankName : "",
+                        Avatar = user.Avatar,
+                        IdUser = user.IdUser,
+                        Name = user.Name,
+                        DateOfBirth = user.DateOfBirth,
+                        PhoneNumber = user.PhoneNumber,
+                        IdCard = user.IdCard,
+                        Email = user.Email,
+                        DateCreate = user.IdAccountNavigation.DateCreate,
+                        BankNumber = user.IdBankAccountNavigation == null ? null : user.IdBankAccountNavigation.BankAccountNumber,
+                        BankName = user.IdBankAccountNavigation == null ? null : user.IdBankAccountNavigation.BankName,
                         Degrees = degrees,
                     });
 
@@ -304,7 +274,6 @@ namespace DAL
                 client.UseDefaultCredentials = false;
                 client.Credentials = basicCredential1;
                 
-
                 client.Send(message);
 
                 return message;

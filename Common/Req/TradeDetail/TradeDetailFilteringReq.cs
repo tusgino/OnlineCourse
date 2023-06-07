@@ -25,7 +25,7 @@ namespace Common.Req.TradeDetail
             is_success ??= true;
             is_pending ??= true;
             is_failed ??= true;
-            start_date ??= new DateTime(1, 1, 1);
+            start_date ??= new DateTime(1800, 1, 1);
             end_date ??= new DateTime(9999, 1, 1);
             start_balance ??= 0;
             end_balance ??= int.MaxValue;

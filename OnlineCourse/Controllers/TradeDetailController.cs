@@ -17,7 +17,7 @@ namespace OnlineCourse.Controllers
         private readonly TradeDetailSvc _tradeDetailSvc = new TradeDetailSvc();
         [HttpGet("Get-all-tradedetail-by-filtering")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllTradeDetailByFiltering(TradeDetailFilteringReq tradeDetailFilteringReq)
+        public IActionResult GetAllTradeDetailByFiltering([FromQuery] TradeDetailFilteringReq tradeDetailFilteringReq)
         {
             var res = _tradeDetailSvc.GetAllTradeDetailsByFiltering(tradeDetailFilteringReq);
 
