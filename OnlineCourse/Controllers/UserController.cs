@@ -207,7 +207,6 @@ namespace OnlineCourse.Controllers
             }
         }
         [HttpGet("Get-best-experts")]
-        [Authorize(Roles = "Admin")]
         public IActionResult GetBestExperts()
         {
             var res = _userSvc.GetBestExperts();

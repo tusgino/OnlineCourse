@@ -341,7 +341,7 @@ namespace DAL
                 }
                 else
                 {
-                    var purchases = context.Purchases.Where(p => p.IdUser == id && p.IdTradeNavigation.TradeStatus == 1 || p.IdTradeNavigation.TradeStatus == 0).ToList();
+                    var purchases = context.Purchases.Where(p => p.IdUser == id && (p.IdTradeNavigation.TradeStatus == 1 || p.IdTradeNavigation.TradeStatus == 0)).ToList();
                     foreach (var purchase in purchases)
                     {
                         context.Entry(purchase).Reference(p => p.IdTradeNavigation).Load();

@@ -44,7 +44,7 @@ namespace OnlineCourse.Controllers
             }
         }
 
-        [HttpPatch("update-lesson")]
+        [HttpPatch("update-lesson/{idLesson}")]
         public IActionResult UpdateLesson(Guid idLesson, JsonPatchDocument patchDoc)
         {
             var rsp = _lessonSvc.UpdateLesson(idLesson, patchDoc);
@@ -57,7 +57,7 @@ namespace OnlineCourse.Controllers
                 return BadRequest();
             }
         }
-        [HttpDelete("delete-lesson")]
+        [HttpDelete("{idLesson}")]
         public IActionResult DeleteLesson(Guid idLesson)
         {
             var rsp = _lessonSvc.DeleteLesson(idLesson);
