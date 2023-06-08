@@ -145,7 +145,7 @@ namespace DAL
                         Avatar = course.IdUserNavigation.Avatar,
                         Name = course.IdUserNavigation.Name
                     },
-                    Category = new CategoryDTO
+                    Category = course.IdCategoryNavigation == null ? null : new CategoryDTO
                     {
                         IdCategory = course.IdCategoryNavigation.IdCategory,
                         Name = course.IdCategoryNavigation.Name
@@ -158,13 +158,13 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                var categories = context.Categories.Where(category => category.Name.Contains(_category_name == null ? "" : _category_name)).Select(category => category.IdCategory).ToList();
+                var categories = context.Categories.Where(category => category.Name.Contains(_category_name)).Select(category => category.IdCategory).ToList();
                 List<int> course_status = new List<int>();
                 if (_status_active == true) course_status.Add(1);
                 if (_status_store == true) course_status.Add(0);
 
                 List<Course> data = context.Courses.Where(course => 
-                   course.CourseName.Contains(_title_like == null ? "" : _title_like) &&
+                   course.CourseName.Contains(_title_like) &&
                    course.DateOfUpload >= _start_upload_day && course.DateOfUpload <= _end_upload_day &&
                    (categories.Contains(course.IdCategory ?? Guid.Empty) || course.IdCategory == null)&&
                    course_status.Contains(course.Status ?? -1)
@@ -173,8 +173,8 @@ namespace DAL
                 List<CourseModel_Admin> res = new List<CourseModel_Admin>();
                 foreach(Course course in data)
                 {
-                    if(course.IdCategory != null) 
-                        context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
+                    
+                    context.Entry(course).Reference(course => course.IdCategoryNavigation).Load();
                     context.Entry(course).Reference(course => course.IdUserNavigation).Load();
 
                     res.Add(new CourseModel_Admin
@@ -233,40 +233,23 @@ namespace DAL
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                int count_reg_user = 0;
-                var purchases = context.Purchases.Where(purchase => purchase.IdCourse == _course_id).ToList();
-                foreach (Purchase purchase in purchases)
-                {
-                    var trade = context.TradeDetails.FirstOrDefault(trade => trade.IdTrade == purchase.IdTrade && trade.TradeStatus == 1);
-                    if (trade != null)
-                    {
-                        count_reg_user++;
-                    }
-                }
-                return count_reg_user;
+               return context.Purchases.Where(purchase => purchase.IdCourse == _course_id && purchase.IdTradeNavigation.TradeStatus == 1)
+                                       .Count();
             }
         }
         public int GetCourseRate(Guid _course_id)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                int rate_point = 0, count_turn = 0;
-                foreach(Rate rate in context.Rates)
-                {
-                    if(rate.IdCourse == _course_id)
-                    {
-                        rate_point += rate.Rate1 ?? 0;
-                        count_turn++;
-                    }
-                }
-                return count_turn == 0 ? 0 : rate_point/count_turn;
+                return Convert.ToInt32(context.Rates.Where(rate => rate.IdCourse == _course_id)
+                                                    .Average(rate => rate.Rate1));
             }
         }
         public List<object> GetAllCoursesForAnalytics(string? _title_like, int? _start_reg_user, int? _end_reg_user, int? _start_rate, int? _end_rate)
         {
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
-                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like == null? "" : _title_like)).ToList();
+                List<Course> courses = context.Courses.Where(course => course.CourseName.Contains(_title_like)).ToList();
 
                 List<object> data = new List<object>();
                 foreach(Course course in courses.ToList())
@@ -288,8 +271,6 @@ namespace DAL
                             revenue[trade.DateOfTrade.Value.Month - 1] += Convert.ToInt64(trade.Balance);
                         }
                     }
-                    Console.WriteLine(GetNumberOfRegisterdUser(course.IdCourse));
-                    Console.WriteLine(GetCourseRate(course.IdCourse));
                     if(GetNumberOfRegisterdUser(course.IdCourse) >= _start_reg_user && GetNumberOfRegisterdUser(course.IdCourse) <= _end_reg_user && GetCourseRate(course.IdCourse) >= _start_rate && GetCourseRate(course.IdCourse) <= _end_rate)
                     {
                         data.Add(new
@@ -302,7 +283,6 @@ namespace DAL
                         });
                     }
                 }
-
                 return data;
             }
         }
@@ -450,20 +430,15 @@ namespace DAL
             using (WebsiteKhoaHocOnline_V4Context context = new WebsiteKhoaHocOnline_V4Context())
             {
                 var totalCourse = context.Courses.Count();
+                var bestSaleCourses = context.Courses.Select(course => new { course.CourseName, totalreg = course.Purchases.Count() })
+                                                      .OrderByDescending(element => element.totalreg)
+                                                      .Take(1).ToList();
+                var bestSaleCourse = bestSaleCourses[0].CourseName;
 
-                var bestSaleCourses = context.Courses.Join(context.Purchases, course => course.IdCourse, purchase => purchase.IdCourse, (course, purchase) => new { course, purchase})
-                                                    .GroupBy(group => new { group.course.IdCourse, group.course.CourseName })
-                                                    .Select(group => new {group.Key, totalreg = group.Count()})
-                                                    .OrderByDescending(group => group.totalreg)
+                var uploadPerExpert = context.Users.Select(user => new { user.Name, totalUpload = user.Courses.Count() })
+                                                    .OrderByDescending(element => element.totalUpload)
                                                     .Take(1).ToList();
-                var bestSaleCourse = bestSaleCourses[0].Key.CourseName;
-
-                var uploadPerExpert = context.Courses.Join(context.Users, course => course.IdUser, user => user.IdUser, (course, user) => new { course, user })
-                                                .GroupBy(group => new { group.user.IdUser, group.user.Name })
-                                                .Select(group => new { group.Key, totalUpload = group.Count() })
-                                                .OrderByDescending(group => group.totalUpload)
-                                                .Take(1).ToList();
-                var mostUpload = uploadPerExpert[0].Key.Name;
+                var mostUpload = uploadPerExpert[0].Name;
 
 
                 var avgrate = 0;

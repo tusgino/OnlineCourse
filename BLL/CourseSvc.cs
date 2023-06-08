@@ -20,17 +20,14 @@ namespace BLL
         private readonly CourseRep _courseRep = new CourseRep();
         public SingleRsp GetAllCourse(CoursesPaginationReq coursesPaginationReq)
         {
-            var rsp = new SingleRsp();
-
             var courses = _courseRep.GetAllCourseByName(coursesPaginationReq.Title_like).ToList();
+
             var offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
             var total = courses.Count();
-            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
-
 
             var _data = _courseRep.GetAllCourse(offset, coursesPaginationReq.Limit, coursesPaginationReq.Title_like);
 
+            var rsp = new SingleRsp();
             rsp.Data = new
             {
                 data = _data,
@@ -60,7 +57,7 @@ namespace BLL
             var rsp = new SingleRsp();
 
             if ((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null) {
-                rsp.SetError("Not found Course");
+                rsp.SetError("Course not found");
             };
 
             return rsp;
@@ -72,7 +69,7 @@ namespace BLL
 
             if (_courseRep.GetCourseByID(id) == null)
             {
-                res.SetError("Not found course");
+                res.SetError("Course not found");
             }
             else
             {
@@ -81,18 +78,22 @@ namespace BLL
 
             return res;
         }
-        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq)
         {
-            if (coursesFilteringReq.start_day == null) coursesFilteringReq.start_day = new DateTime(1, 1, 1);
-            if (coursesFilteringReq.end_day == null) coursesFilteringReq.end_day = new DateTime(9999, 1, 1);
-            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+            coursesFilteringReq.ValidateData();
 
-            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.title_like,
+                                                             coursesFilteringReq.category_name,
+                                                             coursesFilteringReq.start_day,
+                                                             coursesFilteringReq.end_day,
+                                                             coursesFilteringReq.status_active,
+                                                             coursesFilteringReq.status_store);
+
+            int limit = 10;
+            int offset = (coursesFilteringReq.Page - 1) * limit;
             int total = courses.Count;
-            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
 
-            var data = courses.OrderBy(course => course.Name).Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+            var data = courses.OrderBy(course => course.Name).Skip(offset).Take(limit).ToList();
 
             object res = new
             {
@@ -104,7 +105,7 @@ namespace BLL
 
             if (data == null)
             {
-                rsp.SetError("Not found course");
+                rsp.SetError("Course not found");
             }
             else
             {
@@ -115,14 +116,15 @@ namespace BLL
         }
         public SingleRsp GetCoursesByCategoryID(Guid _category_id)
         {
-            var courses = _courseRep.GetAllCourseByCategoryID(_category_id).OrderBy(course => course.CourseName).Select(course => course.CourseName).ToList(); ;
-
+            var courses = _courseRep.GetAllCourseByCategoryID(_category_id)
+                                    .OrderBy(course => course.CourseName)
+                                    .Select(course => course.CourseName).ToList(); ;
 
             var rsp = new SingleRsp();
 
             if (courses == null)
             {
-                rsp.SetError("Not found course");
+                rsp.SetError("Course not found");
             }
             else
             {
@@ -142,13 +144,9 @@ namespace BLL
 
             return rsp;
         }
-        public SingleRsp GetAllCourseForAnalytics(CourseAnalyticsReq courseAnalyticsReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllCourseForAnalytics(CourseAnalyticsReq courseAnalyticsReq)
         {
-            if (courseAnalyticsReq.start_reg_user == null) courseAnalyticsReq.start_reg_user = 0;
-            if (courseAnalyticsReq.end_reg_user == null) courseAnalyticsReq.end_reg_user = int.MaxValue;
-
-            if (courseAnalyticsReq.start_rate == null) courseAnalyticsReq.start_rate = 1;
-            if (courseAnalyticsReq.end_rate == null) courseAnalyticsReq.end_rate = 5;
+            courseAnalyticsReq.ValidateData();
 
             var courses = _courseRep.GetAllCoursesForAnalytics(courseAnalyticsReq.title_like,
                                                                courseAnalyticsReq.start_reg_user,
@@ -157,10 +155,8 @@ namespace BLL
                                                                courseAnalyticsReq.end_rate);
 
             int limit = 10;
-            int offset = (coursesPaginationReq.Page - 1) * limit;
+            int offset = (courseAnalyticsReq.Page - 1) * limit;
             int total = courses.Count;
-            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
 
             var data = courses.Skip(offset).Take(limit).ToList();
 
@@ -179,9 +175,6 @@ namespace BLL
             {
                 rsp.Data = res;
             }
-
-
-
             return rsp;
         }
         public SingleRsp AddCourse(CourseReq courseReq)

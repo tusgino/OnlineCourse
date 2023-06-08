@@ -13,5 +13,14 @@ namespace Common.Req.User
         public int? end_upload_course { get; set; }
         public long? start_revenue { get; set; }
         public long? end_revenue { get; set; }
+        public int Page { get; set; }
+        public void ValidateData()
+        {
+            expert_name ??= string.Empty;
+            start_upload_course ??= 0;
+            end_upload_course ??= int.MaxValue;
+            start_revenue ??= 0;
+            end_revenue ??= int.MaxValue;
+        }
     }
 }
