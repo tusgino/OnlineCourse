@@ -28,7 +28,7 @@ namespace Common.Req.TradeDetail
             start_date ??= new DateTime(1800, 1, 1);
             end_date ??= new DateTime(9999, 1, 1);
             start_balance ??= 0;
-            end_balance ??= int.MaxValue;
+            end_balance ??= long.MaxValue;
         }
     }
 }
