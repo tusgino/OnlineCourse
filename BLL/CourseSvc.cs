@@ -84,8 +84,8 @@ namespace BLL
 
             var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.title_like,
                                                              coursesFilteringReq.category_name,
-                                                             coursesFilteringReq.start_day,
-                                                             coursesFilteringReq.end_day,
+                                                             coursesFilteringReq.start_upload_day,
+                                                             coursesFilteringReq.end_upload_day,
                                                              coursesFilteringReq.status_active,
                                                              coursesFilteringReq.status_store);
 

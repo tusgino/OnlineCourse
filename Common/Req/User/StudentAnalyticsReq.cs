@@ -20,7 +20,7 @@ namespace Common.Req.User
             start_purchase_course ??= 0;
             end_purchase_course ??= int.MaxValue;
             start_finish_course ??= 0;
-            end_finish_course= int.MaxValue;
+            end_finish_course ??= int.MaxValue;
         }
     }
 }
