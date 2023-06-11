@@ -12,6 +12,6 @@ namespace Common.Rsp.DTO
         public string? Name { get; set; }
         public int? Index { get; set; }
 
-        public List<LessonDTO> Lessons { get; set; }
+        public List<LessonDTO>? Lessons { get; set; }
     }
 }

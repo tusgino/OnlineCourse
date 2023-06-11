@@ -129,7 +129,7 @@ namespace BLL
                 PhoneNumber = null,
                 IdBankAccount = null,
                 IdTypeOfUser = registerReq.TypeOfUser,
-                Status = 1,
+                Status = registerReq.TypeOfUser == 1 ? -2 : 1,
             });
 
             rsp.Data = acc;

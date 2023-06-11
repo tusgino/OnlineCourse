@@ -1,11 +1,14 @@
 ﻿using Common.BLL;
 using Common.Req.Course;
+using Common.Req.User;
 using Common.Rsp;
 using Common.Rsp.DTO;
 using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,18 +20,15 @@ namespace BLL
         private readonly CourseRep _courseRep = new CourseRep();
         public SingleRsp GetAllCourse(CoursesPaginationReq coursesPaginationReq)
         {
-            var rsp = new SingleRsp();
-
             var courses = _courseRep.GetAllCourseByName(coursesPaginationReq.Title_like).ToList();
+
             var offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
             var total = courses.Count();
-            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
-
 
             var _data = _courseRep.GetAllCourse(offset, coursesPaginationReq.Limit, coursesPaginationReq.Title_like);
 
-            object res = new
+            var rsp = new SingleRsp();
+            rsp.Data = new
             {
                 data = _data,
                 pagination = new
@@ -38,33 +38,26 @@ namespace BLL
                     _totalRows = total,
                 }
             };
-            rsp.Data = res;
 
             return rsp;
         }
 
-        public SingleRsp GetAllCourseByExpert(Guid id)
+        public SingleRsp GetAllCourseByIdUser(Guid id)
         {
             var rsp = new SingleRsp();
-
-            if(_courseRep.GetAllCourseByExpert(id) == null)
+            if ((rsp.Data = _courseRep.GetAllCourseByIdUser(id)) == null)
             {
                 rsp.SetError("Not found Course of this Expert");
             }
-            else
-            {
-                rsp.Data = _courseRep.GetAllCourseByExpert(id);
-            }
-
             return rsp;
         }
 
-        public SingleRsp GetACourse(Guid id)
+        public SingleRsp GetACourse(Guid idCourse, Guid idUser)
         {
             var rsp = new SingleRsp();
 
-            if((rsp.Data = _courseRep.GetACourse(id)) == null){
-                rsp.SetError("Not found Course");
+            if ((rsp.Data = _courseRep.GetACourse(idCourse, idUser)) == null) {
+                rsp.SetError("Course not found");
             };
 
             return rsp;
@@ -74,9 +67,9 @@ namespace BLL
         {
             var res = new SingleRsp();
 
-            if(_courseRep.GetCourseByID(id) == null)
+            if (_courseRep.GetCourseByID(id) == null)
             {
-                res.SetError("Not found course");
+                res.SetError("Course not found");
             }
             else
             {
@@ -85,21 +78,140 @@ namespace BLL
 
             return res;
         }
-        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq, CoursesPaginationReq coursesPaginationReq)
+        public SingleRsp GetAllCoursesByFiltering(CoursesFilteringReq coursesFilteringReq)
         {
-            if (coursesFilteringReq.start_day == null) coursesFilteringReq.start_day = new DateTime(1, 1, 1);
-            if (coursesFilteringReq.end_day == null) coursesFilteringReq.end_day = new DateTime(9999, 1, 1);
-            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.text, coursesFilteringReq.category_name, coursesFilteringReq.start_day, coursesFilteringReq.end_day, coursesFilteringReq.status_active, coursesFilteringReq.status_store);
+            coursesFilteringReq.ValidateData();
 
-            int offset = (coursesPaginationReq.Page - 1) * coursesPaginationReq.Limit;
+            var courses = _courseRep.GetAllCourseByFiltering(coursesFilteringReq.title_like,
+                                                             coursesFilteringReq.category_name,
+                                                             coursesFilteringReq.start_upload_day,
+                                                             coursesFilteringReq.end_upload_day,
+                                                             coursesFilteringReq.status_active,
+                                                             coursesFilteringReq.status_store);
+
+            int limit = 10;
+            int offset = (coursesFilteringReq.Page - 1) * limit;
             int total = courses.Count;
-            int totalPage = (total % coursesPaginationReq.Limit) == 0 ? (int)(total / coursesPaginationReq.Limit) :
-                (int)(1 + (total / coursesPaginationReq.Limit));
 
-            var data = courses.Skip(offset).Take(coursesPaginationReq.Limit).ToList();
+            var data = courses.OrderBy(course => course.Name).Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
 
             var rsp = new SingleRsp();
 
+            if (data == null)
+            {
+                rsp.SetError("Course not found");
+            }
+            else
+            {
+                rsp.Data = res;
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetCoursesByCategoryID(Guid _category_id)
+        {
+            var courses = _courseRep.GetAllCourseByCategoryID(_category_id)
+                                    .OrderBy(course => course.CourseName)
+                                    .Select(course => course.CourseName).ToList(); ;
+
+            var rsp = new SingleRsp();
+
+            if (courses == null)
+            {
+                rsp.SetError("Course not found");
+            }
+            else
+            {
+                rsp.Data = courses;
+            }
+
+            return rsp;
+        }
+        public SingleRsp UpdateCourse(Guid _id_course, JsonPatchDocument patchDoc)
+        {
+            var rsp = new SingleRsp();
+
+            if (!_courseRep.UpdateCourse(_id_course, patchDoc))
+            {
+                rsp.SetError("Update failed");
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetAllCourseForAnalytics(CourseAnalyticsReq courseAnalyticsReq)
+        {
+            courseAnalyticsReq.ValidateData();
+
+            var courses = _courseRep.GetAllCoursesForAnalytics(courseAnalyticsReq.title_like,
+                                                               courseAnalyticsReq.start_reg_user,
+                                                               courseAnalyticsReq.end_reg_user,
+                                                               courseAnalyticsReq.start_rate,
+                                                               courseAnalyticsReq.end_rate);
+
+            int limit = 10;
+            int offset = (courseAnalyticsReq.Page - 1) * limit;
+            int total = courses.Count;
+
+            var data = courses.Skip(offset).Take(limit).ToList();
+
+            object res = new
+            {
+                _data = data,
+                _totalRows = total,
+            };
+
+            var rsp = new SingleRsp();
+            if (data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = res;
+            }
+            return rsp;
+        }
+        public SingleRsp AddCourse(CourseReq courseReq)
+        {
+            var rsp = new SingleRsp();
+
+            Course course = new Course
+            {
+                IdCategory = courseReq.IdCategory,
+                CourseName = courseReq.CourseName,
+                DateOfUpload = DateTime.Now,
+                Description = courseReq.Description,
+                Discount = courseReq.Discount,
+                FeePercent = courseReq.FeePercent,
+                IdCourse = Guid.NewGuid(),
+                IdUser = courseReq.IdUser,
+                Price = courseReq.Price,
+                Status = courseReq.Status,
+                Thumbnail = courseReq.Thumbnail,
+                VideoPreview = courseReq.VideoPreview,
+            };
+
+            if (_courseRep.AddCourse(course))
+            {
+                rsp.Data = course.IdCourse;
+            }
+            else
+            {
+                rsp.SetError("Not found any category");
+            }
+
+            return rsp;
+        }
+        public SingleRsp GetAverageFeePercent()
+        {
+            var data = _courseRep.GetAverageFeePercent();
+            var rsp = new SingleRsp();
             if (data == null)
             {
                 rsp.SetError("Not found course");
@@ -108,17 +220,63 @@ namespace BLL
             {
                 rsp.Data = data;
             }
-
             return rsp;
         }
-        public SingleRsp GetCoursesByCategoryID(Guid _category_id)
+        public SingleRsp GetBestCourses()
         {
-            var courses = _courseRep.GetAllCourseByCategoryID(_category_id);
+            var data = _courseRep.GetBestCourses();
+            var rsp = new SingleRsp();
+            if (data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+        public SingleRsp ChangeStatus(Guid idCourse)
+        {
             var rsp = new SingleRsp();
 
-            rsp.Data = courses;
+            if (!_courseRep.ChangeStatus(idCourse))
+            {
+                rsp.SetError("Can not change status");
+            }
+
             return rsp;
         }
+        public SingleRsp GetNumOfUploadedCourseByMonth(int year)
+        {
+            var data = _courseRep.GetNumOfUploadedCourseByMonth(year);
 
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("Not found course");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
+        public SingleRsp OverviewCourse()
+        {
+            var data = _courseRep.OverviewCourse();
+
+            var rsp = new SingleRsp();
+            if(data == null)
+            {
+                rsp.SetError("No information");
+            }
+            else
+            {
+                rsp.Data = data;
+            }
+            return rsp;
+        }
     }
+
 }

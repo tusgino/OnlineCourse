@@ -1,5 +1,7 @@
 ﻿using BLL;
+using Common.Req.Course;
 using Common.Req.User;
+using Common.Rsp.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -19,7 +21,7 @@ namespace OnlineCourse.Controllers
         public IActionResult GetUserByID(Guid? id) {
             var rsp = _userSvc.GetUserByID(id);
 
-            if(rsp.Success)
+            if (rsp.Success)
             {
                 return Ok(rsp);
             }
@@ -30,21 +32,9 @@ namespace OnlineCourse.Controllers
         }
         [HttpGet("Get-all-users-by-filtering")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllUsersByFiltering(string? _title_like, DateTime? _start_date_create, DateTime? _end_date_create, bool? _is_student, bool? _is_expert, bool? _is_admin, bool? _status_active, bool? _status_banned, int page)
+        public IActionResult GetAllUsersByFiltering([FromQuery] UserFilteringReq userFilteringReq)
         {
-            UserFilteringReq userFilteringReq = new UserFilteringReq
-            {
-                text = _title_like,
-                start_date_create = _start_date_create,
-                end_date_create = _end_date_create,
-                is_student = _is_student,
-                is_expert = _is_expert,
-                is_admin = _is_admin,
-                status_active = _status_active,
-                status_banned = _status_banned,
-            };
-
-            var rsp = _userSvc.GetAllUsersByFiltering(userFilteringReq, page);
+            var rsp = _userSvc.GetAllUsersByFiltering(userFilteringReq);
 
             if (rsp.Success)
             {
@@ -57,7 +47,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPatch("{ID_User}")]
-
+        [Authorize]
         public IActionResult UpdateUser(Guid ID_User, [FromBody] JsonPatchDocument patchDoc)
         {
             var rsp = _userSvc.UpdateUser(ID_User, patchDoc);
@@ -68,6 +58,141 @@ namespace OnlineCourse.Controllers
             else
             {
                 return BadRequest(rsp.Message);
+            }
+        }
+
+        [HttpGet("Get-all-students-for-analytics")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetStudentsForAnalytics([FromQuery] StudentAnalyticsReq studentAnalyticsReq)
+        {
+            var res = _userSvc.GetAllStudentForAnalytics(studentAnalyticsReq);
+
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-all-experts-for-analytics")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllExpertsForAnalytics([FromQuery] ExpertAnalyticsReq expertAnalyticsReq)
+        {
+            var res = _userSvc.GetAllExpertsForAnalytics(expertAnalyticsReq);
+
+            if(res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        
+        [HttpGet("Get-all-users-by-type")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllUsersByType()
+        {
+            var res = _userSvc.GetAllUsersByType();
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-new-users")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetNewUsers()
+        {
+            var res = _userSvc.GetNewUsers();
+            if(res.Success)
+            {
+                return Ok(res.Data);  
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-all-expert-requests")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllExpertRequests([FromQuery] ExpertRegisterReq expertRegisterReq)
+        {
+            var res = _userSvc.GetAllExpertRequests(expertRegisterReq);
+
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-best-students")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetBestStudents()
+        {
+            var res = _userSvc.GetBestStudents();
+
+            if(res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpGet("Get-best-experts")]
+        public IActionResult GetBestExperts()
+        {
+            var res = _userSvc.GetBestExperts();
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+        [HttpPost("Send-mail")]
+        public IActionResult SendMail(EmailDTO emailDTO)
+        {
+            var res = _userSvc.SendMail(emailDTO);
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
+            }
+        }
+
+        [HttpGet("Statistics-experts-by-{idExpert}")]
+        [Authorize]
+        public IActionResult StatisticsExpert(Guid idExpert)
+        {
+            var res = _userSvc.StatisticsExpert(idExpert);
+
+            if (res.Success)
+            {
+                return Ok(res.Data);
+            }
+            else
+            {
+                return BadRequest(res.Message);
             }
         }
     }

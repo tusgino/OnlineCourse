@@ -41,6 +41,7 @@ namespace BLL
 
             if(!_bankInfoRep.AddBankInfo(bankInfo))
             {
+
                 rsp.SetError($"Not found user have id = {bankInfoReq.IdUser}");
             }
             else

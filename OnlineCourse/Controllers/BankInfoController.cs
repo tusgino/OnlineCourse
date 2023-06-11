@@ -31,6 +31,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("Add-BankInfo")]
+        [Authorize]
         public IActionResult AddBankInfo([FromBody] BankInfoReq bankInfoReq)
         {
             var rsp = _bankInfoSvc.AddBankInfo(bankInfoReq);

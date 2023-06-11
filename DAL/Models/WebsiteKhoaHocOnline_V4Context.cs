@@ -36,7 +36,7 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=HUAN\\SQLEXPRESS;Initial Catalog=WebsiteKhoaHocOnline_V4;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=DESKTOP-OLCDUI2\\SQLEXPRESS;Initial Catalog=WebsiteKhoaHocOnline_V4;Integrated Security=True");
             }
         }
 
@@ -170,7 +170,7 @@ namespace DAL.Models
 
             modelBuilder.Entity<Purchase>(entity =>
             {
-                entity.HasKey(e => new { e.IdUser, e.IdCourse, e.IdTrade });
+                entity.HasKey(e => new { e.IdUser, e.IdCourse });
 
                 entity.ToTable("PURCHASE");
 
@@ -178,9 +178,9 @@ namespace DAL.Models
 
                 entity.Property(e => e.IdCourse).HasColumnName("ID_Course");
 
-                entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
-
                 entity.Property(e => e.DateOfPurchase).HasColumnType("datetime");
+
+                entity.Property(e => e.IdTrade).HasColumnName("ID_Trade");
 
                 entity.HasOne(d => d.IdCourseNavigation)
                     .WithMany(p => p.Purchases)
@@ -191,7 +191,6 @@ namespace DAL.Models
                 entity.HasOne(d => d.IdTradeNavigation)
                     .WithMany(p => p.Purchases)
                     .HasForeignKey(d => d.IdTrade)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_TRADE_DETAIL");
 
                 entity.HasOne(d => d.IdUserNavigation)
@@ -253,21 +252,22 @@ namespace DAL.Models
 
             modelBuilder.Entity<Study>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.IdUser, e.IdLesson });
 
                 entity.ToTable("STUDY");
 
-                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
-
                 entity.Property(e => e.IdUser).HasColumnName("ID_User");
 
+                entity.Property(e => e.IdLesson).HasColumnName("ID_Lesson");
+
                 entity.HasOne(d => d.IdLessonNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdLesson)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_LESSON");
 
                 entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany()
+                    .WithMany(p => p.Studies)
                     .HasForeignKey(d => d.IdUser)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_STUDY_USER");
